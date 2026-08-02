@@ -1,0 +1,44 @@
+# PyTorch CUDA 12.1 Index for Windows GPU acceleration
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+# Core PyTorch packages (CUDA 12.1)
+torch==2.3.1+cu121
+torchaudio==2.3.1+cu121
+torchvision==0.18.1+cu121
+
+# Voice Stack (CPU Optimized)
+openwakeword>=0.6.0
+faster-whisper>=1.0.2
+kokoro>=0.3.1
+soundfile>=0.12.1
+sounddevice>=0.4.6
+pyaudio>=0.2.14
+numpy>=1.26.4,<2.0.0
+scipy>=1.12.0
+onnxruntime>=1.17.0
+
+# Orchestration & LLM Framework
+langchain>=0.2.0
+langchain-community>=0.2.0
+langchain-core>=0.2.0
+langchain-ollama>=0.1.0
+langgraph>=0.1.0
+pydantic>=2.7.0
+
+# PCB Parsing & KiCad Tools (kicad-happy dependencies)
+sexpdata>=1.0.0
+matplotlib>=3.8.0
+pillow>=10.2.0
+networkx>=3.2
+
+# Web Search & Compliance Tools (agent-reach CLI & Scraping)
+agent-reach>=0.1.0
+requests>=2.31.0
+beautifulsoup4>=4.12.3
+httpx>=0.27.0
+lxml>=5.1.0
+
+# Async & Utilities
+asyncio>=3.4.3
+python-dotenv>=1.0.1
+rich>=13.7.1

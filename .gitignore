@@ -1,0 +1,25 @@
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Large Model Files & Scratches
+models/
+scratch/
+*.onnx
+*.bin
+*.pth
+*.pt
+
+# IDEs & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
