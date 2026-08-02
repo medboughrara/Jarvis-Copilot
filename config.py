@@ -4,6 +4,28 @@ Contains audio specifications, model configurations, and system prompts.
 """
 
 import os
+import logging
+import sys
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+# Configure standard structured logging
+os.makedirs("scratch", exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.FileHandler("scratch/jarvis_session.log"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
+def get_logger(name: str):
+    return logging.getLogger(name)
 
 # Project Metadata
 PROJECT_NAME = "AutoPick"

@@ -25,7 +25,7 @@ class TestJarvisAgent(unittest.TestCase):
 
     def test_gui_screen_query_dispatch(self):
         res = asyncio.run(self.agent.process_query("Parse active KiCad GUI screen layout"))
-        self.assertIn("OmniParser V2 Screen Analysis", res)
+        self.assertIn("I captured your active screen", res)
 
 
 if __name__ == "__main__":

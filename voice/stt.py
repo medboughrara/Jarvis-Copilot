@@ -6,8 +6,14 @@ Transcribes user spoken commands with domain-specific bias prompts.
 import asyncio
 import numpy as np
 from faster_whisper import WhisperModel
-import sounddevice as sd
 import config
+
+try:
+    import sounddevice as sd
+    AUDIO_AVAILABLE = True
+except OSError as e:
+    print(f"[STT Audio Error] sounddevice import failed: {e}")
+    AUDIO_AVAILABLE = False
 
 
 class Transcriber:
@@ -25,18 +31,28 @@ class Transcriber:
         """
         Records microphone input for a specified duration after wake word activation.
         """
+        if not AUDIO_AVAILABLE:
+            print("[STT] Audio device unavailable. Simulating silence...")
+            await asyncio.sleep(1)
+            # Return empty audio array
+            return np.zeros(int(record_seconds * config.SAMPLE_RATE), dtype=np.float32)
+
         loop = asyncio.get_running_loop()
         print(f"[STT] Listening for user command ({record_seconds}s)... Speak now!")
 
         def record_sync():
-            audio_data = sd.rec(
-                int(record_seconds * config.SAMPLE_RATE),
-                samplerate=config.SAMPLE_RATE,
-                channels=config.CHANNELS,
-                dtype="float32"
-            )
-            sd.wait()
-            return audio_data.flatten()
+            try:
+                audio_data = sd.rec(
+                    int(record_seconds * config.SAMPLE_RATE),
+                    samplerate=config.SAMPLE_RATE,
+                    channels=config.CHANNELS,
+                    dtype="float32"
+                )
+                sd.wait()
+                return audio_data.flatten()
+            except Exception as e:
+                print(f"[STT Error] Failed to record audio: {e}")
+                return np.zeros(int(record_seconds * config.SAMPLE_RATE), dtype=np.float32)
 
         audio_buffer = await loop.run_in_executor(None, record_sync)
         return audio_buffer

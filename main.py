@@ -31,11 +31,19 @@ async def main_loop():
     print("\n[System] Initialization complete. Jarvis is online and listening...\n")
 
     try:
+        tts_task = None
         while True:
             # Step 1: Continuous background wake word detection
             triggered = await wakeword_engine.wait_for_wakeword()
             
             if triggered:
+                # Barge-in: if TTS is playing, cancel it immediately
+                if tts_task and not tts_task.done():
+                    tts_engine.stop()
+                    tts_task.cancel()
+                    print("\n[Barge-in] Interrupted ongoing audio playback.")
+                    await asyncio.sleep(0.1)
+
                 # Play brief acknowledgement audio or notification
                 print("[Jarvis] Wake word recognized! Listening for input...")
                 
@@ -44,14 +52,20 @@ async def main_loop():
                 transcription = await stt_engine.transcribe(audio_buffer)
 
                 if not transcription.strip():
-                    await tts_engine.speak("I didn't hear any command. Standing by.")
+                    tts_task = asyncio.create_task(tts_engine.speak("I didn't hear any command. Standing by."))
+                    continue
+
+                # Quick short-circuit for stop/cancel commands
+                transcription_lower = transcription.lower().strip().strip(".!")
+                if transcription_lower in ["stop", "cancel", "never mind", "nevermind", "quiet", "silence", "shut up"]:
+                    tts_task = asyncio.create_task(tts_engine.speak("Understood."))
                     continue
 
                 # Step 3: Send transcription to LangChain agent
                 agent_response = await agent_engine.process_query(transcription)
 
                 # Step 4: Convert agent text response to Kokoro TTS audio playback
-                await tts_engine.speak(agent_response)
+                tts_task = asyncio.create_task(tts_engine.speak(agent_response))
 
                 print("\n[Jarvis] Ready for next command...\n")
 

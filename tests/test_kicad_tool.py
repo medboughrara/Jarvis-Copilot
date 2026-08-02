@@ -41,7 +41,7 @@ SAMPLE_KICAD_SCH = """(kicad_sch (version 20230121) (generator eeschema)
 class TestKiCadTool(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.test_file = "d:/aaaassistan_pcb/tests/sample_autopick.kicad_sch"
+        cls.test_file = os.path.join(os.getcwd(), "tests", "sample_autopick.kicad_sch")
         os.makedirs(os.path.dirname(cls.test_file), exist_ok=True)
         with open(cls.test_file, "w", encoding="utf-8") as f:
             f.write(SAMPLE_KICAD_SCH)
@@ -65,6 +65,16 @@ class TestKiCadTool(unittest.TestCase):
         parser = KiCadParser(self.test_file)
         erc_result = parser.run_erc_checks()
         self.assertTrue(isinstance(erc_result, str))
+
+    def test_bom_generation(self):
+        parser = KiCadParser(self.test_file)
+        result = parser.generate_bom()
+        self.assertIn("BOM generated for", result)
+        self.assertTrue(os.path.exists("scratch/bom_output.csv"))
+        with open("scratch/bom_output.csv", "r", encoding="utf-8") as f:
+            content = f.read()
+            self.assertIn("Quantity,Value,Library,References", content)
+            self.assertIn("STM32", content)
 
     def test_langchain_tool_invocations(self):
         res1 = analyze_kicad_file.invoke({"file_path": self.test_file})

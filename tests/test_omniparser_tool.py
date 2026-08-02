@@ -3,15 +3,18 @@ Unit & Integration Tests for tools/omniparser_tool.py (AutoPick Jarvis Copilot).
 """
 
 import unittest
+import os
 from tools.omniparser_tool import OmniParserTool, parse_screen_gui
 
 
 class TestOmniParserTool(unittest.TestCase):
-    def test_capture_and_parse(self):
+    def test_screen_capture_and_parse(self):
         parser = OmniParserTool()
-        result = parser.capture_and_parse(output_path="d:/aaaassistan_pcb/scratch/test_screen.png")
-        self.assertIn("captured your active screen", result)
-        self.assertIn("Visual analysis identified", result)
+        test_path = os.path.join(os.getcwd(), "scratch", "test_screen.png")
+        result = parser.capture_and_parse(output_path=test_path)
+        
+        self.assertIn("I captured your active screen", result)
+        self.assertTrue(os.path.exists(test_path))
 
     def test_langchain_tool_invocation(self):
         result = parse_screen_gui.invoke({"action_context": "KiCad PCB Layout"})

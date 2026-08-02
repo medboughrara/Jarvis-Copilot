@@ -8,9 +8,10 @@ import asyncio
 from typing import List, Dict
 import config
 from agent.prompts import JARVIS_SYSTEM_PROMPT
-from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors
+from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
 from tools.reach_tool import search_component_datasheet, check_compliance_status
 from tools.omniparser_tool import parse_screen_gui
+from tools.datasheet_rag_tool import query_local_datasheets
 
 try:
     from langchain_ollama import ChatOllama
@@ -30,9 +31,11 @@ class JarvisAgent:
             analyze_kicad_file,
             get_power_tree,
             check_pcb_errors,
+            generate_bom_report,
             search_component_datasheet,
             check_compliance_status,
-            parse_screen_gui
+            parse_screen_gui,
+            query_local_datasheets
         ]
         self.tools_by_name = {t.name: t for t in self.tools}
         self.llm_with_tools = None
@@ -86,8 +89,10 @@ class JarvisAgent:
             tool_result = parse_screen_gui.invoke({"action_context": user_query})
             tool_executed = True
         elif "power tree" in lower_q or "power distribution" in lower_q:
-            file_path = "d:/aaaassistan_pcb/tests/sample_autopick.kicad_sch"
-            tool_result = get_power_tree.invoke({"file_path": file_path})
+            tool_result = get_power_tree.invoke({"file_path": ""})
+            tool_executed = True
+        elif "bom" in lower_q or "bill of materials" in lower_q:
+            tool_result = generate_bom_report.invoke({"file_path": ""})
             tool_executed = True
         elif "datasheet" in lower_q or "sts" in lower_q or ("servo" in lower_q and "rohs" not in lower_q and "fcc" not in lower_q):
             tool_result = search_component_datasheet.invoke({"query": user_query})
@@ -96,8 +101,13 @@ class JarvisAgent:
             tool_result = check_compliance_status.invoke({"component_name": user_query})
             tool_executed = True
         elif "erc" in lower_q or "drc" in lower_q or "schematic check" in lower_q:
-            file_path = "d:/aaaassistan_pcb/tests/sample_autopick.kicad_sch"
-            tool_result = check_pcb_errors.invoke({"file_path": file_path})
+            tool_result = check_pcb_errors.invoke({"file_path": ""})
+            tool_executed = True
+        elif "what can you do" in lower_q or "help" in lower_q or "commands" in lower_q:
+            tool_result = "I am Jarvis, your PCB Copilot. I can analyze your KiCad schematics, generate power distribution trees, run ERC checks, create Bill of Materials, look up component datasheets, verify RoHS and FCC compliance, and even analyze your active screen."
+            tool_executed = True
+        elif "local datasheet" in lower_q or "local pdf" in lower_q or "document" in lower_q or "rag" in lower_q:
+            tool_result = query_local_datasheets.invoke({"query": user_query})
             tool_executed = True
 
         if tool_executed:

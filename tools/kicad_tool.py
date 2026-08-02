@@ -7,15 +7,16 @@ Supports automatic file discovery in workspace.
 import os
 import re
 import glob
+import csv
 from typing import Dict, List, Any
-import sexpdata
 from langchain_core.tools import tool
+from tools.reach_tool import AgentReachTool
 
 
 def find_latest_kicad_file(extension: str = ".kicad_sch") -> str:
     """Searches workspace and current directory for KiCad schematic or PCB files."""
-    # Search working directory and subdirectories
-    search_dirs = [".", "d:/aaaassistan_pcb", "d:/aaaassistan_pcb/tests"]
+    cwd = os.path.abspath(os.getcwd())
+    search_dirs = [cwd, os.path.join(cwd, "tests")]
     for d in search_dirs:
         pattern = os.path.join(d, f"**/*{extension}")
         matches = glob.glob(pattern, recursive=True)
@@ -23,7 +24,7 @@ def find_latest_kicad_file(extension: str = ".kicad_sch") -> str:
             return matches[0]
             
     # Fallback to test sample if no user file found yet
-    sample_file = "d:/aaaassistan_pcb/tests/sample_autopick.kicad_sch"
+    sample_file = os.path.join(cwd, "tests", "sample_autopick.kicad_sch")
     if os.path.exists(sample_file):
         return sample_file
     raise FileNotFoundError(f"No {extension} file found in workspace.")
@@ -36,8 +37,18 @@ class KiCadParser:
         if not file_path or not os.path.exists(file_path):
             file_path = find_latest_kicad_file(".kicad_sch")
             
-        self.file_path = file_path
-        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+        # Security: Prevent path traversal and enforce valid extensions
+        abs_path = os.path.abspath(file_path)
+        cwd = os.path.abspath(os.getcwd())
+        
+        if not abs_path.startswith(cwd):
+            raise ValueError(f"Security Error: Path traversal detected. File '{abs_path}' is outside the workspace.")
+            
+        if not (abs_path.endswith('.kicad_sch') or abs_path.endswith('.kicad_pcb')):
+            raise ValueError(f"Security Error: Invalid file type '{os.path.basename(abs_path)}'. Must be .kicad_sch or .kicad_pcb.")
+
+        self.file_path = abs_path
+        with open(abs_path, "r", encoding="utf-8", errors="ignore") as f:
             self.content = f.read()
 
     def extract_components(self) -> List[Dict[str, str]]:
@@ -140,6 +151,63 @@ class KiCadParser:
         
         return f"🔍 [KiCad ERC Error Summary for {os.path.basename(self.file_path)}]:\n" + "\n".join(issues)
 
+    def generate_bom(self) -> str:
+        """Generates a Bill of Materials (BOM) summary and CSV, resolving parts where possible."""
+        components = self.extract_components()
+        
+        # Group by value and library
+        bom_map = {}
+        for c in components:
+            key = f"{c['value']} | {c['library']}"
+            if key not in bom_map:
+                bom_map[key] = {"value": c['value'], "library": c['library'], "refs": []}
+            bom_map[key]["refs"].append(c['reference'])
+            
+        # Write to CSV
+        os.makedirs("scratch", exist_ok=True)
+        csv_path = "scratch/bom_output.csv"
+        try:
+            with open(csv_path, "w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["Quantity", "Value", "Library", "References", "Status / Info"])
+                for item in bom_map.values():
+                    qty = len(item['refs'])
+                    refs = " ".join(sorted(item['refs']))
+                    
+                    # Optional pricing/stock lookup stub
+                    info = "Offline"
+                    
+                    # Try to resolve servo/MCU details via reach tool DB (offline subset)
+                    val_upper = item['value'].upper()
+                    if any(kw in val_upper for kw in ['STS', 'NEMA', 'SERVO', 'MG996R', 'STM32', 'PCA9685']):
+                        try:
+                            # Quick offline check to see if reach_tool knows it
+                            res = AgentReachTool.search_datasheet(item['value'])
+                            if "Search Notice" not in res and "Live Internet" not in res:
+                                info = "In Component DB"
+                        except Exception:
+                            pass
+                            
+                    writer.writerow([qty, item['value'], item['library'], refs, info])
+        except Exception as e:
+            print(f"[BOM Error] Failed to write CSV: {e}")
+
+        # Generate spoken summary
+        summary = [f"BOM generated for {os.path.basename(self.file_path)} with {len(components)} total parts across {len(bom_map)} unique components."]
+        summary.append(f"Exported to {csv_path}.")
+        
+        # Find interesting parts to mention (ICs, servos)
+        interesting_parts = []
+        for item in bom_map.values():
+            val_upper = item['value'].upper()
+            if any(kw in val_upper for kw in ['STS', 'SERVO', 'STM32', 'PCA9685', 'IC', 'MCU', 'REG', 'NEMA']):
+                interesting_parts.append(f"{len(item['refs'])}x {item['value']}")
+                
+        if interesting_parts:
+            summary.append("Key components include: " + ", ".join(interesting_parts) + ".")
+            
+        return " ".join(summary)
+
 
 # ---------------------------------------------------------------------------
 # LangChain Tool Functions
@@ -201,3 +269,18 @@ def check_pcb_errors(file_path: str = "") -> str:
         return parser.run_erc_checks()
     except Exception as e:
         return f"Error running ERC checks: {e}"
+
+@tool
+def generate_bom_report(file_path: str = "") -> str:
+    """
+    Generates a full Bill of Materials (BOM) from a KiCad file, exporting to CSV and summarizing part counts.
+    Args:
+        file_path: Optional path to .kicad_sch. If empty, auto-discovers file in workspace.
+    """
+    try:
+        if not file_path or not os.path.exists(file_path):
+            file_path = find_latest_kicad_file(".kicad_sch")
+        parser = KiCadParser(file_path)
+        return parser.generate_bom()
+    except Exception as e:
+        return f"Error generating BOM: {e}"

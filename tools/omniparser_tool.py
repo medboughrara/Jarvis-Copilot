@@ -6,8 +6,12 @@ directly from captured screen images (scratch/screen_capture.png).
 
 import os
 import re
+import hashlib
 from PIL import Image, ImageGrab
 from langchain_core.tools import tool
+
+_CACHE_HASH = None
+_CACHE_WORDS = None
 
 try:
     from rapidocr_onnxruntime import RapidOCR
@@ -29,10 +33,13 @@ class OmniParserTool:
             except Exception as e:
                 print(f"[OmniParser V2 Warning] RapidOCR init error: {e}")
 
-    def capture_and_parse(self, output_path: str = "d:/aaaassistan_pcb/scratch/screen_capture.png") -> str:
+    def capture_and_parse(self, output_path: str = None) -> str:
         """
         Captures primary monitor screen image and extracts real visual text, section headers, ICs, and component labels.
         """
+        if not output_path:
+            output_path = os.path.join(os.getcwd(), "scratch", "screen_capture.png")
+            
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         width, height = 1920, 1080
         screen_captured = False
@@ -48,15 +55,26 @@ class OmniParserTool:
             img = Image.new('RGB', (1920, 1080), color=(30, 30, 30))
             img.save(output_path)
 
+        global _CACHE_HASH, _CACHE_WORDS
         extracted_words = []
-        if self.ocr_engine and os.path.exists(output_path):
+        
+        if os.path.exists(output_path):
             try:
-                ocr_results, _ = self.ocr_engine(output_path)
-                if ocr_results:
-                    for line in ocr_results:
-                        text = line[1].strip()
-                        if text and len(text) >= 2:
-                            extracted_words.append(text)
+                with open(output_path, "rb") as f:
+                    img_hash = hashlib.md5(f.read()).hexdigest()
+                
+                if _CACHE_HASH == img_hash and _CACHE_WORDS is not None:
+                    print(f"[OmniParser V2] Cache hit for screen image {img_hash}.")
+                    extracted_words = _CACHE_WORDS
+                elif self.ocr_engine:
+                    ocr_results, _ = self.ocr_engine(output_path)
+                    if ocr_results:
+                        for line in ocr_results:
+                            text = line[1].strip()
+                            if text and len(text) >= 2:
+                                extracted_words.append(text)
+                    _CACHE_HASH = img_hash
+                    _CACHE_WORDS = extracted_words
             except Exception as e:
                 print(f"[OmniParser OCR Error] {e}")
 

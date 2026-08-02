@@ -7,8 +7,14 @@ import asyncio
 import os
 import sys
 import numpy as np
-import sounddevice as sd
 import config
+
+try:
+    import sounddevice as sd
+    AUDIO_AVAILABLE = True
+except OSError as e:
+    print(f"[TTS Audio Error] sounddevice import failed: {e}")
+    AUDIO_AVAILABLE = False
 
 try:
     from kokoro_onnx import Kokoro
@@ -28,6 +34,7 @@ class TextToSpeech:
         self.voice = voice
         self.sample_rate = 24000  # High-quality 24kHz audio synthesis
         self.kokoro_engine = None
+        self._stop_event = asyncio.Event()
         
         # Check for downloaded Kokoro-82M ONNX model files
         model_path = "models/kokoro-v1.0.onnx"
@@ -44,10 +51,18 @@ class TextToSpeech:
         else:
             print("[TTS Warning] Kokoro-82M model files not found. Using fallback engine.")
 
+    def stop(self):
+        """Stops any active TTS playback immediately."""
+        self._stop_event.set()
+        if AUDIO_AVAILABLE:
+            sd.stop()
+
     async def speak(self, text: str):
         """
         Asynchronously converts text into 24kHz human-like Kokoro-82M speech audio and plays out loud via speakers.
         """
+        self._stop_event.clear()
+        
         if not text or not text.strip():
             return
 
@@ -60,7 +75,7 @@ class TextToSpeech:
 
         def play_audio_sync():
             # Primary: Kokoro-82M 24kHz high-quality neural voice synthesis
-            if self.kokoro_engine:
+            if self.kokoro_engine and AUDIO_AVAILABLE:
                 try:
                     # Synthesize 24kHz audio waveform (using af_bella voice)
                     samples, sample_rate = self.kokoro_engine.create(
@@ -71,8 +86,7 @@ class TextToSpeech:
                     )
                     # Play 24kHz audio through laptop speakers
                     sd.play(samples, samplerate=sample_rate)
-                    sd.wait()
-                    return
+                    return True
                 except Exception as e:
                     print(f"[TTS Error] Kokoro-82M synthesis error ({e}). Falling back to SAPI5.")
 
@@ -86,5 +100,14 @@ class TextToSpeech:
                     print(f"[TTS SAPI Error] {e}")
 
             print(f"[TTS Audio Stream] {safe_print_text}")
+            return False
 
-        await loop.run_in_executor(None, play_audio_sync)
+        is_playing_sd = await loop.run_in_executor(None, play_audio_sync)
+        
+        # Wait asynchronously while sounddevice is playing, allowing cancellation
+        if is_playing_sd and AUDIO_AVAILABLE:
+            while sd.get_stream() is not None and sd.get_stream().active:
+                if self._stop_event.is_set():
+                    sd.stop()
+                    break
+                await asyncio.sleep(0.05)

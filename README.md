@@ -45,10 +45,16 @@ d:/aaaassistan_pcb/
 │   └── prompts.py            # System prompts configured for AutoPick / Multiverse AI
 ├── tools/
 │   ├── __init__.py
-│   ├── kicad_tool.py         # KiCad schematic/PCB parser, power tree generator, & ERC checks
+│   ├── kicad_tool.py         # KiCad schematic parser, BOM generation, power tree, & ERC checks
 │   ├── reach_tool.py         # Web search & servomotor datasheet/RoHS compliance checker
-│   └── omniparser_tool.py    # OmniParser V2 screen capture & RapidOCR layout parser
+│   ├── omniparser_tool.py    # OmniParser V2 screen capture & RapidOCR layout parser
+│   └── datasheet_rag_tool.py # Local PDF RAG with sentence-transformers and ChromaDB
 ├── models/                   # Downloaded ONNX model weights (Kokoro-82M 24kHz voice pack)
+├── datasheets/               # Directory for local PDF datasheets queried via RAG
+├── scratch/                  # Directory for temporary screen captures, CSVs, and logs
+├── Dockerfile                # Container configuration with system audio dependencies
+├── CONTRIBUTING.md           # Developer guidelines
+├── LICENSE                   # MIT License
 └── tests/                    # Unit and integration test suite
     ├── test_kicad_tool.py
     ├── test_reach_tool.py
@@ -64,22 +70,30 @@ d:/aaaassistan_pcb/
 
 ### 1. KiCad Schematic & PCB Review (`tools/kicad_tool.py`)
 - **Direct S-Expression Parsing**: Parses `.kicad_sch` and `.kicad_pcb` files directly without needing KiCad GUI dependencies.
+- **Bill of Materials (BOM)**: Generates a CSV BOM grouped by value and footprint, outputting to `scratch/bom_output.csv`.
 - **Power Distribution Tree**: Generates hierarchical power maps (`12V Motor Rail` -> `5V LDO` -> `3.3V MCU`).
 - **Automated ERC Check**: Detects missing ground planes (`GND`), insufficient decoupling capacitors near ICs, and voltage rail isolation risks.
-- **Workspace Auto-Discovery**: Automatically locates the active `.kicad_sch` project file in the workspace.
+- **Secure Workspace Auto-Discovery**: Automatically locates the active `.kicad_sch` project file with strict path-traversal prevention.
 
 ### 2. Web Search & Regulatory Compliance (`tools/reach_tool.py`)
 - **Servomotor Datasheet Database**: Embedded technical specifications for **Feetech STS Series** (STS3215, STS3032), **MG996R**, **SG90**, and **ROBOTIS Dynamixel** motors used in the Sim2Real pipeline.
 - **Query Cleaning**: Strips conversational filler phrases (*"could you get the datasheet of..."*) to extract clean part queries.
 - **Compliance Verification**: Checks **RoHS 3 (2015/863/EU)** lead-free standards and **FCC Part 15** certification status.
+- **Robustness**: Uses standard Python `logging` and exponential backoff retries for live internet DDGS searches.
 
 ### 3. Screen Vision & OCR Parsing (`tools/omniparser_tool.py`)
 - **Live GUI Screen Capture**: Captures the primary display monitor (`scratch/screen_capture.png`).
 - **RapidOCR ONNX Layout Engine**: Extracts visual schematic section headers (`POWER`, `ENCODERS`, `I2C MUX`), ICs (`TCA9548A`, `LM2596`, `Q1`), and power nets (`12V_PROT`, `+5V`, `+3.3V`, `GND`).
+- **Visual Caching**: Employs MD5 image hashing to skip redundant ONNX layout detections if the screen hasn't changed.
 
-### 4. Context Consciousness & Conversation Memory (`agent/copilot.py`)
+### 4. Local PDF Datasheet RAG (`tools/datasheet_rag_tool.py`)
+- **CPU Embedding**: Uses `sentence-transformers/all-MiniLM-L6-v2` to vectorize arbitrary PDF datasheets placed in `datasheets/`, completely preserving GPU VRAM for Ollama.
+- **Local Vector Store**: Queries `ChromaDB` for accurate, context-aware information extraction from complex component documents.
+
+### 5. Context Consciousness & Voice Interruption
 - **Multi-Turn Context Memory**: Retains history across conversation turns and caches the last tool execution output.
-- **Follow-Up Query Handling**: Understands queries like *"Is the power section in the captured image good?"* or *"What was the last component?"* based on accumulated context.
+- **Fast Intent Routing**: Simple commands (like generating a BOM) bypass the LLM for instantaneous execution.
+- **Barge-in Support**: You can interrupt the TTS engine mid-sentence by triggering the wake word again. Graceful audio degradation handles missing system audio libraries seamlessly (e.g. headless Linux/Docker).
 
 ---
 
@@ -111,7 +125,14 @@ uv pip install --index-strategy unsafe-best-match -r requirements.txt
 uv pip install torch==2.4.1+cu121 torchaudio==2.4.1+cu121 torchvision==0.19.1+cu121 --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### 4. Start Local Ollama Model
+### 4. Run Setup Wizard
+To verify your environment (Python, CUDA, Ollama, microphones, and models):
+```powershell
+python scripts/first_run.py
+```
+*Note: The wizard will offer to automatically pull the required Ollama model if missing.*
+
+### 5. Start Local Ollama Model
 ```powershell
 # Run Ollama local LLM server
 ollama run llama3:8b
@@ -134,7 +155,9 @@ python main.py
 | **Follow-Up Analysis** | *"Hey Jarvis, is the power section in the captured image good?"* | Uses conversation memory to evaluate the `LM2596` buck converter and `Q1` MOSFET in the active schematic. |
 | **Power Distribution** | *"Hey Jarvis, generate the power tree for the AutoPick PCB."* | Parses schematic power nets and speaks the 12V -> 5V -> 3.3V rail distribution. |
 | **Electrical Rules Check** | *"Hey Jarvis, run an ERC check on my schematic."* | Checks for floating nets, missing ground planes, and decoupling capacitor counts. |
-| **Datasheet Search** | *"Hey Jarvis, get the datasheet of servomotor STS."* | Returns torque (19.5 kg-cm @ 7.4V), 12-bit magnetic encoder feedback, and TTL serial bus specs. |
+| **Bill of Materials** | *"Hey Jarvis, generate a BOM for my project."* | Cross-references parts, generates a CSV BOM, and outputs to `scratch/bom_output.csv`. |
+| **Datasheet Search** | *"Hey Jarvis, get the datasheet of servomotor STS."* | Returns torque (19.5 kg-cm @ 7.4V), 12-bit magnetic encoder feedback, and TTL serial bus specs via live search. |
+| **PDF RAG Search** | *"Hey Jarvis, query local datasheet for the maximum operating temperature."* | Semantically searches ingested local PDFs in the `datasheets/` directory without using internet. |
 | **Compliance Check** | *"Hey Jarvis, check RoHS and FCC compliance for servomotors."* | Verifies RoHS 3 (2015/863) lead-free certification and FCC status. |
 
 ---

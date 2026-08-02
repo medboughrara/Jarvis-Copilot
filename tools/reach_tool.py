@@ -9,6 +9,9 @@ import re
 from ddgs import DDGS
 from langchain_core.tools import tool
 import config
+import time
+
+logger = config.get_logger(__name__)
 
 
 class AgentReachTool:
@@ -56,20 +59,28 @@ class AgentReachTool:
         Performs REAL live internet web search for component datasheets using DDGS.
         """
         clean_part = AgentReachTool._clean_and_correct_query(query)
-        print(f"[ReachTool] Executing LIVE Internet Search for part: '{clean_part}' (Raw query: '{query}')...")
+        logger.info(f"Executing LIVE Internet Search for part: '{clean_part}' (Raw query: '{query}')...")
 
         live_results = []
-        try:
-            search_prompt = f"{clean_part} datasheet specs pdf pinout RoHS"
-            with DDGS() as ddgs:
-                results = list(ddgs.text(search_prompt, max_results=3))
-                for r in results:
-                    title = r.get('title', '').encode('ascii', errors='ignore').decode('ascii')
-                    body = r.get('body', '').encode('ascii', errors='ignore').decode('ascii')
-                    if title and body:
-                        live_results.append(f"• {title}: {body[:220]}")
-        except Exception as e:
-            print(f"[ReachTool Live Search Error] {e}")
+        search_prompt = f"{clean_part} datasheet specs pdf pinout RoHS"
+        
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                with DDGS() as ddgs:
+                    results = list(ddgs.text(search_prompt, max_results=3))
+                    for r in results:
+                        title = r.get('title', '').encode('ascii', errors='ignore').decode('ascii')
+                        body = r.get('body', '').encode('ascii', errors='ignore').decode('ascii')
+                        if title and body:
+                            live_results.append(f"• {title}: {body[:220]}")
+                break  # Success, exit retry loop
+            except Exception as e:
+                logger.warning(f"Live Search Error on attempt {attempt+1}/{max_retries}: {e}")
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)  # Exponential backoff
+                else:
+                    logger.error(f"Live Search failed after {max_retries} attempts.")
 
         # If live web search returned real online results, synthesize live report
         if live_results:
@@ -111,7 +122,7 @@ class AgentReachTool:
         Verifies regulatory compliance (RoHS, FCC, CE) for a component.
         """
         clean_name = AgentReachTool._clean_and_correct_query(component_name)
-        print(f"[ReachTool] Verifying compliance for: '{clean_name}'...")
+        logger.info(f"Verifying compliance for: '{clean_name}'...")
         datasheet_info = AgentReachTool.search_datasheet(clean_name)
         
         rohs_status = "Pass (RoHS 3 2015/863/EU compliant)" if "RoHS" in datasheet_info or "Lead-free" in datasheet_info else "Certified Compliant"
