@@ -372,11 +372,11 @@ threadpoolctl==3.6.0
 
 tokenizers==0.22.2
 
-torch==2.4.1+cu121
+torch==2.4.1
 
-torchaudio==2.4.1+cu121
+torchaudio==2.4.1
 
-torchvision==0.19.1+cu121
+torchvision==0.19.1
 
 tqdm==4.70.0
 
