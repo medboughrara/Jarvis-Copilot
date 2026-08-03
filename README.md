@@ -53,13 +53,16 @@ d:/aaaassistan_pcb/
 │   ├── __init__.py
 │   ├── copilot.py            # LangChain agent with conversation history & 3-tier LLM fallback
 │   ├── key_manager.py        # Multi-key Gemini rotation manager & real-time metrics tracking
+│   ├── composio_router.py    # On-demand dynamic tool router & tool stacker
 │   ├── skill_loader.py       # Standardized AAS SKILL.md playbook loader
 │   ├── workflows.py          # Multi-stage autonomous audit workflows & report generator
 │   └── prompts.py            # System prompts configured for AutoPick / Multiverse AI
-├── skills/                   # AAS-style SKILL.md hardware engineering playbooks
+├── skills/                   # AAS & Claude-style SKILL.md hardware engineering playbooks
 │   ├── pcb-thermal-analysis/SKILL.md
 │   ├── emc-emi-hardening/SKILL.md
-│   └── sim2real-motor-calibration/SKILL.md
+│   ├── sim2real-motor-calibration/SKILL.md
+│   ├── github-pcb-issue-tracker/SKILL.md
+│   └── bom-cost-optimization/SKILL.md
 ├── tools/
 │   ├── __init__.py
 │   ├── kicad_tool.py         # KiCad schematic parser, BOM generation, power tree, & ERC checks
@@ -67,8 +70,11 @@ d:/aaaassistan_pcb/
 │   ├── thermal_tool.py       # IPC-2221 trace width, copper power loss, & regulator thermal calculation
 │   ├── signal_integrity_tool.py # I2C pull-up bounds, UART damping, & CAN bus termination
 │   ├── supply_chain_tool.py  # Component lifecycle (Active/NRND/EOL) & distributor stock risk
+│   ├── github_tool.py        # GitHub Issue logger for PCB ERC violations & thermal alerts
+│   ├── doc_exporter_tool.py  # Engineering documentation report exporter (Markdown/JSON)
 │   ├── omniparser_tool.py    # OmniParser V2 screen capture & RapidOCR layout parser
 │   └── datasheet_rag_tool.py # Local PDF RAG with sentence-transformers and ChromaDB
+├── docs/                     # Exported engineering audit logs and documentation
 ├── models/                   # Downloaded ONNX model weights (Kokoro-82M 24kHz voice pack)
 ├── datasheets/               # Directory for local PDF datasheets queried via RAG
 ├── scratch/                  # Directory for audit reports, CSVs, screen captures, and key stats
