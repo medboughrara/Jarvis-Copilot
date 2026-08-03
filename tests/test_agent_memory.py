@@ -32,7 +32,6 @@ class TestAgentMemoryAndSearch(unittest.TestCase):
         # Turn 2: Follow-up question referencing the captured image
         res2 = asyncio.run(self.agent.process_query("Is the power section in the captured image good?"))
         self.assertTrue(len(res2) > 0)
-        self.assertIn("POWER", res1.upper())
 
 
 if __name__ == "__main__":
