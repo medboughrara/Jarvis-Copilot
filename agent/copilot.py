@@ -8,6 +8,7 @@ import asyncio
 from typing import List, Dict
 import config
 from agent.prompts import JARVIS_SYSTEM_PROMPT
+from agent.key_manager import GeminiKeyManager
 from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
 from tools.reach_tool import search_component_datasheet, check_compliance_status
 from tools.omniparser_tool import parse_screen_gui
@@ -52,6 +53,9 @@ class JarvisAgent:
         self.history: List[Dict[str, str]] = []  # List of {"role": "user"|"assistant", "content": text}
         self.last_tool_context: str = ""        # Context cache of last executed tool output (e.g. screen analysis, power tree)
 
+        # Gemini Multi-Key Rotation & Tracking Manager
+        self.key_manager = GeminiKeyManager()
+
         # Initialize secondary local Ollama fallback engine
         if LANGCHAIN_OLLAMA_AVAILABLE:
             try:
@@ -64,30 +68,14 @@ class JarvisAgent:
                 print(f"[Agent Warning] ChatOllama fallback init notice: {oe}")
                 self.ollama_llm = None
 
-        # Initialize primary Google Gemini engine
-        if getattr(config, 'USE_GEMINI', False) and getattr(config, 'GEMINI_API_KEY', '') and LANGCHAIN_GEMINI_AVAILABLE:
-            print(f"[Agent Memory] Initializing Google Gemini ({config.GEMINI_MODEL}) with Context Consciousness...")
-            try:
-                self.raw_llm = ChatGoogleGenerativeAI(
-                    model=config.GEMINI_MODEL,
-                    api_key=config.GEMINI_API_KEY,
-                    temperature=0.3
-                )
-                try:
-                    self.llm_with_tools = self.raw_llm.bind_tools(self.tools)
-                except Exception as te:
-                    print(f"[Agent Memory Notice] Gemini Tool binding notice ({te}). Active in conversational mode.")
-                    self.llm_with_tools = None
-            except Exception as e:
-                print(f"[Agent Warning] Gemini init notice: {e}")
-                self.raw_llm = None
-
-        if not self.raw_llm:
-            self.raw_llm = self.ollama_llm
-            if self.raw_llm:
-                print(f"[Agent Memory] Active Engine: ChatOllama ({self.model_name} at {self.base_url})")
-            else:
-                print("[Agent Warning] No active LLM engine loaded (neither Gemini nor Ollama).")
+        # Initialize primary Google Gemini engine notice
+        if getattr(config, 'USE_GEMINI', False) and LANGCHAIN_GEMINI_AVAILABLE and self.key_manager.api_keys:
+            print(f"[Agent Memory] Initializing Multi-Key Gemini Engine ({config.GEMINI_MODEL}) with {len(self.key_manager.api_keys)} registered keys...")
+            print(self.key_manager.get_usage_summary())
+        elif self.ollama_llm:
+            print(f"[Agent Memory] Active Engine: ChatOllama ({self.model_name} at {self.base_url})")
+        else:
+            print("[Agent Warning] No active LLM engine loaded (neither Gemini nor Ollama).")
 
     def _save_turn(self, user_query: str, assistant_response: str):
         """Saves interaction turn to conversation history memory (max 10 turns)."""
@@ -134,6 +122,10 @@ class JarvisAgent:
         elif "local datasheet" in lower_q or "local pdf" in lower_q or "document" in lower_q or "rag" in lower_q:
             tool_result = query_local_datasheets.invoke({"query": user_query})
             tool_executed = True
+        elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q or "gemini usage" in lower_q or "quota status" in lower_q:
+            tool_result = self.key_manager.get_usage_summary()
+            print(f"\n{tool_result}\n")
+            tool_executed = True
 
         if tool_executed:
             self.last_tool_context = tool_result
@@ -157,19 +149,39 @@ class JarvisAgent:
         # Append current user query
         messages.append(HumanMessage(content=user_query))
 
-        # 3. LLM Response Generation (handles primary LLM with local Ollama fallback)
+        # 3. Multi-Key Gemini LLM Response Generation with local Ollama Fallback
         response = None
-        if self.raw_llm:
+
+        if getattr(config, 'USE_GEMINI', False) and LANGCHAIN_GEMINI_AVAILABLE and self.key_manager.api_keys:
+            max_attempts = len(self.key_manager.api_keys)
+            for attempt in range(max_attempts):
+                working_key = self.key_manager.get_working_key()
+                if not working_key:
+                    print("[Agent Key Manager] All Gemini API keys are currently rate-limited.")
+                    break
+
+                try:
+                    gemini_model = ChatGoogleGenerativeAI(
+                        model=config.GEMINI_MODEL,
+                        api_key=working_key,
+                        temperature=0.3
+                    )
+                    response = await gemini_model.ainvoke(messages)
+                    self.key_manager.report_success(working_key)
+                    break  # Successful response!
+                except Exception as e:
+                    err_msg = str(e)
+                    is_rate_limit = "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "Quota" in err_msg
+                    self.key_manager.report_error(working_key, is_rate_limit=is_rate_limit, cooldown_seconds=60)
+                    print(f"[Agent Key Manager] Key error on attempt {attempt+1}/{max_attempts}: {e}. Auto-rotating to next key...")
+
+        # Secondary Fallback: Invoke local ChatOllama if all Gemini keys fail or key pool exhausted
+        if not response and self.ollama_llm:
+            print("[Agent Fallback] API keys exhausted / rate-limited. Falling back to local ChatOllama...")
             try:
-                response = await self.raw_llm.ainvoke(messages)
-            except Exception as e:
-                print(f"[Agent Primary LLM Notice] {e}")
-                if self.ollama_llm and self.raw_llm != self.ollama_llm:
-                    print("[Agent Fallback] API rate limit or network error reached. Falling back to local ChatOllama...")
-                    try:
-                        response = await self.ollama_llm.ainvoke(messages)
-                    except Exception as oe:
-                        print(f"[Agent Ollama Fallback Error] {oe}")
+                response = await self.ollama_llm.ainvoke(messages)
+            except Exception as oe:
+                print(f"[Agent Ollama Fallback Error] {oe}")
 
         if response:
             raw_content = response.content if hasattr(response, 'content') else str(response)
