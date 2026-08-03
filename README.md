@@ -21,7 +21,7 @@ Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU
 | **Speech-to-Text (STT)** | CPU | `Faster-Whisper` (`base.en`) | `INT8` Quantization + Custom Prompt Biasing |
 | **Text-to-Speech (TTS)** | CPU | `Kokoro-82M` (24kHz Neural TTS) | ONNX Runtime (`sounddevice` playback) |
 | **Orchestration & Memory** | CPU | LangChain + Context Buffer | Async I/O event loop |
-| **Core LLM** | GPU (Ollama) | `Llama 3 8B` / `Qwen 2.5 7B` | 4-bit Quantization (~4.5GB VRAM) |
+| **Core LLM** | Cloud / GPU | `Google Gemini 3.6 Flash` (API Key) or `Llama 3 8B` (Ollama) | Cloud API (`google-genai`) / 4-bit Quantization |
 | **Vision & Screen OCR** | GPU / CPU | Microsoft OmniParser V2 + `RapidOCR` | Dynamic ONNX Layout Detection |
 
 ---

@@ -53,6 +53,10 @@ TTS_MODEL_NAME = "kokoro-v1.0.onnx"
 TTS_VOICE = "af_bella"  # Default clean voice
 TTS_SPEED = 1.0
 
-# Core LLM (Ollama running locally on GPU)
+# Core LLM Options (Ollama local / Gemini Cloud)
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3:8b")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", ""))
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
+USE_GEMINI = os.getenv("USE_GEMINI", "true").lower() in ("true", "1", "yes")
+

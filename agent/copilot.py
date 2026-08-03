@@ -14,6 +14,12 @@ from tools.omniparser_tool import parse_screen_gui
 from tools.datasheet_rag_tool import query_local_datasheets
 
 try:
+    from langchain_google_genai import ChatGoogleGenerativeAI
+    LANGCHAIN_GEMINI_AVAILABLE = True
+except ImportError:
+    LANGCHAIN_GEMINI_AVAILABLE = False
+
+try:
     from langchain_ollama import ChatOllama
     from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
     LANGCHAIN_OLLAMA_AVAILABLE = True
@@ -45,7 +51,24 @@ class JarvisAgent:
         self.history: List[Dict[str, str]] = []  # List of {"role": "user"|"assistant", "content": text}
         self.last_tool_context: str = ""        # Context cache of last executed tool output (e.g. screen analysis, power tree)
 
-        if LANGCHAIN_OLLAMA_AVAILABLE:
+        if getattr(config, 'USE_GEMINI', False) and getattr(config, 'GEMINI_API_KEY', '') and LANGCHAIN_GEMINI_AVAILABLE:
+            print(f"[Agent Memory] Initializing Google Gemini ({config.GEMINI_MODEL}) with Context Consciousness...")
+            try:
+                self.raw_llm = ChatGoogleGenerativeAI(
+                    model=config.GEMINI_MODEL,
+                    api_key=config.GEMINI_API_KEY,
+                    temperature=0.3
+                )
+                try:
+                    self.llm_with_tools = self.raw_llm.bind_tools(self.tools)
+                except Exception as te:
+                    print(f"[Agent Memory Notice] Gemini Tool binding notice ({te}). Active in conversational mode.")
+                    self.llm_with_tools = None
+            except Exception as e:
+                print(f"[Agent Warning] Gemini init notice: {e}")
+                self.raw_llm = None
+
+        if not self.raw_llm and LANGCHAIN_OLLAMA_AVAILABLE:
             print(f"[Agent Memory] Initializing ChatOllama ({self.model_name} at {self.base_url}) with Context Consciousness...")
             try:
                 self.raw_llm = ChatOllama(
@@ -61,8 +84,8 @@ class JarvisAgent:
             except Exception as e:
                 print(f"[Agent Warning] ChatOllama init notice: {e}")
                 self.raw_llm = None
-        else:
-            print("[Agent Warning] langchain-ollama package not loaded.")
+        elif not self.raw_llm:
+            print("[Agent Warning] No active LLM engine loaded (neither Gemini nor Ollama).")
 
     def _save_turn(self, user_query: str, assistant_response: str):
         """Saves interaction turn to conversation history memory (max 10 turns)."""
