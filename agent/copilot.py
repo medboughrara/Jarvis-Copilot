@@ -159,7 +159,21 @@ class JarvisAgent:
         if self.raw_llm:
             try:
                 response = await self.raw_llm.ainvoke(messages)
-                response_text = response.content if hasattr(response, 'content') else str(response)
+                raw_content = response.content if hasattr(response, 'content') else str(response)
+                
+                if isinstance(raw_content, str):
+                    response_text = raw_content
+                elif isinstance(raw_content, list):
+                    text_parts = []
+                    for block in raw_content:
+                        if isinstance(block, str):
+                            text_parts.append(block)
+                        elif isinstance(block, dict) and 'text' in block:
+                            text_parts.append(block['text'])
+                    response_text = " ".join(text_parts) if text_parts else str(raw_content)
+                else:
+                    response_text = str(raw_content)
+
                 print(f"[Agent Conscious Memory Response] {response_text}")
                 self._save_turn(user_query, response_text)
                 return response_text
