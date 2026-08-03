@@ -67,7 +67,10 @@ class TextToSpeech:
             return
 
         # Clean markdown formatting for voice synthesis
-        clean_text = text.replace("*", "").replace("`", "").replace("#", "").replace("- ", "").strip()
+        clean_text = text.replace("*", "").replace("`", "").replace("#", "").replace("- ", "").replace("[]", "").strip()
+        if not clean_text or clean_text in ["[]", "()", "{}"]:
+            return
+
         safe_print_text = clean_text.encode('ascii', errors='ignore').decode('ascii')
         print(f"\n[Kokoro-82M Speaking 24kHz]: \"{safe_print_text}\"")
 

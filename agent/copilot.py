@@ -170,9 +170,17 @@ class JarvisAgent:
                             text_parts.append(block)
                         elif isinstance(block, dict) and 'text' in block:
                             text_parts.append(block['text'])
-                    response_text = " ".join(text_parts) if text_parts else str(raw_content)
+                        elif hasattr(block, 'text'):
+                            text_parts.append(getattr(block, 'text', ''))
+                    response_text = " ".join(text_parts).strip()
                 else:
-                    response_text = str(raw_content)
+                    response_text = str(raw_content).strip()
+
+                if not response_text or response_text in ["[]", "{}", "()"]:
+                    if self.last_tool_context:
+                        response_text = "I've analyzed your screen capture and saved the circuit context. What would you like to inspect next?"
+                    else:
+                        response_text = "I am ready for your command. What would you like to analyze?"
 
                 print(f"[Agent Conscious Memory Response] {response_text}")
                 self._save_turn(user_query, response_text)
