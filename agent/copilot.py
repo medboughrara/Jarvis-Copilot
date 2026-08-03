@@ -302,7 +302,10 @@ class JarvisAgent:
                 else:
                     response_text = "I am ready for your command. What would you like to analyze?"
 
-            print(f"[Agent Conscious Memory Response] {response_text}")
+            try:
+                print(f"[Agent Conscious Memory Response] {response_text}")
+            except UnicodeEncodeError:
+                print(f"[Agent Conscious Memory Response] {response_text.encode('ascii', 'ignore').decode('ascii')}")
             self._save_turn(user_query, response_text)
             return response_text
 
