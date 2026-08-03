@@ -12,6 +12,11 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 
 ---
 
+> [!WARNING]
+> **Safety & Scope Disclaimer**: Jarvis PCB Copilot is an assistive AI engineering copilot designed for rapid schematic context retrieval, IPC-2221 trace calculation, and preliminary ERC checking. It is **NOT** a substitute for human peer review by a licensed electrical engineer or KiCad's built-in, certified DRC/ERC layout engines. Always manually verify motor supply rail trace widths, high-current isolation gaps, and polarity prior to PCB manufacturing.
+
+---
+
 ## ⚡ Hardware Constraints & Resource Distribution
 
 Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU**, **24GB RAM**, and an **NVIDIA RTX 3050 Laptop GPU (6GB VRAM)** without VRAM out-of-memory errors:
