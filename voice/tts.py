@@ -87,9 +87,10 @@ class TextToSpeech:
                         speed=config.TTS_SPEED,
                         lang="en-us"
                     )
+                    duration = len(samples) / float(sample_rate)
                     # Play 24kHz audio through laptop speakers
                     sd.play(samples, samplerate=sample_rate)
-                    return True
+                    return duration
                 except Exception as e:
                     print(f"[TTS Error] Kokoro-82M synthesis error ({e}). Falling back to SAPI5.")
 
@@ -98,19 +99,22 @@ class TextToSpeech:
                 try:
                     speaker = win32com.client.Dispatch("SAPI.SpVoice")
                     speaker.Speak(clean_text)
-                    return
+                    return 0.0
                 except Exception as e:
                     print(f"[TTS SAPI Error] {e}")
 
             print(f"[TTS Audio Stream] {safe_print_text}")
-            return False
+            return 0.0
 
-        is_playing_sd = await loop.run_in_executor(None, play_audio_sync)
+        duration = await loop.run_in_executor(None, play_audio_sync)
         
-        # Wait asynchronously while sounddevice is playing, allowing cancellation
-        if is_playing_sd and AUDIO_AVAILABLE:
-            while sd.get_stream() is not None and sd.get_stream().active:
+        # Wait asynchronously for exact audio duration while allowing cancellation (barge-in)
+        if duration > 0 and AUDIO_AVAILABLE:
+            end_time = loop.time() + duration
+            while loop.time() < end_time:
                 if self._stop_event.is_set():
                     sd.stop()
                     break
                 await asyncio.sleep(0.05)
+            if not self._stop_event.is_set():
+                sd.stop()
