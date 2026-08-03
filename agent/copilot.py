@@ -46,11 +46,25 @@ class JarvisAgent:
         self.tools_by_name = {t.name: t for t in self.tools}
         self.llm_with_tools = None
         self.raw_llm = None
+        self.ollama_llm = None
 
         # Context Consciousness Memory
         self.history: List[Dict[str, str]] = []  # List of {"role": "user"|"assistant", "content": text}
         self.last_tool_context: str = ""        # Context cache of last executed tool output (e.g. screen analysis, power tree)
 
+        # Initialize secondary local Ollama fallback engine
+        if LANGCHAIN_OLLAMA_AVAILABLE:
+            try:
+                self.ollama_llm = ChatOllama(
+                    model=self.model_name,
+                    base_url=self.base_url,
+                    temperature=0.3
+                )
+            except Exception as oe:
+                print(f"[Agent Warning] ChatOllama fallback init notice: {oe}")
+                self.ollama_llm = None
+
+        # Initialize primary Google Gemini engine
         if getattr(config, 'USE_GEMINI', False) and getattr(config, 'GEMINI_API_KEY', '') and LANGCHAIN_GEMINI_AVAILABLE:
             print(f"[Agent Memory] Initializing Google Gemini ({config.GEMINI_MODEL}) with Context Consciousness...")
             try:
@@ -68,24 +82,12 @@ class JarvisAgent:
                 print(f"[Agent Warning] Gemini init notice: {e}")
                 self.raw_llm = None
 
-        if not self.raw_llm and LANGCHAIN_OLLAMA_AVAILABLE:
-            print(f"[Agent Memory] Initializing ChatOllama ({self.model_name} at {self.base_url}) with Context Consciousness...")
-            try:
-                self.raw_llm = ChatOllama(
-                    model=self.model_name,
-                    base_url=self.base_url,
-                    temperature=0.3
-                )
-                try:
-                    self.llm_with_tools = self.raw_llm.bind_tools(self.tools)
-                except Exception as te:
-                    print(f"[Agent Memory Notice] Tool binding notice ({te}). Active in conversational + tool dispatcher mode.")
-                    self.llm_with_tools = None
-            except Exception as e:
-                print(f"[Agent Warning] ChatOllama init notice: {e}")
-                self.raw_llm = None
-        elif not self.raw_llm:
-            print("[Agent Warning] No active LLM engine loaded (neither Gemini nor Ollama).")
+        if not self.raw_llm:
+            self.raw_llm = self.ollama_llm
+            if self.raw_llm:
+                print(f"[Agent Memory] Active Engine: ChatOllama ({self.model_name} at {self.base_url})")
+            else:
+                print("[Agent Warning] No active LLM engine loaded (neither Gemini nor Ollama).")
 
     def _save_turn(self, user_query: str, assistant_response: str):
         """Saves interaction turn to conversation history memory (max 10 turns)."""
@@ -155,38 +157,47 @@ class JarvisAgent:
         # Append current user query
         messages.append(HumanMessage(content=user_query))
 
-        # 3. LLM Response Generation (handles follow-up queries like "Is the power section good?")
+        # 3. LLM Response Generation (handles primary LLM with local Ollama fallback)
+        response = None
         if self.raw_llm:
             try:
                 response = await self.raw_llm.ainvoke(messages)
-                raw_content = response.content if hasattr(response, 'content') else str(response)
-                
-                if isinstance(raw_content, str):
-                    response_text = raw_content
-                elif isinstance(raw_content, list):
-                    text_parts = []
-                    for block in raw_content:
-                        if isinstance(block, str):
-                            text_parts.append(block)
-                        elif isinstance(block, dict) and 'text' in block:
-                            text_parts.append(block['text'])
-                        elif hasattr(block, 'text'):
-                            text_parts.append(getattr(block, 'text', ''))
-                    response_text = " ".join(text_parts).strip()
-                else:
-                    response_text = str(raw_content).strip()
-
-                if not response_text or response_text in ["[]", "{}", "()"]:
-                    if self.last_tool_context:
-                        response_text = "I've analyzed your screen capture and saved the circuit context. What would you like to inspect next?"
-                    else:
-                        response_text = "I am ready for your command. What would you like to analyze?"
-
-                print(f"[Agent Conscious Memory Response] {response_text}")
-                self._save_turn(user_query, response_text)
-                return response_text
             except Exception as e:
-                print(f"[Agent LLM Error] {e}")
+                print(f"[Agent Primary LLM Notice] {e}")
+                if self.ollama_llm and self.raw_llm != self.ollama_llm:
+                    print("[Agent Fallback] API rate limit or network error reached. Falling back to local ChatOllama...")
+                    try:
+                        response = await self.ollama_llm.ainvoke(messages)
+                    except Exception as oe:
+                        print(f"[Agent Ollama Fallback Error] {oe}")
+
+        if response:
+            raw_content = response.content if hasattr(response, 'content') else str(response)
+            
+            if isinstance(raw_content, str):
+                response_text = raw_content
+            elif isinstance(raw_content, list):
+                text_parts = []
+                for block in raw_content:
+                    if isinstance(block, str):
+                        text_parts.append(block)
+                    elif isinstance(block, dict) and 'text' in block:
+                        text_parts.append(block['text'])
+                    elif hasattr(block, 'text'):
+                        text_parts.append(getattr(block, 'text', ''))
+                response_text = " ".join(text_parts).strip()
+            else:
+                response_text = str(raw_content).strip()
+
+            if not response_text or response_text in ["[]", "{}", "()"]:
+                if self.last_tool_context:
+                    response_text = "I've analyzed your screen capture and saved the circuit context. What would you like to inspect next?"
+                else:
+                    response_text = "I am ready for your command. What would you like to analyze?"
+
+            print(f"[Agent Conscious Memory Response] {response_text}")
+            self._save_turn(user_query, response_text)
+            return response_text
 
         # 4. Context Fallback Response
         fallback_msg = f"Based on your recent circuit context ({self.last_tool_context[:150]}...), your power section includes LM2596 buck regulator and MOSFET protection. Systems operational."
