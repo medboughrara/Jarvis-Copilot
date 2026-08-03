@@ -12,6 +12,8 @@ from tools.datasheet_rag_tool import query_local_datasheets
 from tools.thermal_tool import calculate_thermal_loss
 from tools.signal_integrity_tool import check_signal_integrity
 from tools.supply_chain_tool import check_supply_chain_status
+from tools.github_tool import manage_github_issue
+from tools.doc_exporter_tool import export_engineering_doc
 from agent.workflows import run_full_pcb_audit
 
 logger = config.get_logger(__name__)
@@ -108,6 +110,16 @@ def pcb_full_audit_workflow(file_path: str = "") -> str:
     """Runs autonomous 6-stage hardware review and outputs JSON/Markdown audit artifacts to scratch/."""
     res = run_full_pcb_audit(file_path)
     return f"Audit completed successfully. Status: {res['status']}. Report saved to scratch/pcb_audit_report.md"
+
+@mcp.tool()
+def github_issue_log(title: str, body: str, labels: str = "hardware-erc") -> str:
+    """Logs a GitHub issue/ticket for PCB schematic errors, thermal alerts, or component risks."""
+    return manage_github_issue.invoke({"title": title, "body": body, "labels": labels})
+
+@mcp.tool()
+def doc_export(title: str, content: str, format_type: str = "markdown") -> str:
+    """Exports structured engineering log reports to docs/ directory."""
+    return export_engineering_doc.invoke({"title": title, "content": content, "format_type": format_type})
 
 if __name__ == "__main__":
     logger.info("Starting Jarvis PCB Copilot Stdio MCP Server...")

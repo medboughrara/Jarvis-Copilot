@@ -10,6 +10,7 @@ import config
 from agent.prompts import JARVIS_SYSTEM_PROMPT
 from agent.key_manager import GeminiKeyManager
 from agent.skill_loader import SkillLoader
+from agent.composio_router import ComposioRouter
 from agent.workflows import run_full_pcb_audit
 from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
 from tools.reach_tool import search_component_datasheet, check_compliance_status
@@ -18,6 +19,8 @@ from tools.datasheet_rag_tool import query_local_datasheets
 from tools.thermal_tool import calculate_thermal_loss
 from tools.signal_integrity_tool import check_signal_integrity
 from tools.supply_chain_tool import check_supply_chain_status
+from tools.github_tool import manage_github_issue
+from tools.doc_exporter_tool import export_engineering_doc
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
@@ -51,8 +54,11 @@ class JarvisAgent:
             query_local_datasheets,
             calculate_thermal_loss,
             check_signal_integrity,
-            check_supply_chain_status
+            check_supply_chain_status,
+            manage_github_issue,
+            export_engineering_doc
         ]
+        self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
         self.llm_with_tools = None
         self.raw_llm = None
@@ -146,6 +152,12 @@ class JarvisAgent:
             tool_executed = True
         elif "skills" in lower_q or "playbook" in lower_q or "capabilities" in lower_q:
             tool_result = self.skill_loader.list_skills_summary()
+            tool_executed = True
+        elif "github" in lower_q or "log issue" in lower_q or "create issue" in lower_q:
+            tool_result = manage_github_issue.invoke({"title": "AutoPick Schematic Review Item", "body": user_query, "labels": "hardware-erc"})
+            tool_executed = True
+        elif "export" in lower_q or "save log" in lower_q or "doc" in lower_q:
+            tool_result = export_engineering_doc.invoke({"title": "AutoPick Engineering Review", "content": user_query})
             tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q or "gemini usage" in lower_q or "quota status" in lower_q:
             tool_result = self.key_manager.get_usage_summary()
