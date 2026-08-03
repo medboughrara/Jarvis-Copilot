@@ -6,7 +6,7 @@ ASCII safe output for Windows console compatibility.
 """
 
 import re
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 from langchain_core.tools import tool
 import config
 import time

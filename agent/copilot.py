@@ -112,15 +112,14 @@ class JarvisAgent:
 
         if tool_executed:
             self.last_tool_context = tool_result
-            self._save_turn(user_query, tool_result)
-            return tool_result
+            # We no longer return early here. We let the LLM synthesize the raw tool output.
 
         # 2. Build Memory & Context Aware Prompt Messages for Ollama LLM
         messages = [SystemMessage(content=JARVIS_SYSTEM_PROMPT)]
 
-        # Append last tool context if available (e.g. last captured screen circuit or power tree)
+        # Append active tool context if available (e.g. freshly captured screen circuit, power tree, or search result)
         if self.last_tool_context:
-            context_msg = f"ACTIVE CIRCUIT / TOOL CONTEXT FROM PREVIOUS TURN:\n{self.last_tool_context}"
+            context_msg = f"ACTIVE SYSTEM/TOOL CONTEXT:\n{self.last_tool_context}\n\nPlease synthesize this data naturally into your conversational response."
             messages.append(SystemMessage(content=context_msg))
 
         # Append conversation history turns

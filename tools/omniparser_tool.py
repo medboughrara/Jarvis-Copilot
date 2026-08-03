@@ -100,11 +100,11 @@ class OmniParserTool:
             elif re.match(r'^(J\d+|Q\d+|F\d+|EN\s+\w+|D\d+)$', w_upper):
                 detected_connectors.add(w_clean)
 
-        # Build dynamic, 100% accurate visual voice response summary
-        sec_str = ", ".join(sorted(list(detected_sections))) if detected_sections else "POWER, ENCODERS, I2C MUX"
-        ics_str = ", ".join(sorted(list(detected_ics))) if detected_ics else "TCA9548A I2C Mux, LM2596 Buck Converter, Q1 MOSFET"
-        nets_str = ", ".join(sorted(list(detected_nets))) if detected_nets else "12V_PROT, +5V, +3.3V, GND"
-        conn_str = ", ".join(sorted(list(detected_connectors))) if detected_connectors else "J11 Power Header, Q1, EN X1, EN Y1, EN Z1"
+        # Build dynamic, accurate visual voice response summary without hardcoded hallucinations
+        sec_str = ", ".join(sorted(list(detected_sections))) if detected_sections else "None detected"
+        ics_str = ", ".join(sorted(list(detected_ics))) if detected_ics else "None detected"
+        nets_str = ", ".join(sorted(list(detected_nets))) if detected_nets else "None detected"
+        conn_str = ", ".join(sorted(list(detected_connectors))) if detected_connectors else "None detected"
 
         summary = [
             f"I captured your active screen at {width}x{height} showing '{window_title}'.",
