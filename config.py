@@ -53,9 +53,10 @@ TTS_MODEL_NAME = "kokoro-v1.0.onnx"
 TTS_VOICE = "af_bella"  # Default clean voice
 TTS_SPEED = 1.0
 
-# Core LLM Options (Ollama local / Gemini Cloud)
+# Core LLM Options (Gemini Cloud / Ollama Cloud / Ollama Local)
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3:8b")
+OLLAMA_CLOUD_MODELS = [m.strip() for m in os.getenv("OLLAMA_CLOUD_MODELS", "glm-5.2:cloud,kimi-k3:cloud").split(",") if m.strip()]
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", ""))
 GEMINI_API_KEYS = [k.strip() for k in os.getenv("GEMINI_API_KEYS", "").split(",") if k.strip()]
 if not GEMINI_API_KEYS and GEMINI_API_KEY:

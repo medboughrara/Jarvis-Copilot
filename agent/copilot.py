@@ -149,9 +149,14 @@ class JarvisAgent:
         # Append current user query
         messages.append(HumanMessage(content=user_query))
 
-        # 3. Multi-Key Gemini LLM Response Generation with local Ollama Fallback
+        # 3. Hierarchical Multi-Tier LLM Execution & Fallback Pipeline
+        # Tier 1: Multi-Key Google Gemini Pool (Round-robin + 429 auto-cooling)
+        # Tier 2: Ollama Cloud Models (glm-5.2:cloud, kimi-k3:cloud)
+        # Tier 3: Local Ollama Model (llama3:8b)
+
         response = None
 
+        # Tier 1: Google Gemini API Keys
         if getattr(config, 'USE_GEMINI', False) and LANGCHAIN_GEMINI_AVAILABLE and self.key_manager.api_keys:
             max_attempts = len(self.key_manager.api_keys)
             for attempt in range(max_attempts):
@@ -173,15 +178,31 @@ class JarvisAgent:
                     err_msg = str(e)
                     is_rate_limit = "429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "Quota" in err_msg
                     self.key_manager.report_error(working_key, is_rate_limit=is_rate_limit, cooldown_seconds=60)
-                    print(f"[Agent Key Manager] Key error on attempt {attempt+1}/{max_attempts}: {e}. Auto-rotating to next key...")
+                    print(f"[Agent Key Manager] Gemini key error ({e}). Auto-rotating to next key...")
 
-        # Secondary Fallback: Invoke local ChatOllama if all Gemini keys fail or key pool exhausted
+        # Tier 2: Ollama Cloud Models (glm-5.2:cloud, kimi-k3:cloud)
+        if not response and LANGCHAIN_OLLAMA_AVAILABLE and getattr(config, 'OLLAMA_CLOUD_MODELS', []):
+            for cloud_model in config.OLLAMA_CLOUD_MODELS:
+                print(f"[Agent Fallback] Attempting Ollama Cloud Model '{cloud_model}'...")
+                try:
+                    ollama_cloud_engine = ChatOllama(
+                        model=cloud_model,
+                        base_url=self.base_url,
+                        temperature=0.3
+                    )
+                    response = await ollama_cloud_engine.ainvoke(messages)
+                    print(f"[Agent Fallback] Success with Ollama Cloud Model '{cloud_model}'.")
+                    break
+                except Exception as oce:
+                    print(f"[Agent Notice] Ollama Cloud Model '{cloud_model}' unavailable ({oce}). Trying next...")
+
+        # Tier 3: Local Ollama Model (llama3:8b)
         if not response and self.ollama_llm:
-            print("[Agent Fallback] API keys exhausted / rate-limited. Falling back to local ChatOllama...")
+            print(f"[Agent Fallback] Invoking local ChatOllama model ({config.OLLAMA_MODEL})...")
             try:
                 response = await self.ollama_llm.ainvoke(messages)
             except Exception as oe:
-                print(f"[Agent Ollama Fallback Error] {oe}")
+                print(f"[Agent Ollama Local Fallback Error] {oe}")
 
         if response:
             raw_content = response.content if hasattr(response, 'content') else str(response)
