@@ -9,10 +9,15 @@ from typing import List, Dict
 import config
 from agent.prompts import JARVIS_SYSTEM_PROMPT
 from agent.key_manager import GeminiKeyManager
+from agent.skill_loader import SkillLoader
+from agent.workflows import run_full_pcb_audit
 from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
 from tools.reach_tool import search_component_datasheet, check_compliance_status
 from tools.omniparser_tool import parse_screen_gui
 from tools.datasheet_rag_tool import query_local_datasheets
+from tools.thermal_tool import calculate_thermal_loss
+from tools.signal_integrity_tool import check_signal_integrity
+from tools.supply_chain_tool import check_supply_chain_status
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
@@ -32,6 +37,7 @@ class JarvisAgent:
     def __init__(self, model_name: str = config.OLLAMA_MODEL, base_url: str = config.OLLAMA_BASE_URL):
         self.model_name = model_name
         self.base_url = base_url
+        self.skill_loader = SkillLoader()
         
         # Registered PCB Copilot Tools
         self.tools = [
@@ -42,7 +48,10 @@ class JarvisAgent:
             search_component_datasheet,
             check_compliance_status,
             parse_screen_gui,
-            query_local_datasheets
+            query_local_datasheets,
+            calculate_thermal_loss,
+            check_signal_integrity,
+            check_supply_chain_status
         ]
         self.tools_by_name = {t.name: t for t in self.tools}
         self.llm_with_tools = None
@@ -122,6 +131,22 @@ class JarvisAgent:
         elif "local datasheet" in lower_q or "local pdf" in lower_q or "document" in lower_q or "rag" in lower_q:
             tool_result = query_local_datasheets.invoke({"query": user_query})
             tool_executed = True
+        elif "thermal" in lower_q or "heat" in lower_q or "power loss" in lower_q or "ipc" in lower_q:
+            tool_result = calculate_thermal_loss.invoke({})
+            tool_executed = True
+        elif "signal integrity" in lower_q or "pullup" in lower_q or "impedance" in lower_q or "termination" in lower_q:
+            tool_result = check_signal_integrity.invoke({"bus_type": "i2c"})
+            tool_executed = True
+        elif "supply chain" in lower_q or "obsolescence" in lower_q or "stock" in lower_q or "lifecycle" in lower_q:
+            tool_result = check_supply_chain_status.invoke({"part_number": user_query})
+            tool_executed = True
+        elif "audit workflow" in lower_q or "full audit" in lower_q or "run workflow" in lower_q or "pcb audit" in lower_q:
+            res = run_full_pcb_audit("")
+            tool_result = f"Full PCB Audit completed! Executive summary: {res['summary']}. Report written to scratch/pcb_audit_report.md"
+            tool_executed = True
+        elif "skills" in lower_q or "playbook" in lower_q or "capabilities" in lower_q:
+            tool_result = self.skill_loader.list_skills_summary()
+            tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q or "gemini usage" in lower_q or "quota status" in lower_q:
             tool_result = self.key_manager.get_usage_summary()
             print(f"\n{tool_result}\n")
@@ -133,6 +158,11 @@ class JarvisAgent:
 
         # 2. Build Memory & Context Aware Prompt Messages for Ollama LLM
         messages = [SystemMessage(content=JARVIS_SYSTEM_PROMPT)]
+
+        # Append dynamic SKILL.md playbook instructions if relevant
+        skill_prompt = self.skill_loader.get_skill_instructions(user_query)
+        if skill_prompt:
+            messages.append(SystemMessage(content=f"SKILL PLAYBOOK INSTRUCTIONS:\n{skill_prompt}"))
 
         # Append active tool context if available (e.g. freshly captured screen circuit, power tree, or search result)
         if self.last_tool_context:
