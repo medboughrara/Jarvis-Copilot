@@ -372,11 +372,11 @@ threadpoolctl==3.6.0
 
 tokenizers==0.22.2
 
-torch==2.4.1+cu121
+torch==2.6.0
 
-torchaudio==2.4.1+cu121
+torchaudio==2.6.0
 
-torchvision==0.19.1+cu121
+torchvision==0.21.0
 
 tqdm==4.70.0
 
@@ -415,4 +415,3 @@ xxhash==3.8.1
 yarl==1.24.5
 
 zstandard==0.25.0
-
