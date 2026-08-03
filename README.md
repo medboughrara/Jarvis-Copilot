@@ -86,34 +86,27 @@ d:/aaaassistan_pcb/
 
 ---
 
-## 🛠️ Key Features & Tools
+## 🛠️ Complete System Capabilities Matrix
 
-### 1. Multi-Key Gemini API Key Rotation & Tracking (`agent/key_manager.py`)
-- **Round-Robin Key Balancing**: Automatically cycles requests across 5 registered Gemini API keys.
-- **429 Rate Limit Cooldown**: Automatically detects rate limits (`429 Resource Exhausted`), puts the affected key into a temporary 60-second cooldown, and seamlessly rotates to the next available key without interrupting the user.
-- **Usage Metrics Tracking**: Tracks request counts, error counts, last used timestamps, and outputs ASCII tracking tables.
+Jarvis PCB Copilot integrates 15 core hardware engineering, voice, and agentic capabilities:
 
-### 2. Hierarchical 3-Tier LLM Pipeline (`agent/copilot.py`)
-- **Tier 1 (Primary)**: Google Gemini 3.6 Flash Multi-Key Cloud Engine.
-- **Tier 2 (Secondary Cloud)**: Ollama Cloud Models (`glm-5.2:cloud`, `kimi-k3:cloud`).
-- **Tier 3 (Local Fallback)**: Local `ChatOllama` (`llama3:8b`) for complete offline operation.
-
-### 3. Native Stdio Model Context Protocol (MCP) Server (`mcp_server.py`)
-- **IDE Tool Exporter**: Powered by `FastMCP`, exposing all 11 hardware tools over stdio.
-- **Cross-Platform Agent Integration**: Allows Cursor, Antigravity, Claude Code, and VS Code to call Jarvis PCB Copilot tools directly from your editor.
-
-### 4. AAS Core Playbook Engine (`agent/skill_loader.py` & `skills/`)
-- **Dynamic Playbooks**: Reads AAS-style `SKILL.md` markdown playbooks with YAML frontmatter.
-- **Domain Playbooks**: Includes pre-built playbooks for PCB thermal analysis, EMC/EMI hardening, and Sim2Real motor calibration.
-
-### 5. Specialized Hardware Engineering Tools
-- **IPC-2221 Thermal Calculator (`tools/thermal_tool.py`)**: Computes copper trace width requirements ($I = k \cdot \Delta T^{0.44} \cdot A^{0.725}$), $I^2R$ power loss, and SOT-223 regulator junction thermal rise ($T_j = T_a + P_d \cdot R_{\theta JA}$).
-- **Signal Integrity Calculator (`tools/signal_integrity_tool.py`)**: Computes I2C pull-up resistor min/max bounds ($R_{min} / R_{max}$), UART damping resistors, and CAN bus split termination.
-- **Supply Chain EOL Tracker (`tools/supply_chain_tool.py`)**: Checks component lifecycle status (Active vs NRND vs EOL) and distributor stock availability.
-
-### 6. Autonomous Multi-Phase Audit Workflows (`agent/workflows.py`)
-- **6-Stage Hardware Review**: Runs Schematic Parse -> ERC Checks -> Power Tree -> Thermal Analysis -> Signal Integrity -> Supply Chain.
-- **Reproducible Artifacts**: Automatically saves audit output to `scratch/pcb_audit_report.json` and `scratch/pcb_audit_report.md`.
+| # | Capability Domain | Subsystem / Module | Key Functions & Features |
+| :--- | :--- | :--- | :--- |
+| **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`) | Hands-free ONNX wake word ("hey_jarvis"), INT8 STT with electronics vocabulary prompt biasing, and 24kHz Neural TTS non-blocking audio playback. |
+| **2** | **🧠 Multi-Tier LLM Brain** | `agent/copilot.py` & `agent/key_manager.py` | 3-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool (5 keys with auto-cooling rotation) -> Tier 2 Ollama Cloud (`glm-5.2:cloud`, `kimi-k3:cloud`) -> Tier 3 Local GPU `llama3:8b`. |
+| **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Exposes all 13 hardware tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
+| **4** | **📐 KiCad Schematic & PCB Parser** | `tools/kicad_tool.py` | Direct S-expression parser for `.kicad_sch` & `.kicad_pcb` files: extracts components, generates hierarchical power trees, builds BOM CSVs, and runs ERC checks without KiCad GUI. |
+| **5** | **🔥 IPC-2221 Thermal Analysis** | `tools/thermal_tool.py` | Calculates required trace width ($I = k \cdot \Delta T^{0.44} \cdot A^{0.725}$), $I^2R$ copper power loss, and SOT-223 voltage regulator junction temperature rise ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
+| **6** | **⚡ Signal Integrity Calculator** | `tools/signal_integrity_tool.py` | Calculates I2C pull-up resistor min/max bounds ($R_{min} / R_{max}$), UART series damping resistors (22Ω–33Ω), and CAN bus 120Ω split termination ($60\Omega + 60\Omega + 4.7\text{nF}$). |
+| **7** | **📦 Supply Chain & Lifecycle Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle status (Active vs NRND vs EOL), distributor stock availability (LCSC/Mouser/DigiKey), JLCPCB basic/extended classification, and risk levels. |
+| **8** | **🌐 Live Web & Compliance Search** | `tools/reach_tool.py` | Live DuckDuckGo web search for part datasheets, pinouts, and strict RoHS 3 (2015/863/EU) / FCC Part 15 regulatory verification. |
+| **9** | **👁️ OmniParser Screen OCR Inspector** | `tools/omniparser_tool.py` | Screen capture layout parser using `RapidOCR` ONNX engine to visually detect ICs, pin labels, power rails, and KiCad GUI dialogs. |
+| **10**| **📚 Local Datasheet PDF RAG** | `tools/datasheet_rag_tool.py` | Incremental PDF datasheet ingestion into a CPU-bound ChromaDB vector store with HuggingFace `all-MiniLM-L6-v2` embeddings for local RAG search. |
+| **11**| **🎫 GitHub Issue & Audit Logger** | `tools/github_tool.py` | Logs PCB schematic ERC violations, thermal alerts, or component risks directly as labeled GitHub issues via GitHub API or local JSON log (`scratch/github_issues_log.json`). |
+| **12**| **📄 Engineering Document Exporter** | `tools/doc_exporter_tool.py` | Formats and exports audit reports, thermal calculations, and BOM summaries directly to `docs/` and `scratch/` as clean markdown or JSON files. |
+| **13**| **📖 AAS & Claude Skill Playbook Engine**| `agent/skill_loader.py` & `skills/` | Dynamic SKILL.md playbook loader with YAML frontmatter for domain playbooks: Thermal Analysis, EMC/EMI Hardening, Sim2Real Motor Calibration, Issue Tracking, BOM Cost Optimization. |
+| **14**| **🔄 On-Demand Dynamic Tool Router** | `agent/composio_router.py` | Dynamically scopes active tools per prompt query intent (`ComposioRouter.filter_tools_for_query`), keeping LLM context fast and lightweight. |
+| **15**| **🤖 Autonomous 6-Stage Hardware Audit**| `agent/workflows.py` | Executes multi-phase audit workflow (Schematic -> ERC -> Power Tree -> Thermal -> Signal Integrity -> Supply Chain) and writes reproducible reports (`scratch/pcb_audit_report.md`). |
 
 ---
 
