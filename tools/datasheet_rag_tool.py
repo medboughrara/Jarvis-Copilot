@@ -22,11 +22,12 @@ except ImportError as e:
 
 
 class DatasheetRAG:
-    """CPU-friendly RAG engine for parsing and querying local PDF datasheets."""
+    """CPU-friendly RAG engine for parsing and querying local PDF datasheets with incremental ingestion."""
 
     def __init__(self, data_dir: str = "datasheets", persist_dir: str = "scratch/chromadb"):
         self.data_dir = data_dir
         self.persist_dir = persist_dir
+        self.ingested_files = set()
         
         if not RAG_AVAILABLE:
             return
@@ -48,8 +49,8 @@ class DatasheetRAG:
             persist_directory=self.persist_dir
         )
 
-    def ingest_new_datasheets(self):
-        """Finds PDFs in the datasheets directory and adds them to the vector store."""
+    def ingest_new_datasheets(self) -> str:
+        """Finds new or uningested PDFs in the datasheets directory and incrementally adds them to the vector store."""
         if not RAG_AVAILABLE:
             return "RAG dependencies not installed."
             
@@ -57,24 +58,31 @@ class DatasheetRAG:
         if not pdf_files:
             return f"No PDF datasheets found in '{self.data_dir}'."
 
-        # Simplistic approach: if we have more than 0 files, we clear and re-ingest for demonstration.
-        # In production, check for existing document IDs.
-        logger.info(f"Found {len(pdf_files)} PDFs in '{self.data_dir}'. Ingesting...")
+        # Filter out already ingested files in this session
+        new_pdf_files = [f for f in pdf_files if os.path.abspath(f) not in self.ingested_files]
+        if not new_pdf_files and self.vector_store._collection.count() > 0:
+            return f"All {len(pdf_files)} PDF datasheets are already ingested."
+
+        logger.info(f"Found {len(new_pdf_files)} new PDFs to ingest in '{self.data_dir}'...")
         
         all_splits = []
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         
-        for pdf in pdf_files:
+        for pdf in new_pdf_files:
             logger.info(f"Loading {os.path.basename(pdf)}...")
-            loader = PyPDFLoader(pdf)
-            docs = loader.load()
-            splits = text_splitter.split_documents(docs)
-            all_splits.extend(splits)
+            try:
+                loader = PyPDFLoader(pdf)
+                docs = loader.load()
+                splits = text_splitter.split_documents(docs)
+                all_splits.extend(splits)
+                self.ingested_files.add(os.path.abspath(pdf))
+            except Exception as e:
+                logger.warning(f"Could not load PDF '{pdf}': {e}")
 
         if all_splits:
             self.vector_store.add_documents(documents=all_splits)
-            return f"Successfully ingested {len(pdf_files)} datasheets into local Chroma vector store."
-        return "No text could be extracted from the PDFs."
+            return f"Successfully ingested {len(new_pdf_files)} new datasheets into Chroma vector store."
+        return "No new text could be extracted from the PDFs."
 
     def query_datasheets(self, query: str) -> str:
         """Performs similarity search on the local datasheet vector store."""
@@ -83,11 +91,11 @@ class DatasheetRAG:
 
         logger.info(f"Executing RAG query: '{query}'")
         
-        # Ensure we have docs; if not, try to ingest
+        # Check for and incrementally ingest any newly added PDF files
+        self.ingest_new_datasheets()
+
         if self.vector_store._collection.count() == 0:
-            ingest_msg = self.ingest_new_datasheets()
-            if "No PDF datasheets found" in ingest_msg:
-                return ingest_msg
+            return f"No PDF datasheets found in '{self.data_dir}'."
 
         results = self.vector_store.similarity_search(query, k=3)
         if not results:
@@ -103,8 +111,18 @@ class DatasheetRAG:
 
 
 # ---------------------------------------------------------------------------
-# LangChain Tool Function
+# Module-level Singleton RAG Instance
 # ---------------------------------------------------------------------------
+
+_RAG_SINGLETON = None
+
+def get_datasheet_rag() -> DatasheetRAG:
+    """Returns singleton DatasheetRAG instance initialized once."""
+    global _RAG_SINGLETON
+    if _RAG_SINGLETON is None:
+        _RAG_SINGLETON = DatasheetRAG()
+    return _RAG_SINGLETON
+
 
 @tool
 def query_local_datasheets(query: str) -> str:
@@ -114,5 +132,5 @@ def query_local_datasheets(query: str) -> str:
     Args:
         query: The question or search term (e.g. 'What is the maximum operating temperature of the IC?').
     """
-    rag = DatasheetRAG()
+    rag = get_datasheet_rag()
     return rag.query_datasheets(query)

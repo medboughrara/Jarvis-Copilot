@@ -54,21 +54,32 @@ def run_full_pcb_audit(file_path: str = "") -> dict:
     supply_info = check_supply_chain_status.invoke({"part_number": "STM32F405RGT6"})
     compliance_info = check_compliance_status.invoke({"component_name": "AutoPick Servomotors"})
 
+    phases = {
+        "kicad_structure": kicad_info,
+        "electrical_rules_check": erc_info,
+        "power_tree": power_info,
+        "thermal_analysis": thermal_info,
+        "signal_integrity": si_info,
+        "supply_chain": supply_info,
+        "compliance": compliance_info
+    }
+
+    # Compute overall status dynamically from phase outputs
+    all_text = " ".join(str(v) for v in phases.values())
+    if "❌" in all_text or "🚨" in all_text:
+        computed_status = "FAILED"
+    elif "⚠️" in all_text:
+        computed_status = "WARNING"
+    else:
+        computed_status = "PASSED"
+
     audit_result = {
         "workflow_name": "Full PCB Hardware Audit",
         "timestamp": timestamp,
         "target_project": file_path or "AutoPick PCB Workspace",
-        "status": "PASSED",
-        "summary": "Completed 6-stage autonomous hardware review covering ERC, Power, Thermal, SI, and Supply Chain.",
-        "phases": {
-            "kicad_structure": kicad_info,
-            "electrical_rules_check": erc_info,
-            "power_tree": power_info,
-            "thermal_analysis": thermal_info,
-            "signal_integrity": si_info,
-            "supply_chain": supply_info,
-            "compliance": compliance_info
-        }
+        "status": computed_status,
+        "summary": f"Completed 6-stage autonomous hardware review ({computed_status}) covering ERC, Power, Thermal, SI, and Supply Chain.",
+        "phases": phases
     }
 
     # Persist Reproducible Audit Artifacts

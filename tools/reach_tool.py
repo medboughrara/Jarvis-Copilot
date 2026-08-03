@@ -86,8 +86,7 @@ class AgentReachTool:
         if live_results:
             summary = [
                 f"[Live Internet Datasheet Search for '{clean_part}']:",
-                *live_results,
-                "\nRegulatory Status: RoHS 3 (2015/863/EU Lead-free) & FCC Part 15 Certified"
+                *live_results
             ]
             return "\n".join(summary)
 
@@ -101,8 +100,7 @@ class AgentReachTool:
                 "• Holding Torque: 45 N-cm (0.45 Nm / 64 oz-in)\n"
                 "• Phase Resistance / Inductance: 1.6 ohms / 3.2 mH\n"
                 "• Wiring: 4-wire Bipolar (Black A+, Green A-, Red B+, Blue B-)\n"
-                "• Frame Size: NEMA 17 (42.3 x 42.3 mm)\n"
-                "• Regulatory Status: Certified RoHS 3 Lead-free & FCC Compliant"
+                "• Frame Size: NEMA 17 (42.3 x 42.3 mm)"
             )
         elif "STS" in upper_part or "FEETECH" in upper_part:
             return (
@@ -110,8 +108,7 @@ class AgentReachTool:
                 "• Operating Voltage: 6.0V - 8.4V DC (Nominal 7.4V 2S LiPo / PSU)\n"
                 "• Stall Torque: 19.5 kg-cm at 7.4V (STS3215) / 30.0 kg-cm at 7.4V (STS3032)\n"
                 "• Encoder / Feedback: 12-bit Magnetic Encoder (360° position, velocity, temp, load)\n"
-                "• Protocol: High-Speed TTL Serial Bus (1 Mbps, Half-Duplex UART)\n"
-                "• Regulatory Status: Certified RoHS 3 Lead-free & FCC Compliant"
+                "• Protocol: High-Speed TTL Serial Bus (1 Mbps, Half-Duplex UART)"
             )
 
         return f"[Search Notice for '{clean_part}']: No live online datasheet found. Please verify part number and internet connection."
@@ -125,8 +122,15 @@ class AgentReachTool:
         logger.info(f"Verifying compliance for: '{clean_name}'...")
         datasheet_info = AgentReachTool.search_datasheet(clean_name)
         
-        rohs_status = "Pass (RoHS 3 2015/863/EU compliant)" if "RoHS" in datasheet_info or "Lead-free" in datasheet_info else "Certified Compliant"
-        fcc_status = "Pass (FCC Part 15 Class B)" if "FCC" in datasheet_info or "Exempt" in datasheet_info else "Certified Compliant"
+        if "RoHS" in datasheet_info or "Lead-free" in datasheet_info or "lead-free" in datasheet_info.lower():
+            rohs_status = "Pass (RoHS 3 2015/863/EU compliant)"
+        else:
+            rohs_status = "Unverified (No explicit RoHS compliance statement found)"
+
+        if "FCC" in datasheet_info or "Exempt" in datasheet_info:
+            fcc_status = "Pass (FCC Part 15 Class B)"
+        else:
+            fcc_status = "Unverified (No explicit FCC certification statement found)"
         
         report = [
             f"[Regulatory Compliance Report: {clean_name}]",

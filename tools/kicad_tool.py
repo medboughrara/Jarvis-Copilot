@@ -13,20 +13,24 @@ from langchain_core.tools import tool
 from tools.reach_tool import AgentReachTool
 
 
-def find_latest_kicad_file(extension: str = ".kicad_sch") -> str:
-    """Searches workspace and current directory for KiCad schematic or PCB files."""
+def find_latest_kicad_file(extension: str = ".kicad_sch") -> tuple[str, bool]:
+    """Searches workspace and current directory for KiCad schematic or PCB files. Returns (file_path, is_sample_fallback)."""
     cwd = os.path.abspath(os.getcwd())
-    search_dirs = [cwd, os.path.join(cwd, "tests")]
+    search_dirs = [cwd]
     for d in search_dirs:
         pattern = os.path.join(d, f"**/*{extension}")
         matches = glob.glob(pattern, recursive=True)
-        if matches:
-            return matches[0]
+        # Filter out tests directory matches from primary discovery
+        non_test_matches = [m for m in matches if f"{os.sep}tests{os.sep}" not in os.path.abspath(m)]
+        if non_test_matches:
+            return non_test_matches[0], False
+        elif matches:
+            return matches[0], False
             
-    # Fallback to test sample if no user file found yet
+    # Fallback to test sample if no user file found in workspace
     sample_file = os.path.join(cwd, "tests", "sample_autopick.kicad_sch")
     if os.path.exists(sample_file):
-        return sample_file
+        return sample_file, True
     raise FileNotFoundError(f"No {extension} file found in workspace.")
 
 
@@ -34,14 +38,21 @@ class KiCadParser:
     """Core parser for KiCad schematic and PCB S-expression files."""
 
     def __init__(self, file_path: str = None):
+        self.is_sample = False
         if not file_path or not os.path.exists(file_path):
-            file_path = find_latest_kicad_file(".kicad_sch")
+            file_path, self.is_sample = find_latest_kicad_file(".kicad_sch")
             
         # Security: Prevent path traversal and enforce valid extensions
         abs_path = os.path.abspath(file_path)
         cwd = os.path.abspath(os.getcwd())
         
-        if not abs_path.startswith(cwd):
+        try:
+            common = os.path.commonpath([abs_path, cwd])
+            if common != cwd:
+                raise ValueError(f"Security Error: Path traversal detected. File '{abs_path}' is outside the workspace.")
+        except Exception as se:
+            if "Security Error" in str(se):
+                raise
             raise ValueError(f"Security Error: Path traversal detected. File '{abs_path}' is outside the workspace.")
             
         if not (abs_path.endswith('.kicad_sch') or abs_path.endswith('.kicad_pcb')):
@@ -221,13 +232,12 @@ def analyze_kicad_file(file_path: str = "") -> str:
         file_path: Optional path to .kicad_sch or .kicad_pcb file. If empty, auto-discovers file in workspace.
     """
     try:
-        if not file_path or not os.path.exists(file_path):
-            file_path = find_latest_kicad_file(".kicad_sch")
-        parser = KiCadParser(file_path)
+        parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
         comps = parser.extract_components()
         rails = parser.extract_power_rails()
         
-        summary = [f"KiCad Analysis for '{os.path.basename(file_path)}':"]
+        warning_prefix = "⚠️ Notice: No project file specified or found. Using fallback sample file: tests/sample_autopick.kicad_sch\n\n" if parser.is_sample else ""
+        summary = [f"{warning_prefix}KiCad Analysis for '{os.path.basename(parser.file_path)}':"]
         summary.append(f"- Total Components Found: {len(comps)}")
         summary.append(f"- Power Nets Detected: {', '.join(rails) if rails else 'None'}")
         summary.append("\nComponent List Sample:")
@@ -247,10 +257,11 @@ def get_power_tree(file_path: str = "") -> str:
         file_path: Optional path to .kicad_sch file. If empty, auto-discovers file in workspace.
     """
     try:
-        if not file_path or not os.path.exists(file_path):
-            file_path = find_latest_kicad_file(".kicad_sch")
-        parser = KiCadParser(file_path)
-        return parser.generate_power_tree()
+        parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
+        res = parser.generate_power_tree()
+        if parser.is_sample:
+            return f"⚠️ Notice: No project file specified or found. Using fallback sample file: tests/sample_autopick.kicad_sch\n\n{res}"
+        return res
     except Exception as e:
         return f"Error generating power tree: {e}"
 
@@ -263,10 +274,11 @@ def check_pcb_errors(file_path: str = "") -> str:
         file_path: Optional path to .kicad_sch or .kicad_pcb file. If empty, auto-discovers file in workspace.
     """
     try:
-        if not file_path or not os.path.exists(file_path):
-            file_path = find_latest_kicad_file(".kicad_sch")
-        parser = KiCadParser(file_path)
-        return parser.run_erc_checks()
+        parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
+        res = parser.run_erc_checks()
+        if parser.is_sample:
+            return f"⚠️ Notice: No project file specified or found. Using fallback sample file: tests/sample_autopick.kicad_sch\n\n{res}"
+        return res
     except Exception as e:
         return f"Error running ERC checks: {e}"
 
@@ -278,9 +290,10 @@ def generate_bom_report(file_path: str = "") -> str:
         file_path: Optional path to .kicad_sch. If empty, auto-discovers file in workspace.
     """
     try:
-        if not file_path or not os.path.exists(file_path):
-            file_path = find_latest_kicad_file(".kicad_sch")
-        parser = KiCadParser(file_path)
-        return parser.generate_bom()
+        parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
+        res = parser.generate_bom()
+        if parser.is_sample:
+            return f"⚠️ Notice: No project file specified or found. Using fallback sample file: tests/sample_autopick.kicad_sch\n\n{res}"
+        return res
     except Exception as e:
         return f"Error generating BOM: {e}"

@@ -70,10 +70,11 @@ def check_supply_chain_status(part_number: str = "STM32F405RGT6") -> str:
             f"============================================================\n"
             f"    SUPPLY CHAIN AUDIT: {clean_part}\n"
             f"============================================================\n"
-            f"Lifecycle Status: Active (Market Estimate)\n"
-            f"Distributor Coverage: LCSC, Mouser, DigiKey\n"
-            f"Risk Level: Moderate Risk (Custom or Unindexed Part)\n"
-            f"Recommendation: Verify part number with distributor database (e.g. LCSC or Octopart).\n"
+            f"Lifecycle Status: Unindexed in Local Database\n"
+            f"Stock Availability: Unknown\n"
+            f"Distributor Coverage: Unverified\n"
+            f"Risk Level: Unverified (Unindexed Part)\n"
+            f"Recommendation: Part '{clean_part}' is not in local catalog. Perform live lookup via distributor API (LCSC, Octopart, or Mouser).\n"
             f"============================================================"
         )
 

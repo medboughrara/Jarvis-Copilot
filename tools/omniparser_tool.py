@@ -117,8 +117,18 @@ class OmniParserTool:
 
 
 # ---------------------------------------------------------------------------
-# LangChain Tool Function
+# Module-level Singleton Engine
 # ---------------------------------------------------------------------------
+
+_OMNIPARSER_SINGLETON = None
+
+def get_omniparser() -> OmniParserTool:
+    """Returns singleton OmniParserTool instance initialized once."""
+    global _OMNIPARSER_SINGLETON
+    if _OMNIPARSER_SINGLETON is None:
+        _OMNIPARSER_SINGLETON = OmniParserTool()
+    return _OMNIPARSER_SINGLETON
+
 
 @tool
 def parse_screen_gui(action_context: str = "KiCad GUI") -> str:
@@ -127,5 +137,5 @@ def parse_screen_gui(action_context: str = "KiCad GUI") -> str:
     Args:
         action_context: Context description of what user wants to inspect (e.g. 'KiCad schematic', 'DRC dialog').
     """
-    parser = OmniParserTool()
+    parser = get_omniparser()
     return parser.capture_and_parse()

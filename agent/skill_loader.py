@@ -43,9 +43,10 @@ class SkillLoader:
             frontmatter_raw = match.group(1)
             markdown_body = match.group(2).strip()
 
-            # Basic YAML parser for name and description
             name = ""
             description = ""
+            keywords = []
+
             for line in frontmatter_raw.splitlines():
                 if ":" in line:
                     k, v = line.split(":", 1)
@@ -55,6 +56,8 @@ class SkillLoader:
                         name = v
                     elif k == "description":
                         description = v
+                    elif k == "keywords":
+                        keywords = [kw.strip().strip('"').strip("'") for kw in v.strip("[]").split(",") if kw.strip()]
 
             if not name:
                 name = os.path.basename(os.path.dirname(filepath))
@@ -62,6 +65,7 @@ class SkillLoader:
             return {
                 "name": name,
                 "description": description,
+                "keywords": keywords,
                 "filepath": filepath,
                 "instructions": markdown_body
             }
@@ -70,12 +74,23 @@ class SkillLoader:
             return None
 
     def get_skill_instructions(self, query: str) -> str:
-        """Matches query against loaded skills and returns relevant playbook instructions."""
+        """Matches query against loaded skills using full skill name, name phrase, or explicit keywords."""
         query_lower = query.lower()
         matched_instructions = []
 
         for name, data in self.skills.items():
-            if name.lower() in query_lower or any(word in query_lower for word in name.lower().split("-")):
+            name_lower = name.lower()
+            name_phrase = name_lower.replace("-", " ")
+            keywords = data.get("keywords", [])
+
+            is_match = False
+            if name_lower in query_lower or name_phrase in query_lower:
+                is_match = True
+            elif keywords:
+                if any(kw.lower() in query_lower for kw in keywords if len(kw.strip()) > 3):
+                    is_match = True
+
+            if is_match:
                 matched_instructions.append(f"### SKILL PLAYBOOK: {name.upper()}\n{data['instructions']}")
 
         return "\n\n".join(matched_instructions)
