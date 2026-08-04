@@ -72,7 +72,7 @@ class NvidiaNIMClient:
         }
 
         try:
-            response = requests.post(self.flux_url, headers=headers, json=payload, timeout=60)
+            response = requests.post(self.flux_url, headers=headers, json=payload, timeout=15)
             response.raise_for_status()
             res_body = response.json()
 
