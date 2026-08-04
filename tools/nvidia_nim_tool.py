@@ -321,71 +321,109 @@ class NvidiaNIMClient:
 
 
 # ---------------------------------------------------------------------------
-# LangChain Tool Exports
+# LangChain Tool Exports ({status, data, summary} Dict Contract)
 # ---------------------------------------------------------------------------
 
 @tool
-def generate_nvidia_image(prompt: str, width: int = 1024, height: int = 1024) -> str:
+def generate_nvidia_image(prompt: str, width: int = 1024, height: int = 1024) -> dict:
     """
     Generates high-resolution PCB block diagrams, lab interiors, or concept artwork using NVIDIA FLUX.1-Schnell.
-    Args:
-        prompt: Descriptive prompt for image generation (e.g. 'a simple coffee shop interior', 'KiCad PCB schematic block diagram').
-        width: Image width in pixels (default: 1024).
-        height: Image height in pixels (default: 1024).
     """
-    client = NvidiaNIMClient()
-    res = client.generate_image(prompt=prompt, width=width, height=height)
-    if res["status"] == "success":
-        return f"NVIDIA FLUX.1-Schnell Image generated successfully! Saved to: {res['file_path']}"
-    return f"Image generation failed: {res.get('message', 'Unknown error')}"
+    try:
+        client = NvidiaNIMClient()
+        res = client.generate_image(prompt=prompt, width=width, height=height)
+        if res["status"] == "success":
+            return {
+                "status": "success",
+                "summary": f"NVIDIA FLUX.1-Schnell Image generated successfully! Saved to: {res['file_path']}",
+                "data": {"file_path": res['file_path'], "prompt": prompt}
+            }
+        return {
+            "status": "error",
+            "summary": f"Image generation failed: {res.get('message', 'Unknown error')}",
+            "data": {"error": res.get("message", "Unknown error")}
+        }
+    except Exception as e:
+        logger.error(f"[generate_nvidia_image Error] {e}")
+        return {"status": "error", "summary": f"Image generation error: {e}", "data": {"error": str(e)}}
 
 
 @tool
-def synthesize_nvidia_speech(text: str, language: str = "English (US)") -> str:
+def synthesize_nvidia_speech(text: str, language: str = "English (US)") -> dict:
     """
     Synthesizes natural, human-like voice audio using NVIDIA Magpie Multilingual TTS.
-    Args:
-        text: Speech text to synthesize into spoken voice audio.
-        language: Target language (default: 'English (US)').
     """
-    client = NvidiaNIMClient()
-    res = client.synthesize_speech(text=text, language=language)
-    if res["status"] == "success":
-        return f"NVIDIA Magpie TTS synthesized voice audio successfully! Saved to: {res['file_path']}"
-    return f"NVIDIA Magpie TTS failed: {res.get('message', 'Unknown error')}"
+    try:
+        client = NvidiaNIMClient()
+        res = client.synthesize_speech(text=text, language=language)
+        if res["status"] == "success":
+            return {
+                "status": "success",
+                "summary": f"NVIDIA Magpie TTS synthesized voice audio successfully! Saved to: {res['file_path']}",
+                "data": {"file_path": res['file_path'], "language": language}
+            }
+        return {
+            "status": "error",
+            "summary": f"NVIDIA Magpie TTS failed: {res.get('message', 'Unknown error')}",
+            "data": {"error": res.get("message", "Unknown error")}
+        }
+    except Exception as e:
+        logger.error(f"[synthesize_nvidia_speech Error] {e}")
+        return {"status": "error", "summary": f"TTS error: {e}", "data": {"error": str(e)}}
 
 
 @tool
-def transcribe_nvidia_audio(audio_file: str) -> str:
+def transcribe_nvidia_audio(audio_file: str) -> dict:
     """
     Transcribes audio commands using NVIDIA Whisper Large v3 Cloud API.
-    Args:
-        audio_file: Path to audio file (.wav) to transcribe.
     """
-    client = NvidiaNIMClient()
-    return client.transcribe_audio(audio_file)
+    try:
+        client = NvidiaNIMClient()
+        text = client.transcribe_audio(audio_file)
+        return {
+            "status": "success",
+            "summary": f"Transcribed audio ({os.path.basename(audio_file)}): '{text[:100]}...'",
+            "data": {"audio_file": audio_file, "transcription": text}
+        }
+    except Exception as e:
+        logger.error(f"[transcribe_nvidia_audio Error] {e}")
+        return {"status": "error", "summary": f"Transcription error: {e}", "data": {"error": str(e)}}
 
 
 @tool
-def run_nvidia_reasoning(query: str, model_choice: str = "kimi-k2.6") -> str:
+def run_nvidia_reasoning(query: str, model_choice: str = "kimi-k2.6") -> dict:
     """
     Executes deep hardware reasoning and architectural analysis using Moonshot Kimi 2.6 or NVIDIA Nemotron 3 Reasoning models.
-    Args:
-        query: Engineering question or architectural review request.
-        model_choice: 'kimi-k2.6' or 'nemotron-3-nano-omni-30b-a3b-reasoning'.
     """
-    client = NvidiaNIMClient()
-    model = "moonshotai/kimi-k2.6" if "kimi" in model_choice.lower() else "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
-    budget = 16384 if "nemotron" in model else None
-    return client.invoke_chat_completion(messages=[{"role": "user", "content": query}], model=model, reasoning_budget=budget)
+    try:
+        client = NvidiaNIMClient()
+        model = "moonshotai/kimi-k2.6" if "kimi" in model_choice.lower() else "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+        budget = 16384 if "nemotron" in model else None
+        res_text = client.invoke_chat_completion(messages=[{"role": "user", "content": query}], model=model, reasoning_budget=budget)
+        return {
+            "status": "success",
+            "summary": f"NVIDIA NIM Reasoning ({model_choice}): {res_text[:120]}...",
+            "data": {"model": model, "query": query, "response": res_text}
+        }
+    except Exception as e:
+        logger.error(f"[run_nvidia_reasoning Error] {e}")
+        return {"status": "error", "summary": f"NVIDIA Reasoning error: {e}", "data": {"error": str(e)}}
 
 
 @tool
-def parse_nemotron_ocr(image_path: str = "") -> str:
+def parse_nemotron_ocr(image_path: str = "") -> dict:
     """
     Extracts text, table values, component designations, and pinouts from PCB screenshots or PDF datasheets using NVIDIA Nemotron OCR v2.
-    Args:
-        image_path: Optional path to screenshot or schematic image file.
     """
-    client = NvidiaNIMClient()
-    return client.invoke_nemotron_ocr(image_path)
+    try:
+        client = NvidiaNIMClient()
+        ocr_text = client.invoke_nemotron_ocr(image_path)
+        return {
+            "status": "success",
+            "summary": f"Nemotron OCR v2 extracted text from '{os.path.basename(image_path) if image_path else 'default screen'}'.",
+            "data": {"image_path": image_path, "extracted_text": ocr_text}
+        }
+    except Exception as e:
+        logger.error(f"[parse_nemotron_ocr Error] {e}")
+        return {"status": "error", "summary": f"Nemotron OCR error: {e}", "data": {"error": str(e)}}
+

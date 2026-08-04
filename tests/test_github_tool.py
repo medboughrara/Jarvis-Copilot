@@ -13,8 +13,8 @@ class TestGitHubTool(unittest.TestCase):
             "body": "Add 0.1uF MLCC near VDD pin",
             "labels": "hardware-erc,high-priority"
         })
-        self.assertIn("GITHUB ISSUE LOGGED", res)
-        self.assertIn("Decoupling Capacitor Missing on U1", res)
+        self.assertEqual(res["status"], "success")
+        self.assertIn("issue_id", res["data"])
         self.assertTrue(os.path.exists("scratch/github_issues_log.json"))
 
 if __name__ == "__main__":

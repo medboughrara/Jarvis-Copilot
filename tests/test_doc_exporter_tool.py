@@ -13,7 +13,8 @@ class TestDocExporterTool(unittest.TestCase):
             "content": "Thermal power loss is 120mW.",
             "format_type": "markdown"
         })
-        self.assertIn("Successfully exported engineering log", res)
+        self.assertEqual(res["status"], "success")
+        self.assertIn("file_path", res["data"])
         self.assertTrue(os.path.exists("docs/test_thermal_audit.md"))
 
 if __name__ == "__main__":

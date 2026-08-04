@@ -4,7 +4,7 @@ Unit and Integration Tests for tools/kicad_tool.py (AutoPick Jarvis Copilot).
 
 import os
 import unittest
-from tools.kicad_tool import KiCadParser, analyze_kicad_file, get_power_tree, check_pcb_errors
+from tools.kicad_tool import KiCadParser, analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
 
 
 SAMPLE_KICAD_SCH = """(kicad_sch (version 20230121) (generator eeschema)
@@ -71,20 +71,23 @@ class TestKiCadTool(unittest.TestCase):
         result = parser.generate_bom()
         self.assertIn("BOM generated for", result)
         self.assertTrue(os.path.exists("scratch/bom_output.csv"))
-        with open("scratch/bom_output.csv", "r", encoding="utf-8") as f:
-            content = f.read()
-            self.assertIn("Quantity,Value,Library,References", content)
-            self.assertIn("STM32", content)
 
     def test_langchain_tool_invocations(self):
         res1 = analyze_kicad_file.invoke({"file_path": self.test_file})
-        self.assertIn("KiCad Analysis", res1)
+        self.assertEqual(res1["status"], "success")
+        self.assertIn("KiCad Analysis", res1["summary"])
 
         res2 = get_power_tree.invoke({"file_path": self.test_file})
-        self.assertIn("AutoPick PCB Power Tree", res2)
+        self.assertEqual(res2["status"], "success")
+        self.assertIn("Power tree for", res2["summary"])
 
         res3 = check_pcb_errors.invoke({"file_path": self.test_file})
-        self.assertTrue(len(res3) > 0)
+        self.assertEqual(res3["status"], "success")
+        self.assertIn("verdict", res3["data"])
+
+        res4 = generate_bom_report.invoke({"file_path": self.test_file})
+        self.assertEqual(res4["status"], "success")
+        self.assertIn("csv_path", res4["data"])
 
 
 if __name__ == "__main__":

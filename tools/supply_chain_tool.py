@@ -1,14 +1,15 @@
 """
 Supply Chain, Lifecycle & Obsolescence Checker Tool for Jarvis Copilot.
 Evaluates component lifecycle status (Active vs NRND vs EOL), inventory risk, and distributor availability.
+Returns structured dictionaries adhering to the {status, data, summary} contract.
 """
 
+from typing import Dict, Any
 from langchain_core.tools import tool
 import config
 
 logger = config.get_logger(__name__)
 
-# Database of AutoPick project components and supply chain metrics
 COMPONENT_DATABASE = {
     "STM32F405RGT6": {
         "description": "ARM Cortex-M4 32-bit MCU 168MHz 1MB Flash LQFP-64",
@@ -48,48 +49,66 @@ COMPONENT_DATABASE = {
     }
 }
 
+
 @tool
-def check_supply_chain_status(part_number: str = "STM32F405RGT6") -> str:
+def check_supply_chain_status(part_number: str = "STM32F405RGT6") -> dict:
     """
     Evaluates component lifecycle status (Active vs NRND vs EOL), stock availability, and supply chain risks.
-    
-    Args:
-        part_number: Part number or component name (e.g. "STM32F405RGT6", "PCA9685", "AMS1117-3.3").
     """
-    clean_part = part_number.strip().upper()
-    
-    # Matching component entry
-    matched_entry = None
-    for key, data in COMPONENT_DATABASE.items():
-        if key in clean_part or clean_part in key:
-            matched_entry = (key, data)
-            break
+    try:
+        clean_part = part_number.strip().upper()
 
-    if not matched_entry:
-        return (
-            f"============================================================\n"
-            f"    SUPPLY CHAIN AUDIT: {clean_part}\n"
-            f"============================================================\n"
-            f"Lifecycle Status: Unindexed in Local Database\n"
-            f"Stock Availability: Unknown\n"
-            f"Distributor Coverage: Unverified\n"
-            f"Risk Level: Unverified (Unindexed Part)\n"
-            f"Recommendation: Part '{clean_part}' is not in local catalog. Perform live lookup via distributor API (LCSC, Octopart, or Mouser).\n"
-            f"============================================================"
-        )
+        matched_entry = None
+        for key, data in COMPONENT_DATABASE.items():
+            if key in clean_part or clean_part in key:
+                matched_entry = (key, data)
+                break
 
-    key, data = matched_entry
-    report = [
-        "============================================================",
-        f"    AUTOPICK SUPPLY CHAIN AUDIT: {key}",
-        "============================================================",
-        f"Description: {data['description']}",
-        f"Lifecycle Status: {data['lifecycle']} (No Obsolescence Risk)",
-        f"Stock Availability: {data['stock_status']}",
-        f"Distributors: {', '.join(data['distributors'])}",
-        f"JLCPCB Assembly Type: {data['jlcpcb_type']}",
-        f"Risk Level: {data['risk_level']}",
-        f"Pin-Compatible Second Source: {data['second_source']}",
-        "============================================================"
-    ]
-    return "\n".join(report)
+        if not matched_entry:
+            verdict = "WARNING"
+            summary_str = f"Supply Chain Audit for '{clean_part}': Verdict [{verdict}] | Unindexed in local catalog. Perform live lookup."
+            return {
+                "status": "success",
+                "summary": summary_str,
+                "data": {
+                    "verdict": verdict,
+                    "part_number": clean_part,
+                    "lifecycle": "Unindexed",
+                    "stock_status": "Unknown",
+                    "risk_level": "Unverified"
+                }
+            }
+
+        key, data = matched_entry
+        lifecycle = data["lifecycle"]
+        if lifecycle == "Active":
+            verdict = "PASSED"
+        elif lifecycle == "NRND":
+            verdict = "WARNING"
+        else: # EOL
+            verdict = "FAILED"
+
+        summary_str = f"Supply Chain Audit for '{key}': Verdict [{verdict}] | Lifecycle: {lifecycle}, Stock: {data['stock_status']}, Risk: {data['risk_level']}."
+
+        return {
+            "status": "success",
+            "summary": summary_str,
+            "data": {
+                "verdict": verdict,
+                "part_number": key,
+                "description": data["description"],
+                "lifecycle": lifecycle,
+                "stock_status": data["stock_status"],
+                "distributors": data["distributors"],
+                "jlcpcb_type": data["jlcpcb_type"],
+                "risk_level": data["risk_level"],
+                "second_source": data["second_source"]
+            }
+        }
+    except Exception as e:
+        logger.error(f"[check_supply_chain_status Error] {e}")
+        return {
+            "status": "error",
+            "summary": f"Error checking supply chain status: {e}",
+            "data": {"verdict": "FAILED", "error": str(e)}
+        }

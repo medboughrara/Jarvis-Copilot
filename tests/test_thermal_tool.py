@@ -16,9 +16,9 @@ class TestThermalTool(unittest.TestCase):
             "vout_v": 5.0,
             "reg_current_a": 0.5
         })
-        self.assertIn("IPC-2221", res)
-        self.assertIn("Trace Width: 30.0 mils", res)
-        self.assertIn("Linear Regulator Drop: 12.0V -> 5.0V", res)
+        self.assertEqual(res["status"], "success")
+        self.assertIn("verdict", res["data"])
+        self.assertEqual(res["data"]["current_amps"], 3.0)
 
 if __name__ == "__main__":
     unittest.main()

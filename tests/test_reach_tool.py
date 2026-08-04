@@ -10,10 +10,8 @@ from tools.reach_tool import AgentReachTool, search_component_datasheet, check_c
 class TestReachTool(unittest.TestCase):
     @patch('tools.reach_tool.DDGS')
     def test_search_datasheet(self, mock_ddgs):
-        # Setup mock behavior for the context manager returned by DDGS()
         mock_ddgs_instance = MagicMock()
         mock_ddgs.return_value.__enter__.return_value = mock_ddgs_instance
-        # Return a deterministic mock search result
         mock_ddgs_instance.text.return_value = [
             {"title": "MG996R Datasheet", "body": "Stall Torque: 11kg/cm"}
         ]
@@ -24,8 +22,8 @@ class TestReachTool(unittest.TestCase):
 
     def test_compliance_verification(self):
         report = AgentReachTool.verify_compliance("PCA9685 PWM Driver")
-        self.assertIn("Regulatory Compliance Report", report)
-        self.assertIn("RoHS", report)
+        self.assertEqual(report["status"], "success")
+        self.assertIn("verdict", report["data"])
 
     @patch('tools.reach_tool.DDGS')
     def test_langchain_tool_invocations(self, mock_ddgs):
@@ -36,13 +34,14 @@ class TestReachTool(unittest.TestCase):
         ]
         
         res1 = search_component_datasheet.invoke({"query": "STM32F405 MCU"})
-        self.assertTrue(len(res1) > 0)
+        self.assertEqual(res1["status"], "success")
 
         mock_ddgs_instance.text.return_value = [
             {"title": "MG996R", "body": "RoHS Compliant"}
         ]
         res2 = check_compliance_status.invoke({"component_name": "MG996R"})
-        self.assertIn("Sim2Real Servomotor Controller Pipeline", res2)
+        self.assertEqual(res2["status"], "success")
+        self.assertIn("verdict", res2["data"])
 
 
 if __name__ == "__main__":

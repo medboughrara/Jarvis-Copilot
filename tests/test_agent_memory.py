@@ -20,16 +20,13 @@ class TestAgentMemoryAndSearch(unittest.TestCase):
             {"title": "Feetech STS Series Datasheet", "body": "19.5 kg-cm at 7.4V"}
         ]
         res = search_component_datasheet.invoke({"query": "Could you get the data sheet of servomotor STS?"})
-        self.assertIn("Feetech STS Series", res)
-        self.assertIn("19.5 kg-cm", res)
-        self.assertIn("7.4V", res)
+        self.assertEqual(res["status"], "success")
+        self.assertIn("Feetech STS Series", res["data"]["findings"])
 
     def test_context_conscious_followup_question(self):
-        # Turn 1: Screen capture command
         res1 = asyncio.run(self.agent.process_query("Capture my screen and describe the current circuit"))
         self.assertTrue(len(res1) > 0)
         
-        # Turn 2: Follow-up question referencing the captured image
         res2 = asyncio.run(self.agent.process_query("Is the power section in the captured image good?"))
         self.assertTrue(len(res2) > 0)
 

@@ -13,17 +13,19 @@ class TestSignalIntegrityTool(unittest.TestCase):
             "trace_cap_pf": 150.0,
             "baud_rate_bps": 400000
         })
-        self.assertIn("I2C", res)
-        self.assertIn("Pull-Up Resistor Calculation", res)
-        self.assertIn("Minimum Pull-Up", res)
+        self.assertEqual(res["status"], "success")
+        self.assertIn("verdict", res["data"])
+        self.assertEqual(res["data"]["bus_type"], "I2C")
 
     def test_uart_damping_recommendation(self):
         res = check_signal_integrity.invoke({"bus_type": "uart"})
-        self.assertIn("UART Series Damping", res)
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(res["data"]["bus_type"], "UART")
 
     def test_can_termination_recommendation(self):
         res = check_signal_integrity.invoke({"bus_type": "can"})
-        self.assertIn("CAN Bus Termination", res)
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(res["data"]["bus_type"], "CAN")
 
 if __name__ == "__main__":
     unittest.main()

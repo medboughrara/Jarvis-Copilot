@@ -1,11 +1,13 @@
 """
-Configuration file for Jarvis PCB Copilot (AutoPick / Multiverse AI).
-Contains audio specifications, model configurations, and system prompts.
+Configuration file and validated Pydantic Settings schema for Jarvis PCB Copilot.
 """
 
 import os
-import logging
 import sys
+import logging
+from typing import List
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings
 
 try:
     from dotenv import load_dotenv
@@ -27,64 +29,138 @@ logging.basicConfig(
 def get_logger(name: str):
     return logging.getLogger(name)
 
-# Project Metadata
-PROJECT_NAME = "AutoPick"
-COMPANY_NAME = "Multiverse AI"
-DOMAIN_CONTEXT = "Sim2Real, servomotors, PCB schematics, component compliance"
 
-# Audio Recording Settings
-SAMPLE_RATE = 16000  # Required by openWakeWord & Faster-Whisper
-CHANNELS = 1         # Mono audio
-CHUNK_SIZE = 1280    # openWakeWord expects 80ms chunks (1280 samples at 16kHz)
+class JarvisConfig(BaseSettings):
+    """Pydantic Settings Schema for Jarvis PCB Copilot with fail-fast startup validation."""
 
-# Wake Word Configuration
-WAKEWORD_MODEL_NAME = "hey_jarvis"  # openWakeWord built-in or custom model
-WAKEWORD_THRESHOLD = 0.5            # Sensitivity threshold (0.0 to 1.0)
+    # Project Metadata
+    PROJECT_NAME: str = "AutoPick"
+    COMPANY_NAME: str = "Multiverse AI"
+    DOMAIN_CONTEXT: str = "Sim2Real, servomotors, PCB schematics, component compliance"
 
-# Speech-to-Text (Faster-Whisper on CPU)
-STT_MODEL_SIZE = "base.en"
-STT_DEVICE = "cpu"
-STT_COMPUTE_TYPE = "int8"
-# Custom initial prompt to bias Whisper for accurate domain transcription
-STT_INITIAL_PROMPT = f"{PROJECT_NAME}, {COMPANY_NAME}, Sim2Real, servomotors, PCB, schematic,KiCad, RoHS, FCC"
+    # Audio Recording Settings
+    SAMPLE_RATE: int = 16000
+    CHANNELS: int = 1
+    CHUNK_SIZE: int = 1280
 
-# Text-to-Speech (Kokoro TTS on CPU)
-TTS_MODEL_NAME = "kokoro-v1.0.onnx"
-TTS_VOICE = "af_bella"  # Default clean voice
-TTS_SPEED = 1.0
+    # Wake Word Configuration
+    WAKEWORD_MODEL_NAME: str = "hey_jarvis"
+    WAKEWORD_THRESHOLD: float = 0.5
 
-# Core LLM Options (Gemini Cloud / Ollama Cloud / Ollama Local)
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3:8b")
-OLLAMA_CLOUD_MODELS = [m.strip() for m in os.getenv("OLLAMA_CLOUD_MODELS", "glm-5.2:cloud,kimi-k3:cloud").split(",") if m.strip()]
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", os.getenv("GOOGLE_API_KEY", ""))
-GEMINI_API_KEYS = [k.strip() for k in os.getenv("GEMINI_API_KEYS", "").split(",") if k.strip()]
-if not GEMINI_API_KEYS and GEMINI_API_KEY:
-    GEMINI_API_KEYS = [GEMINI_API_KEY]
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
-USE_GEMINI = os.getenv("USE_GEMINI", "true").lower() in ("true", "1", "yes")
+    # Speech-to-Text
+    STT_MODEL_SIZE: str = "base.en"
+    STT_DEVICE: str = "cpu"
+    STT_COMPUTE_TYPE: str = "int8"
+    STT_INITIAL_PROMPT: str = "AutoPick, Multiverse AI, Sim2Real, servomotors, PCB, schematic, KiCad, RoHS, FCC"
 
-# NVIDIA NIM Cloud Foundation Models
-NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", os.getenv("NVAPI_KEY", "")).strip()
-NVIDIA_KIMI_KEY = os.getenv("NVIDIA_KIMI_KEY", "").strip()
-NVIDIA_NEMOTRON_KEY = os.getenv("NVIDIA_NEMOTRON_KEY", "").strip()
-NVIDIA_NEMOTRON_OCR_KEY = os.getenv("NVIDIA_NEMOTRON_OCR_KEY", "").strip()
-NVIDIA_NEMOTRON_EMBED_KEY = os.getenv("NVIDIA_NEMOTRON_EMBED_KEY", "").strip()
+    # Text-to-Speech
+    TTS_MODEL_NAME: str = "kokoro-v1.0.onnx"
+    TTS_VOICE: str = "af_bella"
+    TTS_SPEED: float = 1.0
 
-NVIDIA_FLUX_URL = os.getenv("NVIDIA_FLUX_URL", "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell")
-NVIDIA_WHISPER_URL = os.getenv("NVIDIA_WHISPER_URL", "https://ai.api.nvidia.com/v1/audio/openai/whisper-large-v3")
-NVIDIA_MAGPIE_URL = os.getenv("NVIDIA_MAGPIE_URL", "https://ai.api.nvidia.com/v1/audio/nvidia/magpie-tts-multilingual")
-NVIDIA_INTEGRATE_CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
-NVIDIA_NEMOTRON_OCR_URL = "https://ai.api.nvidia.com/v1/vlm/nvidia/nemotron-ocr-v2"
-NVIDIA_EMBED_URL = "https://integrate.api.nvidia.com/v1/embeddings"
+    # Core LLM Options
+    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
+    OLLAMA_MODEL: str = Field(default="llama3:8b")
+    OLLAMA_CLOUD_MODELS_RAW: str = Field(default="glm-5.2:cloud,kimi-k3:cloud", validation_alias="OLLAMA_CLOUD_MODELS")
+    
+    GEMINI_API_KEYS_RAW: str = Field(default="", validation_alias="GEMINI_API_KEYS")
+    GEMINI_API_KEY_RAW: str = Field(default="", validation_alias="GEMINI_API_KEY")
+    GOOGLE_API_KEY_RAW: str = Field(default="", validation_alias="GOOGLE_API_KEY")
+    GEMINI_MODEL: str = Field(default="gemini-3.6-flash")
+    USE_GEMINI: bool = Field(default=True)
 
-USE_NVIDIA_STT = os.getenv("USE_NVIDIA_STT", "false").lower() in ("true", "1", "yes")
-USE_NVIDIA_TTS = os.getenv("USE_NVIDIA_TTS", "false").lower() in ("true", "1", "yes")
+    # NVIDIA NIM Cloud Foundation Models
+    NVIDIA_API_KEY: str = Field(default="", validation_alias="NVIDIA_API_KEY")
+    NVIDIA_KIMI_KEY: str = Field(default="", validation_alias="NVIDIA_KIMI_KEY")
+    NVIDIA_NEMOTRON_KEY: str = Field(default="", validation_alias="NVIDIA_NEMOTRON_KEY")
+    NVIDIA_NEMOTRON_OCR_KEY: str = Field(default="", validation_alias="NVIDIA_NEMOTRON_OCR_KEY")
+    NVIDIA_NEMOTRON_EMBED_KEY: str = Field(default="", validation_alias="NVIDIA_NEMOTRON_EMBED_KEY")
 
-# Baidu Unlimited-OCR Model Config
-UNLIMITED_OCR_MODEL = os.getenv("UNLIMITED_OCR_MODEL", "baidu/Unlimited-OCR")
-USE_UNLIMITED_OCR = os.getenv("USE_UNLIMITED_OCR", "true").lower() in ("true", "1", "yes")
+    NVIDIA_FLUX_URL: str = Field(default="https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell")
+    NVIDIA_WHISPER_URL: str = Field(default="https://ai.api.nvidia.com/v1/audio/openai/whisper-large-v3")
+    NVIDIA_MAGPIE_URL: str = Field(default="https://ai.api.nvidia.com/v1/audio/nvidia/magpie-tts-multilingual")
+    NVIDIA_INTEGRATE_CHAT_URL: str = Field(default="https://integrate.api.nvidia.com/v1/chat/completions")
+    NVIDIA_NEMOTRON_OCR_URL: str = Field(default="https://ai.api.nvidia.com/v1/vlm/nvidia/nemotron-ocr-v2")
+    NVIDIA_EMBED_URL: str = Field(default="https://integrate.api.nvidia.com/v1/embeddings")
+
+    USE_NVIDIA_STT: bool = Field(default=False)
+    USE_NVIDIA_TTS: bool = Field(default=False)
+
+    # Baidu Unlimited-OCR Model Config
+    UNLIMITED_OCR_MODEL: str = Field(default="baidu/Unlimited-OCR")
+    USE_UNLIMITED_OCR: bool = Field(default=True)
+
+    class Config:
+        extra = "ignore"
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+    @property
+    def GEMINI_API_KEYS(self) -> List[str]:
+        keys = [k.strip() for k in self.GEMINI_API_KEYS_RAW.split(",") if k.strip()]
+        if not keys:
+            single = self.GEMINI_API_KEY_RAW.strip() or self.GOOGLE_API_KEY_RAW.strip()
+            if single:
+                keys = [single]
+        return keys
+
+    @property
+    def OLLAMA_CLOUD_MODELS(self) -> List[str]:
+        return [m.strip() for m in self.OLLAMA_CLOUD_MODELS_RAW.split(",") if m.strip()]
+
+    def validate_configuration(self):
+        """Ensures at least 1 LLM tier is properly configured."""
+        has_gemini = bool(self.USE_GEMINI and self.GEMINI_API_KEYS)
+        has_nvidia = bool(self.NVIDIA_API_KEY or self.NVIDIA_KIMI_KEY or self.NVIDIA_NEMOTRON_KEY)
+        has_ollama_cloud = bool(self.OLLAMA_CLOUD_MODELS)
+        has_ollama_local = bool(self.OLLAMA_BASE_URL and self.OLLAMA_MODEL)
+
+        if not (has_gemini or has_nvidia or has_ollama_cloud or has_ollama_local):
+            raise ValueError(
+                "Invalid Configuration: No active LLM tier configured. "
+                "Please configure GEMINI_API_KEYS, NVIDIA_API_KEY, OLLAMA_CLOUD_MODELS, or local OLLAMA_BASE_URL in your .env file."
+            )
 
 
+# Initialize and validate singleton config instance at startup
+_config_instance = JarvisConfig()
+_config_instance.validate_configuration()
 
-
+# Export backward-compatible module-level globals
+PROJECT_NAME = _config_instance.PROJECT_NAME
+COMPANY_NAME = _config_instance.COMPANY_NAME
+DOMAIN_CONTEXT = _config_instance.DOMAIN_CONTEXT
+SAMPLE_RATE = _config_instance.SAMPLE_RATE
+CHANNELS = _config_instance.CHANNELS
+CHUNK_SIZE = _config_instance.CHUNK_SIZE
+WAKEWORD_MODEL_NAME = _config_instance.WAKEWORD_MODEL_NAME
+WAKEWORD_THRESHOLD = _config_instance.WAKEWORD_THRESHOLD
+STT_MODEL_SIZE = _config_instance.STT_MODEL_SIZE
+STT_DEVICE = _config_instance.STT_DEVICE
+STT_COMPUTE_TYPE = _config_instance.STT_COMPUTE_TYPE
+STT_INITIAL_PROMPT = _config_instance.STT_INITIAL_PROMPT
+TTS_MODEL_NAME = _config_instance.TTS_MODEL_NAME
+TTS_VOICE = _config_instance.TTS_VOICE
+TTS_SPEED = _config_instance.TTS_SPEED
+OLLAMA_BASE_URL = _config_instance.OLLAMA_BASE_URL
+OLLAMA_MODEL = _config_instance.OLLAMA_MODEL
+OLLAMA_CLOUD_MODELS = _config_instance.OLLAMA_CLOUD_MODELS
+GEMINI_API_KEY = _config_instance.GEMINI_API_KEY_RAW or (_config_instance.GEMINI_API_KEYS[0] if _config_instance.GEMINI_API_KEYS else "")
+GEMINI_API_KEYS = _config_instance.GEMINI_API_KEYS
+GEMINI_MODEL = _config_instance.GEMINI_MODEL
+USE_GEMINI = _config_instance.USE_GEMINI
+NVIDIA_API_KEY = _config_instance.NVIDIA_API_KEY
+NVIDIA_KIMI_KEY = _config_instance.NVIDIA_KIMI_KEY
+NVIDIA_NEMOTRON_KEY = _config_instance.NVIDIA_NEMOTRON_KEY
+NVIDIA_NEMOTRON_OCR_KEY = _config_instance.NVIDIA_NEMOTRON_OCR_KEY
+NVIDIA_NEMOTRON_EMBED_KEY = _config_instance.NVIDIA_NEMOTRON_EMBED_KEY
+NVIDIA_FLUX_URL = _config_instance.NVIDIA_FLUX_URL
+NVIDIA_WHISPER_URL = _config_instance.NVIDIA_WHISPER_URL
+NVIDIA_MAGPIE_URL = _config_instance.NVIDIA_MAGPIE_URL
+NVIDIA_INTEGRATE_CHAT_URL = _config_instance.NVIDIA_INTEGRATE_CHAT_URL
+NVIDIA_NEMOTRON_OCR_URL = _config_instance.NVIDIA_NEMOTRON_OCR_URL
+NVIDIA_EMBED_URL = _config_instance.NVIDIA_EMBED_URL
+USE_NVIDIA_STT = _config_instance.USE_NVIDIA_STT
+USE_NVIDIA_TTS = _config_instance.USE_NVIDIA_TTS
+UNLIMITED_OCR_MODEL = _config_instance.UNLIMITED_OCR_MODEL
+USE_UNLIMITED_OCR = _config_instance.USE_UNLIMITED_OCR

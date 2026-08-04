@@ -7,6 +7,7 @@ to transcribe entire multi-page component datasheets and schematic PDFs into str
 import os
 import glob
 import time
+from typing import Optional, Any
 from langchain_core.tools import tool
 import config
 
@@ -134,25 +135,37 @@ class UnlimitedOCRTool:
 
 
 # ---------------------------------------------------------------------------
-# Module Singleton & LangChain Tool Export
+# Session-Scoped Engine Helper & LangChain Tool
 # ---------------------------------------------------------------------------
 
-_UNLIMITED_OCR_SINGLETON = None
-
-def get_unlimited_ocr_tool() -> UnlimitedOCRTool:
-    """Returns singleton UnlimitedOCRTool instance initialized once."""
-    global _UNLIMITED_OCR_SINGLETON
-    if _UNLIMITED_OCR_SINGLETON is None:
-        _UNLIMITED_OCR_SINGLETON = UnlimitedOCRTool()
-    return _UNLIMITED_OCR_SINGLETON
+def get_unlimited_ocr_tool(session_context: Optional[Any] = None) -> UnlimitedOCRTool:
+    """Returns session-scoped UnlimitedOCRTool instance or fresh instance."""
+    if session_context and hasattr(session_context, 'get_unlimited_ocr_engine'):
+        return session_context.get_unlimited_ocr_engine()
+    return UnlimitedOCRTool()
 
 
 @tool
-def parse_document_unlimited_ocr(document_path: str = "") -> str:
+def parse_document_unlimited_ocr(document_path: str = "") -> dict:
     """
     Parses multi-page component datasheets or schematic PDFs into structured Markdown using Baidu Unlimited-OCR.
-    Args:
-        document_path: Optional path to PDF or image file. If empty, auto-discovers PDF in datasheets/.
     """
-    tool_inst = get_unlimited_ocr_tool()
-    return tool_inst.parse_document(document_path)
+    try:
+        tool_inst = get_unlimited_ocr_tool()
+        res_text = tool_inst.parse_document(document_path)
+        summary_str = f"Unlimited-OCR Document Analysis: {res_text[:120]}..."
+        return {
+            "status": "success",
+            "summary": summary_str,
+            "data": {
+                "document_path": document_path,
+                "markdown_result": res_text
+            }
+        }
+    except Exception as e:
+        logger.error(f"[parse_document_unlimited_ocr Error] {e}")
+        return {
+            "status": "error",
+            "summary": f"Error parsing document with Unlimited-OCR: {e}",
+            "data": {"error": str(e)}
+        }

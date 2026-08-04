@@ -5,6 +5,7 @@ Enables Retrieval-Augmented Generation over arbitrary component PDFs using CPU-b
 
 import os
 import glob
+from typing import Optional, Any
 from langchain_core.tools import tool
 import config
 
@@ -128,26 +129,37 @@ class DatasheetRAG:
 
 
 # ---------------------------------------------------------------------------
-# Module-level Singleton RAG Instance
+# Session-Scoped RAG Instance Helper & LangChain Tool
 # ---------------------------------------------------------------------------
 
-_RAG_SINGLETON = None
-
-def get_datasheet_rag() -> DatasheetRAG:
-    """Returns singleton DatasheetRAG instance initialized once."""
-    global _RAG_SINGLETON
-    if _RAG_SINGLETON is None:
-        _RAG_SINGLETON = DatasheetRAG()
-    return _RAG_SINGLETON
+def get_datasheet_rag(session_context: Optional[Any] = None) -> DatasheetRAG:
+    """Returns session-scoped DatasheetRAG instance or fresh instance."""
+    if session_context and hasattr(session_context, 'get_rag_engine'):
+        return session_context.get_rag_engine()
+    return DatasheetRAG()
 
 
 @tool
-def query_local_datasheets(query: str) -> str:
+def query_local_datasheets(query: str) -> dict:
     """
-    Searches through locally downloaded PDF datasheets (in the 'datasheets' folder) using RAG.
-    Use this tool when the user explicitly asks to query a local PDF or document.
-    Args:
-        query: The question or search term (e.g. 'What is the maximum operating temperature of the IC?').
+    Queries local PDF datasheets in datasheets/ directory using semantic vector search.
     """
-    rag = get_datasheet_rag()
-    return rag.query_datasheets(query)
+    try:
+        rag = get_datasheet_rag()
+        res_text = rag.query_datasheets(query)
+        summary_str = f"Local Datasheet RAG Query for '{query}': {res_text[:120]}..."
+        return {
+            "status": "success",
+            "summary": summary_str,
+            "data": {
+                "query": query,
+                "rag_result": res_text
+            }
+        }
+    except Exception as e:
+        logger.error(f"[query_local_datasheets Error] {e}")
+        return {
+            "status": "error",
+            "summary": f"Error querying local datasheets: {e}",
+            "data": {"error": str(e)}
+        }

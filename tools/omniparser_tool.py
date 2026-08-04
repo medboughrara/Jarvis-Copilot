@@ -7,6 +7,7 @@ directly from captured screen images (scratch/screen_capture.png).
 import os
 import re
 import hashlib
+from typing import Optional, Any
 from PIL import Image, ImageGrab
 from langchain_core.tools import tool
 
@@ -117,25 +118,37 @@ class OmniParserTool:
 
 
 # ---------------------------------------------------------------------------
-# Module-level Singleton Engine
+# Session-Scoped Engine Helper & LangChain Tool
 # ---------------------------------------------------------------------------
 
-_OMNIPARSER_SINGLETON = None
-
-def get_omniparser() -> OmniParserTool:
-    """Returns singleton OmniParserTool instance initialized once."""
-    global _OMNIPARSER_SINGLETON
-    if _OMNIPARSER_SINGLETON is None:
-        _OMNIPARSER_SINGLETON = OmniParserTool()
-    return _OMNIPARSER_SINGLETON
+def get_omniparser(session_context: Optional[Any] = None) -> OmniParserTool:
+    """Returns session-scoped OmniParserTool instance or fresh instance."""
+    if session_context and hasattr(session_context, 'get_omniparser_engine'):
+        return session_context.get_omniparser_engine()
+    return OmniParserTool()
 
 
 @tool
-def parse_screen_gui(action_context: str = "KiCad GUI") -> str:
+def parse_screen_gui(action_context: str = "KiCad GUI") -> dict:
     """
     Captures current screen and parses KiCad GUI layout using OmniParser V2 to extract UI components, buttons, and schematic visual elements.
-    Args:
-        action_context: Context description of what user wants to inspect (e.g. 'KiCad schematic', 'DRC dialog').
     """
-    parser = get_omniparser()
-    return parser.capture_and_parse()
+    try:
+        parser = get_omniparser()
+        res_text = parser.capture_and_parse()
+        summary_str = f"OmniParser V2 GUI Capture for '{action_context}': {res_text[:120]}..."
+        return {
+            "status": "success",
+            "summary": summary_str,
+            "data": {
+                "action_context": action_context,
+                "parsed_gui_text": res_text
+            }
+        }
+    except Exception as e:
+        logger.error(f"[parse_screen_gui Error] {e}")
+        return {
+            "status": "error",
+            "summary": f"Error parsing GUI screen: {e}",
+            "data": {"error": str(e)}
+        }

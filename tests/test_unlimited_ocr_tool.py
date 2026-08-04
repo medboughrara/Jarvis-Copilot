@@ -35,7 +35,8 @@ class TestUnlimitedOCRTool(unittest.TestCase):
     @patch("tools.unlimited_ocr_tool.UnlimitedOCRTool.load_model_if_needed", return_value=False)
     def test_langchain_tool(self, mock_load, mock_ocr):
         tool_res = parse_document_unlimited_ocr.invoke({"document_path": self.test_pdf})
-        self.assertIn("Unlimited-OCR Document Analysis", tool_res)
+        self.assertEqual(tool_res["status"], "success")
+        self.assertIn("markdown_result", tool_res["data"])
 
 
 if __name__ == "__main__":
