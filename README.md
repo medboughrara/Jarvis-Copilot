@@ -17,6 +17,32 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 
 ---
 
+## 🏛️ Modern Architecture & Refactoring Highlights
+
+Jarvis PCB Copilot features an enterprise-grade, multi-tenant modular architecture:
+
+1. **Shared Parsed Circuit Model (`SchematicModel` via `sexpdata`)**:
+   - Parses `.kicad_sch` S-expressions into an AST tree rather than ad-hoc regex.
+   - Builds a unified `SchematicModel` (components, net-to-pin maps, power rails, pin connectivity graph).
+   - Performs true graph-based floating-net detection (single-pin net declarations).
+   - Derives thermal currents, bus types, and component part numbers dynamically from the board.
+2. **Session-Scoped Engine & Cache Container (`JarvisSessionContext`)**:
+   - Replaces process-wide mutable singletons with per-agent/MCP session context objects.
+   - Caches parsed circuit models (`schematic_cache` keyed by SHA-256 file hash), ChromaDB RAG vector stores, OmniParser V2 screen OCR, and Unlimited-OCR engines without cross-session data leakage.
+3. **Structured Data Contract & Presentation Layer (`tools/formatters.py`)**:
+   - All 11 tool files return structured dicts: `{"status": "success" | "error", "summary": "...", "data": {"verdict": "PASSED" | "WARNING" | "FAILED", ...}}`.
+   - Distinguishes execution outcome (`status`) from engineering judgment (`verdict`).
+   - `tools/formatters.py` provides separate presentation layers for voice audio (`main.py`) vs CLI / MCP clients.
+4. **Dynamic FastMCP Server Tool Registration Adapter (`mcp_server.py`)**:
+   - Dynamically inspects Pydantic `args_schema` models from `JarvisAgent().tools` at startup.
+   - Automatically generates typed wrapper functions preserving parameter annotations AND default values (e.g. `current_amps: float = 3.0`) without hand-duplicating signatures.
+5. **Validated Startup Config Schema (`config.py`)**:
+   - Powered by `pydantic-settings` (`JarvisConfig`) with fail-fast startup validation ensuring at least 1 LLM tier and required API keys are configured.
+6. **Standardized Unified Logger**:
+   - Routes structured audit logs to `scratch/jarvis_session.log` while keeping terminal output clean.
+
+---
+
 ## ⚡ Hardware Constraints & Resource Distribution
 
 Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU**, **24GB RAM**, and an **NVIDIA RTX 3050 Laptop GPU (6GB VRAM)** without VRAM out-of-memory errors:
@@ -32,7 +58,7 @@ Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU
 | **LLM Tier 3 (Cloud)** | Cloud Pool | `Ollama Cloud` (`glm-5.2:cloud`, `kimi-k3:cloud`) | Secondary Cloud Fallback |
 | **LLM Tier 4 (Local)** | GPU RTX 3050 | `Llama 3 8B` (`ChatOllama`) | Zero-Downtime Offline Fallback |
 | **Vision & Document OCR** | GPU / CPU | Baidu `Unlimited-OCR` & NVIDIA `Nemotron OCR v2` | Constant Memory R-SWA + Multi-Page Parsing |
-| **Protocol Integration** | CPU / Stdio | `FastMCP` Stdio MCP Server | Native IDE Integration (Antigravity/Cursor/Claude) |
+| **Protocol Integration** | CPU / Stdio | `FastMCP` Dynamic Stdio MCP Server | Native IDE Integration (Antigravity/Cursor/Claude) |
 
 ---
 
@@ -40,9 +66,10 @@ Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU
 
 ```
 d:/aaaassistan_pcb/
-├── config.py                 # System parameters, audio specs, multi-key config, & model URLs
+├── config.py                 # Validated Pydantic Settings schema & logger configuration
 ├── main.py                   # Async main execution loop linking Wake Word -> STT -> LLM -> TTS
-├── mcp_server.py             # Stdio Model Context Protocol (MCP) server for external IDEs
+├── mcp_server.py             # Dynamic FastMCP Stdio MCP server for external IDEs
+├── test_capabilities.py      # Standalone end-to-end 18-capability verification suite
 ├── requirements.txt          # Dependencies with PyTorch CUDA 12.1 index & MCP packages
 ├── README.md                 # Project documentation
 ├── voice/
@@ -53,6 +80,7 @@ d:/aaaassistan_pcb/
 ├── agent/
 │   ├── __init__.py
 │   ├── copilot.py            # LangChain agent with conversation history & 4-tier LLM fallback
+│   ├── session_context.py    # JarvisSessionContext per-session model cache & engine container
 │   ├── key_manager.py        # Multi-key Gemini rotation manager & real-time metrics tracking
 │   ├── composio_router.py    # On-demand dynamic tool router & tool stacker
 │   ├── skill_loader.py       # Standardized AAS SKILL.md playbook loader
@@ -66,7 +94,8 @@ d:/aaaassistan_pcb/
 │   └── bom-cost-optimization/SKILL.md
 ├── tools/
 │   ├── __init__.py
-│   ├── kicad_tool.py         # KiCad schematic parser, BOM generation, power tree, & ERC checks
+│   ├── kicad_tool.py         # KiCad S-expression parser, SchematicModel, power tree, & ERC
+│   ├── formatters.py         # Voice audio and CLI text presentation formatter layer
 │   ├── reach_tool.py         # Web search & servomotor datasheet/RoHS compliance checker
 │   ├── thermal_tool.py       # IPC-2221 trace width, copper power loss, & regulator thermal calculation
 │   ├── signal_integrity_tool.py # I2C pull-up bounds, UART damping, & CAN bus termination
@@ -80,11 +109,8 @@ d:/aaaassistan_pcb/
 ├── docs/                     # Exported engineering audit logs and documentation
 ├── models/                   # Downloaded ONNX model weights (Kokoro-82M 24kHz voice pack)
 ├── datasheets/               # Directory for local PDF datasheets queried via RAG
-├── scratch/                  # Directory for audit reports, CSVs, screen captures, and key stats
-├── Dockerfile                # Container configuration with system audio dependencies
-├── CONTRIBUTING.md           # Developer guidelines
-├── LICENSE                   # MIT License
-└── tests/                    # Unit and integration test suite (27 test modules)
+├── scratch/                  # Directory for audit reports, CSVs, screen captures, and session logs
+├── tests/                    # Comprehensive unit and integration test suite (38 test modules)
 ```
 
 ---
@@ -97,8 +123,8 @@ Jarvis PCB Copilot integrates 18 core hardware engineering, voice, vision, and a
 | :--- | :--- | :--- | :--- |
 | **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`, `NVIDIA`) | Hands-free ONNX wake word ("hey_jarvis"), Faster-Whisper / NVIDIA Whisper v3 STT, and Kokoro 24kHz / NVIDIA Magpie TTS voice synthesis. |
 | **2** | **🧠 Multi-Tier LLM Brain** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud (Kimi 2.6 & Nemotron 3) -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
-| **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Exposes 16 hardware, vision, and reasoning tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
-| **4** | **📐 KiCad Schematic & PCB Parser** | `tools/kicad_tool.py` | Direct S-expression parser for `.kicad_sch` & `.kicad_pcb` files: extracts components, generates hierarchical power trees, builds BOM CSVs, and runs ERC checks without KiCad GUI. |
+| **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Dynamically registers all 19 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
+| **4** | **📐 KiCad S-Expression AST Parser** | `tools/kicad_tool.py` | Direct S-expression parser for `.kicad_sch` & `.kicad_pcb` files: builds `SchematicModel`, extracts components, generates power trees, builds BOM CSVs, and runs graph ERC. |
 | **5** | **🔥 IPC-2221 Thermal Analysis** | `tools/thermal_tool.py` | Calculates required trace width ($I = k \cdot \Delta T^{0.44} \cdot A^{0.725}$), $I^2R$ copper power loss, and SOT-223 voltage regulator junction temperature rise ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
 | **6** | **⚡ Signal Integrity Calculator** | `tools/signal_integrity_tool.py` | Calculates I2C pull-up resistor min/max bounds ($R_{min} / R_{max}$), UART series damping resistors (22Ω–33Ω), and CAN bus 120Ω split termination ($60\Omega + 60\Omega + 4.7\text{nF}$). |
 | **7** | **📦 Supply Chain & Lifecycle Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle status (Active vs NRND vs EOL), distributor stock availability (LCSC/Mouser/DigiKey), JLCPCB basic/extended classification, and risk levels. |
@@ -109,7 +135,7 @@ Jarvis PCB Copilot integrates 18 core hardware engineering, voice, vision, and a
 | **12**| **📄 Engineering Document Exporter** | `tools/doc_exporter_tool.py` | Formats and exports audit reports, thermal calculations, and BOM summaries directly to `docs/` and `scratch/` as clean markdown or JSON files. |
 | **13**| **📖 AAS & Claude Skill Playbook Engine**| `agent/skill_loader.py` & `skills/` | Dynamic SKILL.md playbook loader with YAML frontmatter for domain playbooks: Thermal Analysis, EMC/EMI Hardening, Sim2Real Motor Calibration, Issue Tracking, BOM Cost Optimization. |
 | **14**| **🔄 On-Demand Dynamic Tool Router** | `agent/composio_router.py` | Dynamically scopes active tools per prompt query intent (`ComposioRouter.filter_tools_for_query`), keeping LLM context fast and lightweight. |
-| **15**| **🤖 Autonomous 6-Stage Hardware Audit**| `agent/workflows.py` | Executes multi-phase audit workflow (Schematic -> ERC -> Power Tree -> Thermal -> Signal Integrity -> Supply Chain) and writes reproducible reports (`scratch/pcb_audit_report.md`). |
+| **15**| **🤖 Autonomous 6-Stage Hardware Audit**| `agent/workflows.py` | Executes multi-phase audit workflow deriving parameters directly from parsed `SchematicModel` and writes reproducible reports (`scratch/pcb_audit_report.md`). |
 | **16**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Generates high-resolution concept block diagrams, laboratory interiors, or hardware schematics via `black-forest-labs/flux.1-schnell`. |
 | **17**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | One-shot long-horizon PDF datasheet & schematic parsing into structured Markdown using Baidu's Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
 | **18**| **👁️ NVIDIA Nemotron OCR v2** | `tools/nvidia_nim_tool.py` | Visual document & schematic OCR for extracting pinouts, table values, and component references via `nvidia/nemotron-ocr-v2`. |
@@ -201,11 +227,21 @@ python mcp_server.py
 
 ---
 
-## 🧪 Running Automated Unit & Integration Tests
+## 🧪 Running Automated Unit & Capabilities Test Suites
 
-Run the complete 26-module test suite:
+### 1. Run Complete Unit Test Suite (38 Modules)
 ```powershell
 .venv\Scripts\python.exe -m unittest discover -s tests
+```
+
+### 2. Run MCP Server Dynamic Registration Unit Test
+```powershell
+.venv\Scripts\python.exe -m unittest tests/test_mcp_server.py
+```
+
+### 3. Run Standalone Capabilities Verification Suite (18 Capabilities)
+```powershell
+.venv\Scripts\python.exe test_capabilities.py
 ```
 
 ---
