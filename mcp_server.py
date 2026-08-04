@@ -14,7 +14,7 @@ from tools.signal_integrity_tool import check_signal_integrity
 from tools.supply_chain_tool import check_supply_chain_status
 from tools.github_tool import manage_github_issue
 from tools.doc_exporter_tool import export_engineering_doc
-from tools.nvidia_nim_tool import generate_nvidia_image
+from tools.nvidia_nim_tool import generate_nvidia_image, run_nvidia_reasoning, parse_nemotron_ocr
 from agent.workflows import run_full_pcb_audit
 
 logger = config.get_logger(__name__)
@@ -126,6 +126,16 @@ def doc_export(title: str, content: str, format_type: str = "markdown") -> str:
 def nvidia_image_gen(prompt: str, width: int = 1024, height: int = 1024) -> str:
     """Generates high-resolution concept images or PCB block diagrams using NVIDIA FLUX.1-Schnell foundation model."""
     return generate_nvidia_image.invoke({"prompt": prompt, "width": width, "height": height})
+
+@mcp.tool()
+def nvidia_reasoning(query: str, model_choice: str = "kimi-k2.6") -> str:
+    """Executes deep hardware reasoning and architectural analysis using Moonshot Kimi 2.6 or NVIDIA Nemotron 3 Reasoning models."""
+    return run_nvidia_reasoning.invoke({"query": query, "model_choice": model_choice})
+
+@mcp.tool()
+def nvidia_nemotron_ocr(image_path: str = "") -> str:
+    """Extracts text, table values, component designations, and pinouts from PCB screenshots or PDF datasheets using NVIDIA Nemotron OCR v2."""
+    return parse_nemotron_ocr.invoke({"image_path": image_path})
 
 if __name__ == "__main__":
     logger.info("Starting Jarvis PCB Copilot Stdio MCP Server...")

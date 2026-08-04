@@ -21,7 +21,14 @@ from tools.signal_integrity_tool import check_signal_integrity
 from tools.supply_chain_tool import check_supply_chain_status
 from tools.github_tool import manage_github_issue
 from tools.doc_exporter_tool import export_engineering_doc
-from tools.nvidia_nim_tool import generate_nvidia_image, synthesize_nvidia_speech, transcribe_nvidia_audio
+from tools.nvidia_nim_tool import (
+    generate_nvidia_image,
+    synthesize_nvidia_speech,
+    transcribe_nvidia_audio,
+    run_nvidia_reasoning,
+    parse_nemotron_ocr,
+    NvidiaNIMClient
+)
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
@@ -60,7 +67,9 @@ class JarvisAgent:
             export_engineering_doc,
             generate_nvidia_image,
             synthesize_nvidia_speech,
-            transcribe_nvidia_audio
+            transcribe_nvidia_audio,
+            run_nvidia_reasoning,
+            parse_nemotron_ocr
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
@@ -234,7 +243,32 @@ class JarvisAgent:
                     self.key_manager.report_error(working_key, is_rate_limit=is_rate_limit, cooldown_seconds=60)
                     print(f"[Agent Key Manager] Gemini key error ({e}). Auto-rotating to next key...")
 
-        # Tier 2: Ollama Cloud Models (glm-5.2:cloud, kimi-k3:cloud)
+        # Tier 2: NVIDIA NIM Cloud Reasoning Tier (Kimi 2.6 & Nemotron 3 Reasoning)
+        if not response and (getattr(config, 'NVIDIA_KIMI_KEY', '') or getattr(config, 'NVIDIA_NEMOTRON_KEY', '')):
+            nim_models = []
+            if config.NVIDIA_KIMI_KEY:
+                nim_models.append(("moonshotai/kimi-k2.6", config.NVIDIA_KIMI_KEY))
+            if config.NVIDIA_NEMOTRON_KEY:
+                nim_models.append(("nvidia/nemotron-3-nano-omni-30b-a3b-reasoning", config.NVIDIA_NEMOTRON_KEY))
+
+            for n_model, n_key in nim_models:
+                print(f"[Agent Fallback] Attempting NVIDIA NIM Model '{n_model}'...")
+                try:
+                    client = NvidiaNIMClient(api_key=n_key)
+                    nim_msg = [{"role": "system", "content": JARVIS_SYSTEM_PROMPT}]
+                    if self.last_tool_context:
+                        nim_msg.append({"role": "system", "content": f"TOOL CONTEXT:\n{self.last_tool_context}"})
+                    nim_msg.append({"role": "user", "content": user_query})
+                    
+                    res_text = client.invoke_chat_completion(messages=nim_msg, model=n_model, api_key=n_key)
+                    if res_text and not res_text.startswith("[Error"):
+                        response = AIMessage(content=res_text)
+                        print(f"[Agent Fallback] Success with NVIDIA NIM Model '{n_model}'.")
+                        break
+                except Exception as n_err:
+                    print(f"[Agent Notice] NVIDIA NIM Model '{n_model}' error ({n_err}). Trying next...")
+
+        # Tier 3: Ollama Cloud Models (glm-5.2:cloud, kimi-k3:cloud)
         if not response and LANGCHAIN_OLLAMA_AVAILABLE and getattr(config, 'OLLAMA_CLOUD_MODELS', []):
             for cloud_model in config.OLLAMA_CLOUD_MODELS:
                 print(f"[Agent Fallback] Attempting Ollama Cloud Model '{cloud_model}'...")

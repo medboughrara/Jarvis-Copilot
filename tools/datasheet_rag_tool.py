@@ -21,8 +21,22 @@ except ImportError as e:
     RAG_AVAILABLE = False
 
 
+class NvidiaNemotronEmbeddings:
+    """LangChain-compatible wrapper for NVIDIA Nemotron 3 Embed 1B."""
+    def __init__(self):
+        from tools.nvidia_nim_tool import NvidiaNIMClient
+        self.client = NvidiaNIMClient()
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return self.client.get_embeddings(texts)
+
+    def embed_query(self, text: str) -> list[float]:
+        res = self.client.get_embeddings([text])
+        return res[0] if res else []
+
+
 class DatasheetRAG:
-    """CPU-friendly RAG engine for parsing and querying local PDF datasheets with incremental ingestion."""
+    """CPU & Cloud RAG engine for parsing and querying local PDF datasheets with incremental ingestion."""
 
     def __init__(self, data_dir: str = "datasheets", persist_dir: str = "scratch/chromadb"):
         self.data_dir = data_dir
@@ -35,13 +49,16 @@ class DatasheetRAG:
         os.makedirs(self.data_dir, exist_ok=True)
         os.makedirs(self.persist_dir, exist_ok=True)
 
-        logger.info(f"Initializing CPU Embedding Model (all-MiniLM-L6-v2) for RAG...")
-        # Use a very small model explicitly set to CPU to preserve VRAM for Ollama
-        self.embeddings = HuggingFaceEmbeddings(
-            model_name="all-MiniLM-L6-v2",
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': False}
-        )
+        if getattr(config, "NVIDIA_NEMOTRON_EMBED_KEY", ""):
+            logger.info("Initializing NVIDIA Nemotron 3 Embed 1B Cloud Embedding Model for RAG...")
+            self.embeddings = NvidiaNemotronEmbeddings()
+        else:
+            logger.info("Initializing CPU Embedding Model (all-MiniLM-L6-v2) for RAG...")
+            self.embeddings = HuggingFaceEmbeddings(
+                model_name="all-MiniLM-L6-v2",
+                model_kwargs={'device': 'cpu'},
+                encode_kwargs={'normalize_embeddings': False}
+            )
         
         self.vector_store = Chroma(
             collection_name="datasheets",
