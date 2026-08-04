@@ -59,8 +59,27 @@ class Transcriber:
 
     async def transcribe(self, audio_buffer: np.ndarray) -> str:
         """
-        Asynchronously transcribes audio buffer into text using Faster-Whisper with domain prompt.
+        Asynchronously transcribes audio buffer into text using NVIDIA Whisper Large v3 (if enabled) or local Faster-Whisper.
         """
+        # Option A: NVIDIA Whisper Large v3 Cloud API
+        if (getattr(config, 'USE_NVIDIA_STT', False) or os.getenv("USE_NVIDIA_STT", "false").lower() in ("true", "1")) and getattr(config, 'NVIDIA_API_KEY', ''):
+            try:
+                import soundfile as sf
+                from tools.nvidia_nim_tool import NvidiaNIMClient
+                
+                temp_wav = os.path.join("scratch", "temp_stt_input.wav")
+                os.makedirs("scratch", exist_ok=True)
+                sf.write(temp_wav, audio_buffer, config.SAMPLE_RATE)
+                
+                print("[STT] Transcribing via NVIDIA Whisper Large v3 Cloud API...")
+                client = NvidiaNIMClient()
+                text = client.transcribe_audio(temp_wav)
+                print(f"[STT NVIDIA Whisper v3] Transcribed: \"{text}\"")
+                return text
+            except Exception as ne:
+                print(f"[STT Warning] NVIDIA Whisper Cloud error ({ne}). Falling back to local Faster-Whisper...")
+
+        # Option B: Local Faster-Whisper
         loop = asyncio.get_running_loop()
 
         def transcribe_sync():
@@ -75,5 +94,5 @@ class Transcriber:
             return text
 
         transcription = await loop.run_in_executor(None, transcribe_sync)
-        print(f"[STT] Transcribed: \"{transcription}\"")
+        print(f"[STT Faster-Whisper] Transcribed: \"{transcription}\"")
         return transcription

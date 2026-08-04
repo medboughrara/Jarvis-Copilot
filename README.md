@@ -141,11 +141,19 @@ uv pip install torch==2.4.1+cu121 torchaudio==2.4.1+cu121 torchvision==0.19.1+cu
 ### 4. Environment Variables Configuration (`.env`)
 Create a `.env` file in the root directory:
 ```env
+# Gemini Multi-Key Rotation Pool
 GEMINI_API_KEYS=AIzaSyDl...,AQ.Ab8RN...,AQ.Ab8RN...,AQ.Ab8RN...,AQ.Ab8RN...
 USE_GEMINI=true
 GEMINI_MODEL=gemini-3.6-flash
+
+# Ollama Models (Cloud & Local)
 OLLAMA_CLOUD_MODELS=glm-5.2:cloud,kimi-k3:cloud
 OLLAMA_MODEL=llama3:8b
+
+# NVIDIA AI Foundation Models (FLUX.1-Schnell, Whisper Large v3, Magpie TTS)
+NVIDIA_API_KEY=nvapi-YOUR_NVIDIA_API_KEY_HERE
+USE_NVIDIA_STT=false
+USE_NVIDIA_TTS=false
 ```
 
 ---

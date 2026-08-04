@@ -14,6 +14,7 @@ from tools.signal_integrity_tool import check_signal_integrity
 from tools.supply_chain_tool import check_supply_chain_status
 from tools.github_tool import manage_github_issue
 from tools.doc_exporter_tool import export_engineering_doc
+from tools.nvidia_nim_tool import generate_nvidia_image
 from agent.workflows import run_full_pcb_audit
 
 logger = config.get_logger(__name__)
@@ -120,6 +121,11 @@ def github_issue_log(title: str, body: str, labels: str = "hardware-erc") -> str
 def doc_export(title: str, content: str, format_type: str = "markdown") -> str:
     """Exports structured engineering log reports to docs/ directory."""
     return export_engineering_doc.invoke({"title": title, "content": content, "format_type": format_type})
+
+@mcp.tool()
+def nvidia_image_gen(prompt: str, width: int = 1024, height: int = 1024) -> str:
+    """Generates high-resolution concept images or PCB block diagrams using NVIDIA FLUX.1-Schnell foundation model."""
+    return generate_nvidia_image.invoke({"prompt": prompt, "width": width, "height": height})
 
 if __name__ == "__main__":
     logger.info("Starting Jarvis PCB Copilot Stdio MCP Server...")

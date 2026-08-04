@@ -64,3 +64,12 @@ if not GEMINI_API_KEYS and GEMINI_API_KEY:
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 USE_GEMINI = os.getenv("USE_GEMINI", "true").lower() in ("true", "1", "yes")
 
+# NVIDIA NIM Cloud Foundation Models (FLUX.1-Schnell, Whisper Large v3, Magpie TTS)
+NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", os.getenv("NVAPI_KEY", "")).strip()
+NVIDIA_FLUX_URL = os.getenv("NVIDIA_FLUX_URL", "https://ai.api.nvidia.com/v1/genai/black-forest-labs/flux.1-schnell")
+NVIDIA_WHISPER_URL = os.getenv("NVIDIA_WHISPER_URL", "https://ai.api.nvidia.com/v1/audio/openai/whisper-large-v3")
+NVIDIA_MAGPIE_URL = os.getenv("NVIDIA_MAGPIE_URL", "https://ai.api.nvidia.com/v1/audio/nvidia/magpie-tts-multilingual")
+USE_NVIDIA_STT = os.getenv("USE_NVIDIA_STT", "false").lower() in ("true", "1", "yes")
+USE_NVIDIA_TTS = os.getenv("USE_NVIDIA_TTS", "false").lower() in ("true", "1", "yes")
+
+

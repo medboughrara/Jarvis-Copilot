@@ -77,7 +77,25 @@ class TextToSpeech:
         loop = asyncio.get_running_loop()
 
         def play_audio_sync():
-            # Primary: Kokoro-82M 24kHz high-quality neural voice synthesis
+            # Option A: NVIDIA Magpie Multilingual Cloud TTS
+            if (getattr(config, 'USE_NVIDIA_TTS', False) or os.getenv("USE_NVIDIA_TTS", "false").lower() in ("true", "1")) and getattr(config, 'NVIDIA_API_KEY', ''):
+                try:
+                    import soundfile as sf
+                    from tools.nvidia_nim_tool import NvidiaNIMClient
+
+                    print("[TTS] Synthesizing speech via NVIDIA Magpie Multilingual Cloud TTS...")
+                    client = NvidiaNIMClient()
+                    res = client.synthesize_speech(clean_text)
+                    if res["status"] == "success" and os.path.exists(res["file_path"]):
+                        data, fs = sf.read(res["file_path"], dtype='float32')
+                        duration = len(data) / float(fs)
+                        if AUDIO_AVAILABLE:
+                            sd.play(data, samplerate=fs)
+                        return duration
+                except Exception as ne:
+                    print(f"[TTS Warning] NVIDIA Magpie TTS Cloud error ({ne}). Falling back to local TTS engine...")
+
+            # Option B: Kokoro-82M 24kHz high-quality neural voice synthesis
             if self.kokoro_engine and AUDIO_AVAILABLE:
                 try:
                     # Synthesize 24kHz audio waveform (using af_bella voice)
@@ -94,7 +112,7 @@ class TextToSpeech:
                 except Exception as e:
                     print(f"[TTS Error] Kokoro-82M synthesis error ({e}). Falling back to SAPI5.")
 
-            # Secondary Fallback: Windows SAPI5
+            # Option C: Windows SAPI5
             if SAPI_AVAILABLE:
                 try:
                     speaker = win32com.client.Dispatch("SAPI.SpVoice")

@@ -21,6 +21,7 @@ from tools.signal_integrity_tool import check_signal_integrity
 from tools.supply_chain_tool import check_supply_chain_status
 from tools.github_tool import manage_github_issue
 from tools.doc_exporter_tool import export_engineering_doc
+from tools.nvidia_nim_tool import generate_nvidia_image, synthesize_nvidia_speech, transcribe_nvidia_audio
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
@@ -56,7 +57,10 @@ class JarvisAgent:
             check_signal_integrity,
             check_supply_chain_status,
             manage_github_issue,
-            export_engineering_doc
+            export_engineering_doc,
+            generate_nvidia_image,
+            synthesize_nvidia_speech,
+            transcribe_nvidia_audio
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
@@ -158,6 +162,9 @@ class JarvisAgent:
             tool_executed = True
         elif "export" in lower_q or "save log" in lower_q or "doc" in lower_q:
             tool_result = export_engineering_doc.invoke({"title": "AutoPick Engineering Review", "content": user_query})
+            tool_executed = True
+        elif "generate image" in lower_q or "flux" in lower_q or "nvidia image" in lower_q or "draw" in lower_q or "visualize concept" in lower_q:
+            tool_result = generate_nvidia_image.invoke({"prompt": user_query})
             tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q or "gemini usage" in lower_q or "quota status" in lower_q:
             tool_result = self.key_manager.get_usage_summary()
