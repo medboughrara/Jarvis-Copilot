@@ -29,6 +29,7 @@ from tools.nvidia_nim_tool import (
     parse_nemotron_ocr,
     NvidiaNIMClient
 )
+from tools.unlimited_ocr_tool import parse_document_unlimited_ocr
 
 try:
     from langchain_google_genai import ChatGoogleGenerativeAI
@@ -69,7 +70,8 @@ class JarvisAgent:
             synthesize_nvidia_speech,
             transcribe_nvidia_audio,
             run_nvidia_reasoning,
-            parse_nemotron_ocr
+            parse_nemotron_ocr,
+            parse_document_unlimited_ocr
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
@@ -174,6 +176,9 @@ class JarvisAgent:
             tool_executed = True
         elif "generate image" in lower_q or "flux" in lower_q or "nvidia image" in lower_q or "draw" in lower_q or "visualize concept" in lower_q:
             tool_result = generate_nvidia_image.invoke({"prompt": user_query})
+            tool_executed = True
+        elif "unlimited ocr" in lower_q or "parse pdf" in lower_q or "baidu ocr" in lower_q or "unlimited document" in lower_q:
+            tool_result = parse_document_unlimited_ocr.invoke({"document_path": ""})
             tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q or "gemini usage" in lower_q or "quota status" in lower_q:
             tool_result = self.key_manager.get_usage_summary()

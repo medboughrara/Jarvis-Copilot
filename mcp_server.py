@@ -15,6 +15,7 @@ from tools.supply_chain_tool import check_supply_chain_status
 from tools.github_tool import manage_github_issue
 from tools.doc_exporter_tool import export_engineering_doc
 from tools.nvidia_nim_tool import generate_nvidia_image, run_nvidia_reasoning, parse_nemotron_ocr
+from tools.unlimited_ocr_tool import parse_document_unlimited_ocr
 from agent.workflows import run_full_pcb_audit
 
 logger = config.get_logger(__name__)
@@ -136,6 +137,11 @@ def nvidia_reasoning(query: str, model_choice: str = "kimi-k2.6") -> str:
 def nvidia_nemotron_ocr(image_path: str = "") -> str:
     """Extracts text, table values, component designations, and pinouts from PCB screenshots or PDF datasheets using NVIDIA Nemotron OCR v2."""
     return parse_nemotron_ocr.invoke({"image_path": image_path})
+
+@mcp.tool()
+def unlimited_ocr(document_path: str = "") -> str:
+    """Parses entire multi-page component datasheets or schematic PDFs into structured Markdown using Baidu Unlimited-OCR (R-SWA)."""
+    return parse_document_unlimited_ocr.invoke({"document_path": document_path})
 
 if __name__ == "__main__":
     logger.info("Starting Jarvis PCB Copilot Stdio MCP Server...")

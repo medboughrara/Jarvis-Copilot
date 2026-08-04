@@ -81,5 +81,10 @@ NVIDIA_EMBED_URL = "https://integrate.api.nvidia.com/v1/embeddings"
 USE_NVIDIA_STT = os.getenv("USE_NVIDIA_STT", "false").lower() in ("true", "1", "yes")
 USE_NVIDIA_TTS = os.getenv("USE_NVIDIA_TTS", "false").lower() in ("true", "1", "yes")
 
+# Baidu Unlimited-OCR Model Config
+UNLIMITED_OCR_MODEL = os.getenv("UNLIMITED_OCR_MODEL", "baidu/Unlimited-OCR")
+USE_UNLIMITED_OCR = os.getenv("USE_UNLIMITED_OCR", "true").lower() in ("true", "1", "yes")
+
+
 
 
