@@ -24,13 +24,14 @@ Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU
 | Subsystem | Target Processor | Model / Framework | Optimization |
 | :--- | :--- | :--- | :--- |
 | **Wake Word Engine** | CPU | `openWakeWord` ("hey_jarvis") | ONNX Runtime (CPU) |
-| **Speech-to-Text (STT)** | CPU | `Faster-Whisper` (`base.en`) | `INT8` Quantization + Custom Prompt Biasing |
-| **Text-to-Speech (TTS)** | CPU | `Kokoro-82M` (24kHz Neural TTS) | ONNX Runtime (`sounddevice` non-blocking audio) |
+| **Speech-to-Text (STT)** | CPU / Cloud | `Faster-Whisper` (`base.en`) / `NVIDIA Whisper v3` | `INT8` Quantization + Cloud API Fallback |
+| **Text-to-Speech (TTS)** | CPU / Cloud | `Kokoro-82M` (24kHz) / `NVIDIA Magpie TTS` | ONNX Runtime + Cloud Multilingual Neural Voice |
 | **Orchestration & Memory** | CPU | LangChain + Context Buffer | Async I/O event loop |
 | **LLM Tier 1 (Cloud)** | Cloud Pool | `Google Gemini 3.6 Flash` (5 API Keys) | Round-Robin Rotation + 429 Rate Limit Cooling |
-| **LLM Tier 2 (Cloud)** | Cloud Pool | `Ollama Cloud` (`glm-5.2:cloud`, `kimi-k3:cloud`) | Secondary Cloud Fallback |
-| **LLM Tier 3 (Local)** | GPU RTX 3050 | `Llama 3 8B` (`ChatOllama`) | Zero-Downtime Offline Fallback |
-| **Vision & Screen OCR** | GPU / CPU | Microsoft OmniParser V2 + `RapidOCR` | Dynamic ONNX Layout Detection |
+| **LLM Tier 2 (Cloud)** | Cloud Pool | `Moonshot Kimi 2.6` & `NVIDIA Nemotron 3` | Deep Hardware Reasoning via NVIDIA NIM API |
+| **LLM Tier 3 (Cloud)** | Cloud Pool | `Ollama Cloud` (`glm-5.2:cloud`, `kimi-k3:cloud`) | Secondary Cloud Fallback |
+| **LLM Tier 4 (Local)** | GPU RTX 3050 | `Llama 3 8B` (`ChatOllama`) | Zero-Downtime Offline Fallback |
+| **Vision & Document OCR** | GPU / CPU | Baidu `Unlimited-OCR` & NVIDIA `Nemotron OCR v2` | Constant Memory R-SWA + Multi-Page Parsing |
 | **Protocol Integration** | CPU / Stdio | `FastMCP` Stdio MCP Server | Native IDE Integration (Antigravity/Cursor/Claude) |
 
 ---
@@ -39,7 +40,7 @@ Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU
 
 ```
 d:/aaaassistan_pcb/
-├── config.py                 # System parameters, audio specs, multi-key config, & Ollama URL
+├── config.py                 # System parameters, audio specs, multi-key config, & model URLs
 ├── main.py                   # Async main execution loop linking Wake Word -> STT -> LLM -> TTS
 ├── mcp_server.py             # Stdio Model Context Protocol (MCP) server for external IDEs
 ├── requirements.txt          # Dependencies with PyTorch CUDA 12.1 index & MCP packages
@@ -47,11 +48,11 @@ d:/aaaassistan_pcb/
 ├── voice/
 │   ├── __init__.py
 │   ├── wakeword.py           # Background openWakeWord listener (CPU ONNX)
-│   ├── stt.py                # Faster-Whisper transcriber (CPU INT8) with domain prompt
-│   └── tts.py                # Kokoro-82M 24kHz non-blocking voice synthesis engine
+│   ├── stt.py                # Faster-Whisper transcriber + NVIDIA Whisper Large v3 cloud option
+│   └── tts.py                # Kokoro-82M 24kHz engine + NVIDIA Magpie Multilingual TTS cloud option
 ├── agent/
 │   ├── __init__.py
-│   ├── copilot.py            # LangChain agent with conversation history & 3-tier LLM fallback
+│   ├── copilot.py            # LangChain agent with conversation history & 4-tier LLM fallback
 │   ├── key_manager.py        # Multi-key Gemini rotation manager & real-time metrics tracking
 │   ├── composio_router.py    # On-demand dynamic tool router & tool stacker
 │   ├── skill_loader.py       # Standardized AAS SKILL.md playbook loader
@@ -73,7 +74,9 @@ d:/aaaassistan_pcb/
 │   ├── github_tool.py        # GitHub Issue logger for PCB ERC violations & thermal alerts
 │   ├── doc_exporter_tool.py  # Engineering documentation report exporter (Markdown/JSON)
 │   ├── omniparser_tool.py    # OmniParser V2 screen capture & RapidOCR layout parser
-│   └── datasheet_rag_tool.py # Local PDF RAG with sentence-transformers and ChromaDB
+│   ├── datasheet_rag_tool.py # PDF RAG with NVIDIA Nemotron 3 Embed 1B / HuggingFace & ChromaDB
+│   ├── nvidia_nim_tool.py    # NVIDIA NIM Cloud APIs: FLUX.1-Schnell, Whisper v3, Magpie TTS, Kimi 2.6, Nemotron 3
+│   └── unlimited_ocr_tool.py # Baidu Unlimited-OCR long-horizon document parser (R-SWA)
 ├── docs/                     # Exported engineering audit logs and documentation
 ├── models/                   # Downloaded ONNX model weights (Kokoro-82M 24kHz voice pack)
 ├── datasheets/               # Directory for local PDF datasheets queried via RAG
@@ -81,32 +84,35 @@ d:/aaaassistan_pcb/
 ├── Dockerfile                # Container configuration with system audio dependencies
 ├── CONTRIBUTING.md           # Developer guidelines
 ├── LICENSE                   # MIT License
-└── tests/                    # Unit and integration test suite (26 test modules)
+└── tests/                    # Unit and integration test suite (27 test modules)
 ```
 
 ---
 
 ## 🛠️ Complete System Capabilities Matrix
 
-Jarvis PCB Copilot integrates 15 core hardware engineering, voice, and agentic capabilities:
+Jarvis PCB Copilot integrates 18 core hardware engineering, voice, vision, and agentic capabilities:
 
 | # | Capability Domain | Subsystem / Module | Key Functions & Features |
 | :--- | :--- | :--- | :--- |
-| **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`) | Hands-free ONNX wake word ("hey_jarvis"), INT8 STT with electronics vocabulary prompt biasing, and 24kHz Neural TTS non-blocking audio playback. |
-| **2** | **🧠 Multi-Tier LLM Brain** | `agent/copilot.py` & `agent/key_manager.py` | 3-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool (5 keys with auto-cooling rotation) -> Tier 2 Ollama Cloud (`glm-5.2:cloud`, `kimi-k3:cloud`) -> Tier 3 Local GPU `llama3:8b`. |
-| **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Exposes all 13 hardware tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
+| **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`, `NVIDIA`) | Hands-free ONNX wake word ("hey_jarvis"), Faster-Whisper / NVIDIA Whisper v3 STT, and Kokoro 24kHz / NVIDIA Magpie TTS voice synthesis. |
+| **2** | **🧠 Multi-Tier LLM Brain** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud (Kimi 2.6 & Nemotron 3) -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
+| **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Exposes 16 hardware, vision, and reasoning tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
 | **4** | **📐 KiCad Schematic & PCB Parser** | `tools/kicad_tool.py` | Direct S-expression parser for `.kicad_sch` & `.kicad_pcb` files: extracts components, generates hierarchical power trees, builds BOM CSVs, and runs ERC checks without KiCad GUI. |
 | **5** | **🔥 IPC-2221 Thermal Analysis** | `tools/thermal_tool.py` | Calculates required trace width ($I = k \cdot \Delta T^{0.44} \cdot A^{0.725}$), $I^2R$ copper power loss, and SOT-223 voltage regulator junction temperature rise ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
 | **6** | **⚡ Signal Integrity Calculator** | `tools/signal_integrity_tool.py` | Calculates I2C pull-up resistor min/max bounds ($R_{min} / R_{max}$), UART series damping resistors (22Ω–33Ω), and CAN bus 120Ω split termination ($60\Omega + 60\Omega + 4.7\text{nF}$). |
 | **7** | **📦 Supply Chain & Lifecycle Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle status (Active vs NRND vs EOL), distributor stock availability (LCSC/Mouser/DigiKey), JLCPCB basic/extended classification, and risk levels. |
 | **8** | **🌐 Live Web & Compliance Search** | `tools/reach_tool.py` | Live DuckDuckGo web search for part datasheets, pinouts, and strict RoHS 3 (2015/863/EU) / FCC Part 15 regulatory verification. |
 | **9** | **👁️ OmniParser Screen OCR Inspector** | `tools/omniparser_tool.py` | Screen capture layout parser using `RapidOCR` ONNX engine to visually detect ICs, pin labels, power rails, and KiCad GUI dialogs. |
-| **10**| **📚 Local Datasheet PDF RAG** | `tools/datasheet_rag_tool.py` | Incremental PDF datasheet ingestion into a CPU-bound ChromaDB vector store with HuggingFace `all-MiniLM-L6-v2` embeddings for local RAG search. |
+| **10**| **📚 Local & Cloud Datasheet PDF RAG**| `tools/datasheet_rag_tool.py` | Incremental PDF datasheet ingestion into ChromaDB powered by **NVIDIA Nemotron 3 Embed 1B** or HuggingFace `all-MiniLM-L6-v2` embeddings. |
 | **11**| **🎫 GitHub Issue & Audit Logger** | `tools/github_tool.py` | Logs PCB schematic ERC violations, thermal alerts, or component risks directly as labeled GitHub issues via GitHub API or local JSON log (`scratch/github_issues_log.json`). |
 | **12**| **📄 Engineering Document Exporter** | `tools/doc_exporter_tool.py` | Formats and exports audit reports, thermal calculations, and BOM summaries directly to `docs/` and `scratch/` as clean markdown or JSON files. |
 | **13**| **📖 AAS & Claude Skill Playbook Engine**| `agent/skill_loader.py` & `skills/` | Dynamic SKILL.md playbook loader with YAML frontmatter for domain playbooks: Thermal Analysis, EMC/EMI Hardening, Sim2Real Motor Calibration, Issue Tracking, BOM Cost Optimization. |
 | **14**| **🔄 On-Demand Dynamic Tool Router** | `agent/composio_router.py` | Dynamically scopes active tools per prompt query intent (`ComposioRouter.filter_tools_for_query`), keeping LLM context fast and lightweight. |
 | **15**| **🤖 Autonomous 6-Stage Hardware Audit**| `agent/workflows.py` | Executes multi-phase audit workflow (Schematic -> ERC -> Power Tree -> Thermal -> Signal Integrity -> Supply Chain) and writes reproducible reports (`scratch/pcb_audit_report.md`). |
+| **16**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Generates high-resolution concept block diagrams, laboratory interiors, or hardware schematics via `black-forest-labs/flux.1-schnell`. |
+| **17**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | One-shot long-horizon PDF datasheet & schematic parsing into structured Markdown using Baidu's Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
+| **18**| **👁️ NVIDIA Nemotron OCR v2** | `tools/nvidia_nim_tool.py` | Visual document & schematic OCR for extracting pinouts, table values, and component references via `nvidia/nemotron-ocr-v2`. |
 
 ---
 
@@ -150,10 +156,18 @@ GEMINI_MODEL=gemini-3.6-flash
 OLLAMA_CLOUD_MODELS=glm-5.2:cloud,kimi-k3:cloud
 OLLAMA_MODEL=llama3:8b
 
-# NVIDIA AI Foundation Models (FLUX.1-Schnell, Whisper Large v3, Magpie TTS)
-NVIDIA_API_KEY=nvapi-YOUR_NVIDIA_API_KEY_HERE
+# NVIDIA AI Foundation Models (FLUX.1-Schnell, Whisper Large v3, Magpie TTS, Kimi 2.6, Nemotron 3)
+NVIDIA_API_KEY=nvapi-YOUR_NVIDIA_API_KEY
+NVIDIA_KIMI_KEY=nvapi-YOUR_KIMI_KEY
+NVIDIA_NEMOTRON_KEY=nvapi-YOUR_NEMOTRON_KEY
+NVIDIA_NEMOTRON_OCR_KEY=nvapi-YOUR_OCR_KEY
+NVIDIA_NEMOTRON_EMBED_KEY=nvapi-YOUR_EMBED_KEY
 USE_NVIDIA_STT=false
 USE_NVIDIA_TTS=false
+
+# Baidu Unlimited-OCR Engine
+UNLIMITED_OCR_MODEL=baidu/Unlimited-OCR
+USE_UNLIMITED_OCR=true
 ```
 
 ---
