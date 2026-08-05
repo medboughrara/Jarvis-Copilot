@@ -3,6 +3,7 @@ Speech-to-Text module using Faster-Whisper (CPU INT8 quantized).
 Transcribes user spoken commands with domain-specific bias prompts.
 """
 
+import os
 import asyncio
 import numpy as np
 from faster_whisper import WhisperModel

@@ -8,8 +8,9 @@ Pipeline Flow:
 4. Synthesize agent response via `Kokoro TTS` (CPU) and stream to audio output.
 """
 
-import asyncio
+import os
 import sys
+import asyncio
 from voice.wakeword import WakeWordDetector
 from voice.stt import Transcriber
 from voice.tts import TextToSpeech
