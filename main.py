@@ -19,7 +19,7 @@ from agent.copilot import JarvisAgent
 
 async def main_loop():
     print("=" * 65)
-    print("      JARVIS PCB COPILOT - AI HARDWARE ASSISTANT")
+    print("      JARVIS AI - UNIVERSAL PERSONAL ASSISTANT")
     print("=" * 65)
     print("[System] Initializing voice pipeline & agent engine...")
 

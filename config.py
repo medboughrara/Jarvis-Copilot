@@ -34,7 +34,7 @@ class JarvisConfig(BaseSettings):
     """Pydantic Settings Schema for Jarvis PCB Copilot with fail-fast startup validation."""
 
     # Project Metadata
-    PROJECT_NAME: str = "Jarvis PCB Copilot"
+    PROJECT_NAME: str = "Jarvis AI Assistant"
     COMPANY_NAME: str = "Personal Open Source"
     DOMAIN_CONTEXT: str = "PCB schematics, component compliance, signal integrity, thermal analysis"
 
@@ -51,7 +51,7 @@ class JarvisConfig(BaseSettings):
     STT_MODEL_SIZE: str = "base.en"
     STT_DEVICE: str = "cpu"
     STT_COMPUTE_TYPE: str = "int8"
-    STT_INITIAL_PROMPT: str = "Jarvis PCB Copilot, PCB, schematic, KiCad, RoHS, FCC, thermal, signal integrity"
+    STT_INITIAL_PROMPT: str = "Jarvis, check my calendar, draft an email, review my code, summarize this document, analyze my schematic, search the web."
 
     # Text-to-Speech
     TTS_MODEL_NAME: str = "kokoro-v1.0.onnx"
