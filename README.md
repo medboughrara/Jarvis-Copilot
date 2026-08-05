@@ -2,6 +2,8 @@
 
 A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic review, electronic component selection, power distribution tree generation, regulatory compliance checks (RoHS/FCC), IPC-2221 thermal analysis, signal integrity, supply chain EOL tracking, and servomotor datasheet retrieval for the **AutoPick** robotic arm project at **Multiverse AI**.
 
+![PCB-CORE_v4.2 Tactical Engineering HUD Interface](image.png)
+
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)
 ![CUDA 12.1](https://img.shields.io/badge/CUDA-12.1-green.svg)
 ![PyTorch 2.4.1](https://img.shields.io/badge/PyTorch-2.4.1%2Bcu121-orange.svg)
@@ -9,6 +11,7 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 ![Gemini 3.6 Flash](https://img.shields.io/badge/LLM-Gemini%203.6%20Flash-blue.svg)
 ![MCP Server](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol-red.svg)
 ![Kokoro 24kHz](https://img.shields.io/badge/TTS-Kokoro--82M%2024kHz-brightgreen.svg)
+![Cyberpunk HUD](https://img.shields.io/badge/UI-PCB--CORE__v4.2%20HUD-cyan.svg)
 
 ---
 
