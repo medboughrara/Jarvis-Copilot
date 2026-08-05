@@ -234,26 +234,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const cleanText = text.replace(/[*#`\-\[\]]/g, ' ').replace(/\s+/g, ' ').trim();
         if (!cleanText) return;
 
-        // Ensure single voice response: prioritize Browser HTML5 SpeechSynthesis
+        // Cancel any browser system voice
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Stop any ongoing speech
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            
-            const voices = window.speechSynthesis.getVoices();
-            const preferredVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Zira'))) || voices.find(v => v.lang.includes('en'));
-            if (preferredVoice) utterance.voice = preferredVoice;
-            
-            window.speechSynthesis.speak(utterance);
-        } else {
-            // Fallback to backend TTS endpoint only if browser SpeechSynthesis is unavailable
-            fetch('/api/tts/speak', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: cleanText })
-            }).catch(() => {});
+            window.speechSynthesis.cancel();
         }
+
+        // Use Python backend Kokoro-82M 24kHz / SAPI5 neural voice exclusively
+        fetch('/api/tts/speak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: cleanText })
+        }).catch(() => {});
     }
 
     async function processUserCommand(cmd) {
