@@ -234,6 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const cleanText = text.replace(/[*#`\-\[\]]/g, ' ').replace(/\s+/g, ' ').trim();
         if (!cleanText) return;
 
+        // Trigger dynamic circle edge voice wave shader!
+        const estimatedDurationMs = Math.max(2500, Math.min(15000, cleanText.length * 65));
+        if (typeof window.setJarvisSpeaking === 'function') {
+            window.setJarvisSpeaking(true, estimatedDurationMs);
+        }
+
         // Cancel any browser system voice
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
@@ -246,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ text: cleanText })
         }).catch(() => {});
     }
+    window.speakAloud = speakAloud;
 
     function refreshVisionFeed() {
         const visionImg = document.getElementById('vision-feed-img');

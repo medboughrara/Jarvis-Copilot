@@ -580,32 +580,53 @@ void main() {
 uniform float u_time;
 uniform vec2 u_resolution;
 uniform vec2 u_mouse;
+uniform float u_speaking;
 varying vec2 v_texCoord;
 
 void main() {
     vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
     float d = length(uv);
-    
-    // Core glow
-    float core = 0.02 / abs(d - 0.2);
-    
-    // Pulsing rings
-    float pulse = sin(u_time * 3.0) * 0.05;
-    float ring1 = 0.01 / abs(d - (0.4 + pulse));
-    float ring2 = 0.005 / abs(d - (0.6 - pulse * 0.5));
-    
-    // Rotating segments
     float angle = atan(uv.y, uv.x);
-    float segments = sin(angle * 12.0 + u_time * 2.0);
-    float ring3 = (0.01 / abs(d - 0.5)) * step(0.8, segments);
     
-    vec3 color = vec3(0.0, 0.95, 1.0) * (core + ring1 + ring2 + ring3);
+    // Core glow (inner reactor)
+    float corePulse = sin(u_time * (3.0 + u_speaking * 8.0)) * (0.02 + 0.03 * u_speaking);
+    float core = (0.025 + 0.02 * u_speaking) / abs(d - (0.18 + corePulse));
     
-    // Add noise/flicker
-    float flicker = sin(u_time * 50.0) * 0.02 + 0.98;
+    // Middle ring with dynamic pulse
+    float pulse = sin(u_time * (2.5 + u_speaking * 10.0)) * (0.03 + 0.05 * u_speaking);
+    float ring1 = 0.012 / abs(d - (0.35 + pulse));
+    
+    // Rotating segment ring
+    float segments = sin(angle * (12.0 + u_speaking * 12.0) + u_time * (3.0 + u_speaking * 12.0));
+    float ring2 = (0.012 / abs(d - 0.48)) * step(0.65 - u_speaking * 0.3, segments);
+    
+    // OUTSIDE EDGE VOICE WAVE (Dynamic edge wave radiating along outer circle boundary!)
+    float waveFreq1 = sin(angle * 18.0 + u_time * (12.0 + u_speaking * 18.0));
+    float waveFreq2 = cos(angle * 32.0 - u_time * (8.0 + u_speaking * 22.0));
+    float waveFreq3 = sin(angle * 6.0 + u_time * 5.0);
+    
+    float waveAmplitude = 0.015 + 0.08 * u_speaking;
+    float edgeDisplacement = (waveFreq1 * 0.5 + waveFreq2 * 0.3 + waveFreq3 * 0.2) * waveAmplitude;
+    float edgeRadius = 0.62 + edgeDisplacement;
+    
+    float edgeWave = (0.01 + 0.015 * u_speaking) / abs(d - edgeRadius);
+    
+    // Spikes/Rays shooting outward from the wave peaks while speaking
+    float spikeAngle = sin(angle * 24.0 + u_time * 10.0);
+    float outerRays = (0.008 * u_speaking) / abs(d - (edgeRadius + 0.1 * step(0.7, spikeAngle)));
+    
+    // Combined color (Cyan glow #00f2ff turning to electric neon cyan/turquoise when speaking)
+    vec3 baseCyan = vec3(0.0, 0.95, 1.0);
+    vec3 speakCyan = vec3(0.2, 1.0, 0.9);
+    vec3 color = mix(baseCyan, speakCyan, u_speaking) * (core + ring1 + ring2 + edgeWave + outerRays);
+    
+    // High frequency audio flicker
+    float flicker = sin(u_time * (40.0 + u_speaking * 60.0)) * 0.03 + 0.97;
     color *= flicker;
 
-    gl_FragColor = vec4(color, color.r > 0.1 ? 1.0 : color.g * 0.5);
+    // Glowing transparency
+    float alpha = clamp(color.r * 0.8 + color.g * 0.6, 0.0, 1.0);
+    gl_FragColor = vec4(color, alpha);
 }`;
   function cs(type, src) {
     const s = gl.createShader(type);
@@ -627,6 +648,30 @@ void main() {
   const uTime = gl.getUniformLocation(prog, 'u_time');
   const uRes = gl.getUniformLocation(prog, 'u_resolution');
   const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+  const uSpeaking = gl.getUniformLocation(prog, 'u_speaking');
+
+  let currentSpeaking = 0.0;
+  let targetSpeaking = 0.0;
+  let speakingTimer = null;
+
+  window.setJarvisSpeaking = function(state, durationMs) {
+    targetSpeaking = state ? 1.0 : 0.0;
+    if (speakingTimer) clearTimeout(speakingTimer);
+    if (state && durationMs) {
+      speakingTimer = setTimeout(() => {
+        targetSpeaking = 0.0;
+      }, durationMs);
+    }
+  };
+
+  canvas.style.cursor = 'pointer';
+  canvas.title = 'Click to test Jarvis Voice Core Wave';
+  canvas.addEventListener('click', () => {
+    window.setJarvisSpeaking(true, 3000);
+    if (typeof window.speakAloud === 'function') {
+      window.speakAloud("Jarvis voice core active. Audio wave visualization responding.");
+    }
+  });
 
   let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
   window.addEventListener('mousemove', (event) => {
@@ -642,9 +687,15 @@ void main() {
   function render(t) {
     if (typeof ResizeObserver === 'undefined') syncSize();
     gl.viewport(0, 0, canvas.width, canvas.height);
+
+    // Smooth interpolation for speech intensity
+    currentSpeaking += (targetSpeaking - currentSpeaking) * 0.1;
+
     if (uTime) gl.uniform1f(uTime, t * 0.001);
     if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
     if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    if (uSpeaking) gl.uniform1f(uSpeaking, currentSpeaking);
+
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     requestAnimationFrame(render);
   }
