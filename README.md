@@ -49,7 +49,7 @@ Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU
 
 | Subsystem | Target Processor | Model / Framework | Optimization |
 | :--- | :--- | :--- | :--- |
-| **Wake Word Engine** | CPU | `openWakeWord` ("hey_jarvis") | ONNX Runtime (CPU) |
+| **Wake Word Engine** | CPU | `openWakeWord` ("jarvis") | ONNX Runtime (CPU) |
 | **Speech-to-Text (STT)** | CPU / Cloud | `Faster-Whisper` (`base.en`) / `NVIDIA Whisper v3` | `INT8` Quantization + Cloud API Fallback |
 | **Text-to-Speech (TTS)** | CPU / Cloud | `Kokoro-82M` (24kHz) / `NVIDIA Magpie TTS` | ONNX Runtime + Cloud Multilingual Neural Voice |
 | **Orchestration & Memory** | CPU | LangChain + Context Buffer | Async I/O event loop |
@@ -121,7 +121,7 @@ Jarvis PCB Copilot integrates 18 core hardware engineering, voice, vision, and a
 
 | # | Capability Domain | Subsystem / Module | Key Functions & Features |
 | :--- | :--- | :--- | :--- |
-| **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`, `NVIDIA`) | Hands-free ONNX wake word ("hey_jarvis"), Faster-Whisper / NVIDIA Whisper v3 STT, and Kokoro 24kHz / NVIDIA Magpie TTS voice synthesis. |
+| **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`, `NVIDIA`) | Hands-free ONNX wake word ("jarvis"), Faster-Whisper / NVIDIA Whisper v3 STT, and Kokoro 24kHz / NVIDIA Magpie TTS voice synthesis. |
 | **2** | **🧠 Multi-Tier LLM Brain** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud (Kimi 2.6 & Nemotron 3) -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
 | **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Dynamically registers all 19 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
 | **4** | **📐 KiCad S-Expression AST Parser** | `tools/kicad_tool.py` | Direct S-expression parser for `.kicad_sch` & `.kicad_pcb` files: builds `SchematicModel`, extracts components, generates power trees, builds BOM CSVs, and runs graph ERC. |
@@ -139,6 +139,7 @@ Jarvis PCB Copilot integrates 18 core hardware engineering, voice, vision, and a
 | **16**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Generates high-resolution concept block diagrams, laboratory interiors, or hardware schematics via `black-forest-labs/flux.1-schnell`. |
 | **17**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | One-shot long-horizon PDF datasheet & schematic parsing into structured Markdown using Baidu's Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
 | **18**| **👁️ NVIDIA Nemotron OCR v2** | `tools/nvidia_nim_tool.py` | Visual document & schematic OCR for extracting pinouts, table values, and component references via `nvidia/nemotron-ocr-v2`. |
+| **19**| **🔗 Composio Cloud App Integration** | `tools/composio_tool.py` | 1000+ cloud app actions (Gmail, GitHub, Slack, Notion, Google Calendar, Google Drive, etc.) via Composio's MCP HTTP API — no pip package required. |
 
 ---
 
@@ -194,6 +195,10 @@ USE_NVIDIA_TTS=false
 # Baidu Unlimited-OCR Engine
 UNLIMITED_OCR_MODEL=baidu/Unlimited-OCR
 USE_UNLIMITED_OCR=true
+
+# Composio MCP Integration (Gmail, GitHub, Slack, Notion, Google Calendar, etc.)
+COMPOSIO_API_KEY=ck_YOUR_COMPOSIO_API_KEY
+COMPOSIO_MCP_URL=https://connect.composio.dev/mcp
 ```
 
 ---
@@ -209,6 +214,50 @@ python main.py
 ```powershell
 python mcp_server.py
 ```
+
+---
+
+## 🔗 Composio Cloud App Integration
+
+Jarvis can send emails, create GitHub issues, post Slack messages, schedule calendar events, and interact with 1000+ cloud apps using [Composio](https://connect.composio.dev) — all via voice command or agent tool call.
+
+### One-Time Setup
+
+1. Connect your apps in the [Composio dashboard](https://connect.composio.dev) (Gmail OAuth, GitHub, Slack, etc.).
+2. Your `COMPOSIO_API_KEY` is already set in `.env`.
+
+### Voice Command Examples
+
+| Voice Command | Composio Action |
+| :--- | :--- |
+| *"Jarvis, fetch my 5 most recent emails."* | Calls `GMAIL_FETCH_EMAILS` via Composio MCP |
+| *"Jarvis, send an email to the team about the PCB audit results."* | Calls `GMAIL_SEND_EMAIL` |
+| *"Jarvis, create a GitHub issue for the floating net ERC warning."* | Routes to `GITHUB_CREATE_ISSUE` |
+| *"Jarvis, post the thermal analysis results to our Slack channel."* | Routes to `SLACK_SEND_MESSAGE` |
+
+### Programmatic Usage
+
+```python
+from tools.composio_tool import composio_execute_action
+
+# Fetch last 5 Gmail inbox emails
+res = composio_execute_action.invoke({
+    "intent": "Fetch 5 most recent Gmail emails",
+    "tool_slug": "GMAIL_FETCH_EMAILS",
+    "tool_arguments": '{"max_results": 5, "label_ids": ["INBOX"], "user_id": "me"}'
+})
+print(res["summary"])
+
+# Send an email
+res = composio_execute_action.invoke({
+    "intent": "Send PCB audit report",
+    "tool_slug": "GMAIL_SEND_EMAIL",
+    "tool_arguments": '{"to": "team@company.com", "subject": "PCB Audit Report", "body": "See attached audit."}'
+})
+```
+
+> [!NOTE]
+> Use `composio_search_tools` first if you're unsure of the exact `tool_slug` for a given action.
 
 ---
 

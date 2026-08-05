@@ -44,7 +44,7 @@ class JarvisConfig(BaseSettings):
     CHUNK_SIZE: int = 1280
 
     # Wake Word Configuration
-    WAKEWORD_MODEL_NAME: str = "hey_jarvis"
+    WAKEWORD_MODEL_NAME: str = "jarvis"
     WAKEWORD_THRESHOLD: float = 0.5
 
     # Speech-to-Text
@@ -89,6 +89,10 @@ class JarvisConfig(BaseSettings):
     # Baidu Unlimited-OCR Model Config
     UNLIMITED_OCR_MODEL: str = Field(default="baidu/Unlimited-OCR")
     USE_UNLIMITED_OCR: bool = Field(default=True)
+
+    # Composio MCP Integration
+    COMPOSIO_API_KEY: str = Field(default="", validation_alias="COMPOSIO_API_KEY")
+    COMPOSIO_MCP_URL: str = Field(default="https://connect.composio.dev/mcp")
 
     class Config:
         extra = "ignore"
@@ -164,3 +168,5 @@ USE_NVIDIA_STT = _config_instance.USE_NVIDIA_STT
 USE_NVIDIA_TTS = _config_instance.USE_NVIDIA_TTS
 UNLIMITED_OCR_MODEL = _config_instance.UNLIMITED_OCR_MODEL
 USE_UNLIMITED_OCR = _config_instance.USE_UNLIMITED_OCR
+COMPOSIO_API_KEY = _config_instance.COMPOSIO_API_KEY
+COMPOSIO_MCP_URL = _config_instance.COMPOSIO_MCP_URL

@@ -41,6 +41,13 @@ class ComposioRouter:
             elif "bom" in name or "supply" in name or "stock" in name:
                 if any(w in query_lower for w in ["bom", "part", "cost", "stock", "lcsc", "mouser", "digikey"]):
                     matched_tools.append(tool)
+            elif "composio" in name:
+                if any(w in query_lower for w in [
+                    "email", "gmail", "send", "inbox", "slack", "notion", "calendar",
+                    "composio", "app", "integration", "message", "schedule", "drive"
+                ]):
+                    matched_tools.append(tool)
 
         # Fallback to all tools if no specific match
         return matched_tools if matched_tools else self.all_tools
+

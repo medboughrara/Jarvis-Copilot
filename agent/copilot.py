@@ -32,6 +32,7 @@ from tools.nvidia_nim_tool import (
     NvidiaNIMClient
 )
 from tools.unlimited_ocr_tool import parse_document_unlimited_ocr
+from tools.composio_tool import composio_execute_action, composio_search_tools, composio_read_sandbox_result
 
 logger = config.get_logger(__name__)
 
@@ -76,7 +77,10 @@ class JarvisAgent:
             transcribe_nvidia_audio,
             run_nvidia_reasoning,
             parse_nemotron_ocr,
-            parse_document_unlimited_ocr
+            parse_document_unlimited_ocr,
+            composio_execute_action,
+            composio_search_tools,
+            composio_read_sandbox_result
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
