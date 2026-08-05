@@ -28,38 +28,39 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 
 ```mermaid
 graph TD
-    subgraph Input Layer
-        MIC[🎙️ Push-To-Talk Mic / Audio] --> STT[⚡ Faster-Whisper / NVIDIA Whisper v3 STT]
-        UI[🖥️ Cyberpunk Glassmorphic HUD] --> CMD[💬 REST API / Command Input]
+    subgraph IN ["Input Layer"]
+        MIC["🎙️ Push-To-Talk Mic / Audio"] --> STT["⚡ Faster-Whisper / NVIDIA Whisper v3 STT"]
+        UI["🖥️ Cyberpunk Glassmorphic HUD"] --> CMD["💬 REST API / Command Input"]
     end
     
-    subgraph AI Orchestration Layer
-        STT --> AGENT[🧠 LangChain JarvisAgent]
+    subgraph ORCH ["AI Orchestration Layer"]
+        STT --> AGENT["🧠 LangChain JarvisAgent"]
         CMD --> AGENT
-        AGENT --> ROUTER[🔄 Composio Dynamic Tool Router]
-        AGENT --> SKILLS[📖 AAS Hardware Playbooks]
+        AGENT --> ROUTER["🔄 Composio Dynamic Tool Router"]
+        AGENT --> SKILLS["📖 AAS Hardware Playbooks"]
     end
     
-    subgraph Multi-Tier LLM Brain
-        AGENT --> T1[⚡ Tier 1: Gemini 3.6 Flash Multi-Key Pool]
-        T1 -. Fallback .-> T2[🌌 Tier 2: NVIDIA NIM Cloud - Kimi 2.6 / Nemotron 3]
-        T2 -. Fallback .-> T3[☁️ Tier 3: Ollama Cloud - GLM-5.2 / Kimi-K3]
-        T3 -. Fallback .-> T4[💻 Tier 4: Local RTX 3050 Llama3:8b]
+    subgraph BRAIN ["Multi-Tier LLM Brain"]
+        AGENT --> T1["⚡ Tier 1: Gemini 3.6 Flash Multi-Key Pool"]
+        T1 -.->|Fallback| T2["🌌 Tier 2: NVIDIA NIM Cloud - Kimi 2.6 / Nemotron 3"]
+        T2 -.->|Fallback| T3["☁️ Tier 3: Ollama Cloud - GLM-5.2 / Kimi-K3"]
+        T3 -.->|Fallback| T4["💻 Tier 4: Local RTX 3050 Llama3:8b"]
     end
     
-    subgraph EDA & Hardware Solvers
-        ROUTER --> KICAD[📐 KiCad S-Expression AST Parser]
-        ROUTER --> THM[🔥 IPC-2221 Thermal & Joule Loss Solver]
-        ROUTER --> SIG[⚡ Signal Integrity Bounds Solver]
-        ROUTER --> SUP[📦 Supply Chain Lifecycle & Risk Tracker]
-        ROUTER --> OCR[👁️ OmniParser V2 GUI Vision & RapidOCR]
-        ROUTER --> CMP[🔗 Composio MCP Hub - Gmail / Calendar / GitHub / Notion]
+    subgraph SOLV ["EDA & Hardware Solvers"]
+        ROUTER --> KICAD["📐 KiCad S-Expression AST Parser"]
+        ROUTER --> THM["🔥 IPC-2221 Thermal & Joule Loss Solver"]
+        ROUTER --> SIG["⚡ Signal Integrity Bounds Solver"]
+        ROUTER --> SUP["📦 Supply Chain Lifecycle & Risk Tracker"]
+        ROUTER --> OCR["👁️ OmniParser V2 GUI Vision & RapidOCR"]
+        ROUTER --> CMP["🔗 Composio MCP Hub - Gmail / Calendar / GitHub / Notion"]
     end
     
-    subgraph Output Layer
-        AGENT --> TTS[🔊 Kokoro-82M 24kHz Neural TTS / SAPI5]
-        TTS --> SPK[📣 Speaker Playback & Audio Uplink]
-        AGENT --> HUD_LOG[💻 Live Tactical Terminal Log Stream]
+    subgraph OUT ["Output Layer"]
+        AGENT --> TTS["🔊 Kokoro-82M 24kHz Neural TTS / SAPI5"]
+        TTS --> SPK["📣 Speaker Playback & Audio Uplink"]
+        AGENT --> HUD_LOG["💻 Live Tactical Terminal Log Stream"]
+    end
 ```
 
 ---
