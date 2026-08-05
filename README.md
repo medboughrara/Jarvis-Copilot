@@ -2,8 +2,6 @@
 
 A local, voice-activated "Jarvis-style" open-source AI copilot designed for PCB schematic review, electronic component selection, power distribution tree generation, regulatory compliance checks (RoHS/FCC), IPC-2221 thermal analysis, signal integrity, supply chain EOL tracking, and KiCad EDA design automation.
 
-![PCB-CORE_v4.2 Tactical Engineering HUD Interface](image.png)
-
 <div align="center">
 
 ### 🎬 Live System Demo & Tactical Engineering HUD Walkthrough
