@@ -291,9 +291,9 @@ def sheets_get_values(
     """
     logger.info(f"[GoogleSheets] Reading range '{range_name}' from spreadsheet '{spreadsheet_id}'")
     return _execute(
-        "GOOGLESHEETS_GET_SPREADSHEET_DATA",
+        "GOOGLESHEETS_BATCH_GET",
         f"Read Google Sheets data: {spreadsheet_id} range {range_name}",
-        {"spreadsheet_id": spreadsheet_id, "range": range_name}
+        {"spreadsheet_id": spreadsheet_id, "ranges": [range_name]}
     )
 
 

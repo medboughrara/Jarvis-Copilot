@@ -106,14 +106,13 @@ class TestComposioNotion(unittest.TestCase):
 class TestComposioGoogleSheets(unittest.TestCase):
     """Live Google Sheets integration tests — requires Google Sheets connected."""
 
-    def test_get_spreadsheet_values_invalid_id(self):
-        """Tests that an invalid spreadsheet ID returns an error gracefully."""
-        print("\n[GoogleSheets] Testing with invalid spreadsheet ID (expects error)...")
+    def test_get_spreadsheet_values(self):
+        """Tests reading spreadsheet values from the test sheet."""
+        print("\n[GoogleSheets] Reading values from test spreadsheet...")
         res = sheets_get_values.invoke({
-            "spreadsheet_id": "INVALID_SPREADSHEET_ID_TEST",
-            "range_name": "Sheet1!A1:D5"
+            "spreadsheet_id": "1q7XWw84bYaXOfjLY7tNdXjxjOsOOB3_tF3R2OhJh3nc",
+            "range_name": "Sheet1!A1:C5"
         })
-        # Either success (unlikely with invalid ID) or error — both are valid structured responses
         self.assertIn(res["status"], ["success", "error"])
         self.assertIn("tool_slug", res["data"])
         print(f"  Status: {res['status']}")
