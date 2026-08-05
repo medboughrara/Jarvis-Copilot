@@ -37,6 +37,14 @@ from agent.instincts import HardwareInstinctsEngine
 from agent.security import AgentShieldGuard
 from agent.context_compressor import ContextWindowCompressor
 from tools.preferred_parts_tool import manage_preferred_parts
+from tools.system_control_tool import (
+    get_system_time_and_greeting,
+    launch_desktop_app,
+    open_website,
+    take_desktop_screenshot,
+    tell_joke,
+    take_voice_note
+)
 from tools.composio_apps_tool import (
     gmail_fetch_emails, gmail_send_email, gmail_search_emails, gmail_create_draft,
     calendar_list_events, calendar_create_event,
@@ -90,6 +98,13 @@ class JarvisAgent:
             parse_nemotron_ocr,
             parse_document_unlimited_ocr,
             manage_preferred_parts,
+            # System & Desktop Control Tools
+            get_system_time_and_greeting,
+            launch_desktop_app,
+            open_website,
+            take_desktop_screenshot,
+            tell_joke,
+            take_voice_note,
             # Composio Generic Tools
             composio_execute_action,
             composio_search_tools,
@@ -190,6 +205,24 @@ class JarvisAgent:
             tool_executed = True
         elif "preferred part" in lower_q or "preferred library" in lower_q or "component memory" in lower_q or "preferred component" in lower_q:
             tool_result = manage_preferred_parts.invoke({"action": "list"})
+            tool_executed = True
+        elif "time" in lower_q or "date" in lower_q or "greeting" in lower_q or "what time" in lower_q:
+            tool_result = get_system_time_and_greeting.invoke({})
+            tool_executed = True
+        elif "launch" in lower_q or "open app" in lower_q or "open notepad" in lower_q or "open calc" in lower_q:
+            tool_result = launch_desktop_app.invoke({"app_name": user_query})
+            tool_executed = True
+        elif "open website" in lower_q or "open youtube" in lower_q or "open google" in lower_q:
+            tool_result = open_website.invoke({"url_or_domain": user_query})
+            tool_executed = True
+        elif "take screenshot" in lower_q or "capture screenshot" in lower_q:
+            tool_result = take_desktop_screenshot.invoke({"filename": ""})
+            tool_executed = True
+        elif "tell joke" in lower_q or "tell me a joke" in lower_q:
+            tool_result = tell_joke.invoke({})
+            tool_executed = True
+        elif "take note" in lower_q or "save note" in lower_q:
+            tool_result = take_voice_note.invoke({"note_text": user_query})
             tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q:
             tool_result = self.key_manager.get_usage_summary()
