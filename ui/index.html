@@ -293,17 +293,20 @@
         <div class="scanline"></div>
         <header class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-4">
             <span class="font-label-caps text-primary-fixed-dim tracking-widest">[ VIS-01 ] VISION_FEED</span>
-            <span class="material-symbols-outlined text-primary-container/50 text-sm">visibility</span>
+            <button id="btn-trigger-vision" title="Capture Screen Feed" class="hover:text-primary-container text-primary-fixed-dim cursor-pointer transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">visibility</span>
+                <span class="text-[9px] font-label-caps">SNAP</span>
+            </button>
         </header>
         
-        <div class="flex-1 relative overflow-hidden bg-surface-container-highest/30 mb-4 border border-outline-variant/30 group flex items-center justify-center">
-            <div class="absolute inset-0 bg-cover bg-center opacity-60 mix-blend-screen filter grayscale contrast-150 group-hover:filter-none transition-all duration-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAUg8C1Ksf0PGLk2IJso_mIEyFsOO2MQL8Psb2SXwCNDu4Ah_s06DPHEKUooTxg2u5nY6ue8SaYTgEwsAIG08Y1oLn6cQysozyQX_rElzw_gXLUKc5haMK4LJ-SUlOkijW_ySMEvApdRhODBxm8AweFycp-dIzOA7MqqWaj-fyHvG8nUmGUrui-T0aZrUeKAd_hswSRpXUv7STAzJIslVJt9u5NDPLcM04mlweEHVCUrQBQnhNjRj1j8Q')"></div>
+        <div class="flex-1 relative overflow-hidden bg-surface-container-highest/30 mb-4 border border-outline-variant/30 group flex items-center justify-center min-h-[220px]">
+            <div id="vision-feed-img" class="absolute inset-0 bg-cover bg-center opacity-90 transition-all duration-700" style="background-image: url('/scratch/screen_capture.png')"></div>
             <!-- Overlay Data -->
-            <div class="absolute inset-0 p-2 flex flex-col justify-between pointer-events-none">
-                <div class="text-primary-container font-data-tabular text-[10px]">LAYER: TOP_COPPER</div>
+            <div class="absolute inset-0 p-2 flex flex-col justify-between pointer-events-none z-10">
+                <div class="text-primary-container font-data-tabular text-[10px] bg-black/60 px-1 rounded w-max">FEED: OPTICAL_OCR</div>
                 <div class="flex justify-between items-end">
-                    <div class="text-error font-data-tabular text-[10px] bg-error/10 px-1 border border-error/50" id="vision-warn-badge">WARN: CLEARANCE VIOLATION</div>
-                    <div class="text-primary-container font-data-tabular text-[10px]">ZOOM: 140%</div>
+                    <div class="text-primary-container font-data-tabular text-[10px] bg-primary-container/20 px-1 border border-primary-container/50 rounded" id="vision-warn-badge">LIVE SCREEN CAPTURE</div>
+                    <div class="text-primary-container font-data-tabular text-[10px] bg-black/60 px-1 rounded" id="vision-resolution-label">1920x1080</div>
                 </div>
             </div>
         </div>

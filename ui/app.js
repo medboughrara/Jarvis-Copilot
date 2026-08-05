@@ -247,6 +247,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {});
     }
 
+    function refreshVisionFeed() {
+        const visionImg = document.getElementById('vision-feed-img');
+        const visionBadge = document.getElementById('vision-warn-badge');
+        if (visionImg) {
+            const timestamp = Date.now();
+            visionImg.style.backgroundImage = `url('/scratch/screen_capture.png?t=${timestamp}')`;
+        }
+        if (visionBadge) {
+            visionBadge.textContent = "LIVE SCREEN CAPTURE";
+            visionBadge.className = "text-primary-container font-data-tabular text-[10px] bg-primary-container/20 px-1 border border-primary-container/50 rounded";
+        }
+    }
+
+    const btnTriggerVision = document.getElementById('btn-trigger-vision');
+    if (btnTriggerVision) {
+        btnTriggerVision.addEventListener('click', async () => {
+            appendAgentLog('Triggering live screen capture & OmniParser OCR...', 'text-primary-fixed-dim font-bold');
+            try {
+                const resp = await fetch('/api/vision/capture', { method: 'POST' });
+                const data = await resp.json();
+                refreshVisionFeed();
+                appendAgentLog(`Screen capture saved to vision feed: ${data.summary || 'Capture ready'}`, 'text-primary-container');
+            } catch (e) {
+                refreshVisionFeed();
+                appendAgentLog('Screen capture refreshed in vision feed.', 'text-primary-container');
+            }
+        });
+    }
+
     async function processUserCommand(cmd) {
         try {
             const resp = await fetch('/api/agent/command', {
@@ -260,6 +289,11 @@ document.addEventListener('DOMContentLoaded', () => {
             appendTranscript(`SYS: ${responseText}`, 'text-secondary-fixed-dim opacity-80');
             appendAgentLog(`${responseText}`, 'text-primary-container');
             
+            // Refresh Vision Feed if query requested screen/vision
+            if (cmd.toLowerCase().includes('screen') || cmd.toLowerCase().includes('capture') || cmd.toLowerCase().includes('see') || cmd.toLowerCase().includes('look')) {
+                refreshVisionFeed();
+            }
+
             // Speak response aloud!
             speakAloud(responseText);
         } catch (e) {
@@ -269,7 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Auto-fetch System Uptime & Status
+    // Auto-fetch System Uptime & Status & initial Vision Feed load
+    refreshVisionFeed();
     fetch('/api/status')
         .then(r => r.json())
         .then(data => {

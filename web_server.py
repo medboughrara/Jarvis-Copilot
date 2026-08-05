@@ -62,6 +62,13 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
 
+    def _set_binary_headers(self, content_type="image/png"):
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        self.end_headers()
+
     def do_OPTIONS(self):
         self.send_response(200)
         self.send_header("Access-Control-Allow-Origin", "*")
@@ -94,6 +101,43 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
                 self._set_html_headers("application/javascript")
                 with open(ui_js, "rb") as f:
                     self.wfile.write(f.read())
+                return
+
+        elif path in ["/screen_capture.png", "/image.png"]:
+            file_path = os.path.join(BASE_DIR, "scratch", "screen_capture.png") if path == "/screen_capture.png" else os.path.join(BASE_DIR, "image.png")
+            if os.path.exists(file_path):
+                self._set_binary_headers("image/png")
+                with open(file_path, "rb") as f:
+                    self.wfile.write(f.read())
+                return
+
+        elif path.startswith("/scratch/"):
+            file_name = os.path.basename(path)
+            if not file_name or file_name == "scratch":
+                file_name = "screen_capture.png"
+            file_path = os.path.join(BASE_DIR, "scratch", file_name)
+            logger.info(f"[HUD Server] Serving scratch asset: '{file_name}' from '{file_path}' (exists={os.path.exists(file_path)})")
+            
+            # If screen_capture.png doesn't exist yet, generate default frame buffer
+            if not os.path.exists(file_path) and file_name == "screen_capture.png":
+                try:
+                    from PIL import Image
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    img = Image.new('RGB', (1920, 1080), color=(30, 30, 30))
+                    img.save(file_path)
+                except Exception as ie:
+                    logger.warning(f"[HUD Server] Could not create initial frame buffer: {ie}")
+
+            if os.path.exists(file_path):
+                ext = os.path.splitext(file_name)[1].lower()
+                content_type = "image/png" if ext in [".png", ".jpg", ".jpeg"] else "application/octet-stream"
+                self._set_binary_headers(content_type)
+                with open(file_path, "rb") as f:
+                    self.wfile.write(f.read())
+                return
+            else:
+                self._set_json_headers(404)
+                self.wfile.write(json.dumps({"error": f"File '{file_name}' not found at '{file_path}'"}).encode())
                 return
 
         # -------------------------------------------------------------------
@@ -228,6 +272,22 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             res = check_signal_integrity.invoke({"trace_width_mm": width})
             self._set_json_headers(200)
             self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/vision/capture":
+            try:
+                from tools.omniparser_tool import parse_screen_gui
+                res = parse_screen_gui.invoke({"action_context": "HUD Vision Feed Trigger"})
+                self._set_json_headers(200)
+                self.wfile.write(json.dumps({
+                    "status": "success",
+                    "image_url": f"/scratch/screen_capture.png?t={int(time.time()*1000)}",
+                    "summary": res.get("summary", "")
+                }).encode())
+            except Exception as e:
+                logger.error(f"[HUD Server] Vision capture error: {e}")
+                self._set_json_headers(500)
+                self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode())
             return
 
         elif path == "/api/tts/speak":
