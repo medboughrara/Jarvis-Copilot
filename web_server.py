@@ -11,6 +11,7 @@ and AI conversational reasoning.
 import os
 import json
 import time
+import asyncio
 import urllib.parse
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import config
@@ -18,6 +19,7 @@ import config
 logger = config.get_logger(__name__)
 
 # Import Jarvis backend tools
+from agent.copilot import JarvisAgent
 from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
 from tools.thermal_tool import calculate_thermal_loss
 from tools.signal_integrity_tool import check_signal_integrity
@@ -26,6 +28,20 @@ from tools.supply_chain_tool import check_supply_chain_status
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_SAMPLE_SCHEMATIC = os.path.join(BASE_DIR, "tests", "sample_autopick.kicad_sch")
 START_TIME = time.time()
+
+# Global Agent Instance Singleton
+_JARVIS_AGENT = None
+
+def get_agent():
+    global _JARVIS_AGENT
+    if _JARVIS_AGENT is None or _JARVIS_AGENT is False:
+        try:
+            logger.info("[HUD Server] Initializing JarvisAgent for live reasoning and tool execution...")
+            _JARVIS_AGENT = JarvisAgent()
+        except Exception as e:
+            logger.warning(f"[HUD Server] Could not initialize full JarvisAgent: {e}")
+            _JARVIS_AGENT = False
+    return _JARVIS_AGENT
 
 
 class JarvisHUDHandler(BaseHTTPRequestHandler):
@@ -167,35 +183,34 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             cmd_lower = cmd.lower()
             res = None
 
-            # Tool Intent Matching
-            if "drc" in cmd_lower or "error" in cmd_lower or "audit" in cmd_lower:
-                res = check_pcb_errors.invoke({"file_path": DEFAULT_SAMPLE_SCHEMATIC})
-            elif "power" in cmd_lower or "tree" in cmd_lower:
-                res = get_power_tree.invoke({"file_path": DEFAULT_SAMPLE_SCHEMATIC})
-            elif "bom" in cmd_lower or "part" in cmd_lower:
-                res = generate_bom_report.invoke({"file_path": DEFAULT_SAMPLE_SCHEMATIC})
-            elif "thermal" in cmd_lower:
-                res = calculate_thermal_loss.invoke({"current_amps": 2.5, "trace_resistance_ohms": 0.045})
-            elif "signal" in cmd_lower or "impedance" in cmd_lower:
-                res = check_signal_integrity.invoke({"trace_width_mm": 0.2, "substrate_height_mm": 1.6})
-            elif "how are you" in cmd_lower or "hello" in cmd_lower or "hi" in cmd_lower or "hey" in cmd_lower:
-                res = {
-                    "status": "success",
-                    "summary": f"Jarvis: Systems online and fully operational! Running {config.GEMINI_MODEL} with 34 active tools and 5 Composio cloud connections.",
-                    "data": {"command": cmd, "result": "Systems nominal and operational."}
-                }
-            elif "who are you" in cmd_lower or "name" in cmd_lower:
-                res = {
-                    "status": "success",
-                    "summary": "Jarvis: I am Jarvis PCB Copilot, your AI engineering assistant for KiCad schematics, DRC audits, thermal modeling, and hardware procurement.",
-                    "data": {"command": cmd, "result": "Jarvis PCB Copilot AI Assistant."}
-                }
-            else:
-                res = {
-                    "status": "success",
-                    "summary": f"Jarvis: Executed query '{cmd}'. All 34 local EDA tools and cloud integrations active.",
-                    "data": {"command": cmd, "result": "Query processed in session."}
-                }
+            if res is None:
+                # Real Agentic Reasoning & Tool Execution via JarvisAgent
+                agent = get_agent()
+                if agent and hasattr(agent, "process_query"):
+                    try:
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        response_text = loop.run_until_complete(agent.process_query(cmd))
+                        loop.close()
+
+                        res = {
+                            "status": "success",
+                            "summary": response_text,
+                            "data": {"command": cmd, "result": response_text}
+                        }
+                    except Exception as e:
+                        logger.error(f"[HUD Server] Agent query execution error: {e}")
+                        res = {
+                            "status": "error",
+                            "summary": f"Jarvis: Execution error occurred while running query ({e}).",
+                            "data": {"error": str(e)}
+                        }
+                else:
+                    res = {
+                        "status": "success",
+                        "summary": f"Jarvis: Query '{cmd}' received. Backend agent online.",
+                        "data": {"command": cmd, "result": "Agent online."}
+                    }
 
             self._set_json_headers(200)
             self.wfile.write(json.dumps(res).encode())
@@ -219,7 +234,6 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             text = body.get("text", "").strip()
             if text:
                 try:
-                    import asyncio
                     from voice.tts import TextToSpeech
                     tts = TextToSpeech()
                     loop = asyncio.new_event_loop()

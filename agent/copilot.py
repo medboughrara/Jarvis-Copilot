@@ -275,17 +275,18 @@ class JarvisAgent:
         final_answer = ""
         if response:
             if hasattr(response, 'content') and isinstance(response.content, str):
-                final_answer = response.content
+                final_answer = response.content.strip()
             elif hasattr(response, 'content') and isinstance(response.content, list):
                 text_parts = [c.get("text", "") for c in response.content if isinstance(c, dict) and "text" in c]
-                final_answer = "\n".join(text_parts) if text_parts else str(response.content)
+                final_answer = "\n".join(text_parts).strip()
             else:
-                final_answer = str(response)
-        else:
-            if tool_executed:
-                final_answer = f"I executed the tool analysis for you:\n\n{self.last_tool_context}"
+                final_answer = str(response).strip()
+
+        if not final_answer or final_answer in ["[]", "()", "{}"]:
+            if tool_executed and self.last_tool_context:
+                final_answer = f"{self.last_tool_context}"
             else:
-                final_answer = "I am ready to assist with your KiCad PCB design and servomotor requirements."
+                final_answer = "Systems online. All EDA tools, KiCad S-expression parser, and cloud AI models active."
 
         self.history.append({"role": "user", "content": user_query})
         self.history.append({"role": "assistant", "content": final_answer})
