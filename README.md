@@ -6,6 +6,13 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 
 <div align="center">
 
+### 🎬 Live System Demo & Tactical Engineering HUD Walkthrough
+
+<video src="test.mp4" controls="controls" muted="muted" width="100%" style="max-height: 640px; border-radius: 8px; border: 1px solid #30363d; margin-top: 12px; margin-bottom: 16px;">
+  <source src="https://raw.githubusercontent.com/medboughrara/Jarvis-PCB-Copilot/main/test.mp4" type="video/mp4">
+  Your browser does not support the video tag. <a href="https://raw.githubusercontent.com/medboughrara/Jarvis-PCB-Copilot/main/test.mp4">Click here to download test.mp4</a>.
+</video>
+
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)
 ![CUDA 12.1](https://img.shields.io/badge/CUDA-12.1-green.svg?style=for-the-badge&logo=nvidia&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-orange.svg?style=for-the-badge&logo=pytorch&logoColor=white)
