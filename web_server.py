@@ -220,11 +220,24 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
 
 
 def start_server(host="localhost", port=8000):
-    server_address = (host, port)
-    httpd = ThreadingHTTPServer(server_address, JarvisHUDHandler)
+    ThreadingHTTPServer.allow_reuse_address = True
+    
+    httpd = None
+    for p in range(port, port + 10):
+        try:
+            httpd = ThreadingHTTPServer((host, p), JarvisHUDHandler)
+            port = p
+            break
+        except OSError:
+            continue
+
+    if not httpd:
+        logger.error(f"[Jarvis HUD] Could not bind to any port in range {port}..{port+10}")
+        return
+
     logger.info(f"[Jarvis HUD] Tactical Multi-Threaded Engineering HUD running at http://{host}:{port}")
     print("=" * 70)
-    print(f"[JARVIS PCB-COPILOT] Multi-Threaded Tactical Cyberpunk HUD Online!")
+    print(f"[JARVIS PCB-COPILOT] Tactical Cyberpunk HUD Interface Online!")
     print(f"URL: http://{host}:{port}")
     print("=" * 70)
     try:
