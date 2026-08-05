@@ -205,12 +205,19 @@ COMPOSIO_MCP_URL=https://connect.composio.dev/mcp
 
 ## 🚀 Running Jarvis PCB Copilot
 
-### Option A: Voice Assistant Mode
+### Option A: Tactical Engineering HUD Web UI (Browser Mode)
+```powershell
+python main.py --ui
+# or python web_server.py
+```
+> Open your browser at **http://localhost:8000** to access the Cyberpunk Glassmorphic Tactical Engineering HUD interface.
+
+### Option B: Voice Assistant Mode (Hands-Free Hotword Mode)
 ```powershell
 python main.py
 ```
 
-### Option B: Native Stdio MCP Server Mode (for Cursor / Antigravity / Claude Code)
+### Option C: Native Stdio MCP Server Mode (for Cursor / Antigravity / Claude Code)
 ```powershell
 python mcp_server.py
 ```

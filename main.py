@@ -3,7 +3,7 @@ Main Async Execution Loop for Jarvis PCB Copilot (AutoPick / Multiverse AI).
 
 Pipeline Flow:
 1. Continuous background wake word detection (`openWakeWord` on CPU).
-2. Upon wake word trigger ("hey_jarvis"), activate `Faster-Whisper` STT with custom domain prompt ("AutoPick, Multiverse AI, Sim2Real, servomotors").
+2. Upon wake word trigger ("jarvis"), activate `Faster-Whisper` STT with custom domain prompt ("AutoPick, Multiverse AI, Sim2Real, servomotors").
 3. Process transcribed query through LangChain `JarvisAgent` (Ollama GPU backend).
 4. Synthesize agent response via `Kokoro TTS` (CPU) and stream to audio output.
 """
@@ -80,5 +80,11 @@ if __name__ == "__main__":
     # Windows Python 3.12 selector event loop policy fix
     if sys.platform == "win32":
         asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        
-    asyncio.run(main_loop())
+
+    # Check for --ui / --web CLI flags
+    if len(sys.argv) > 1 and sys.argv[1].lower() in ["--ui", "--web", "-u", "-w"]:
+        from web_server import start_server
+        start_server(host="localhost", port=8000)
+    else:
+        asyncio.run(main_loop())
+
