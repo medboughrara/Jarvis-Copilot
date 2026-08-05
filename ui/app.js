@@ -229,6 +229,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function speakAloud(text) {
+        if (!text || !text.strip ? !text.trim() : !text) return;
+        const cleanText = text.replace(/[*#`\-\[\]]/g, ' ').replace(/\s+/g, ' ').trim();
+        if (!cleanText) return;
+
+        // 1. Browser HTML5 SpeechSynthesis (Instant Web Voice)
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('David') || v.name.includes('Zira'))) || voices.find(v => v.lang.includes('en'));
+            if (preferredVoice) utterance.voice = preferredVoice;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 2. Python Backend TTS Endpoint Trigger
+        fetch('/api/tts/speak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: cleanText })
+        }).catch(() => {});
+    }
+
     async function processUserCommand(cmd) {
         try {
             const resp = await fetch('/api/agent/command', {
@@ -241,9 +268,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
             appendTranscript(`SYS: ${responseText}`, 'text-secondary-fixed-dim opacity-80');
             appendAgentLog(`${responseText}`, 'text-primary-container');
+            
+            // Speak response aloud!
+            speakAloud(responseText);
         } catch (e) {
             appendTranscript(`SYS: Command "${cmd}" processed.`, 'text-secondary-fixed-dim');
             appendAgentLog(`Local Agent: Command "${cmd}" executed successfully.`, 'text-primary-container');
+            speakAloud(`Command ${cmd} processed successfully.`);
         }
     }
 

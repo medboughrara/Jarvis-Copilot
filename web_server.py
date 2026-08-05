@@ -215,6 +215,27 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(res).encode())
             return
 
+        elif path == "/api/tts/speak":
+            text = body.get("text", "").strip()
+            if text:
+                try:
+                    import asyncio
+                    from voice.tts import TextToSpeech
+                    tts = TextToSpeech()
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    loop.run_until_complete(tts.speak(text))
+                    loop.close()
+                    res = {"status": "success", "summary": f"Spoke: '{text[:50]}...'"}
+                except Exception as e:
+                    logger.warning(f"[HUD Server] TTS speak error: {e}")
+                    res = {"status": "error", "summary": str(e)}
+            else:
+                res = {"status": "error", "summary": "Empty text"}
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
         self._set_json_headers(404)
         self.wfile.write(json.dumps({"error": f"POST route '{path}' not found"}).encode())
 

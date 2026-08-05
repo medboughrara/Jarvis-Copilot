@@ -112,9 +112,21 @@ class TextToSpeech:
                 except Exception as e:
                     print(f"[TTS Error] Kokoro-82M synthesis error ({e}). Falling back to SAPI5.")
 
-            # Option C: Windows SAPI5
+            # Option C: pyttsx3 / Windows SAPI5 Fallback
+            try:
+                import pyttsx3
+                engine = pyttsx3.init()
+                engine.setProperty('rate', 175)
+                engine.say(clean_text)
+                engine.runAndWait()
+                return 0.0
+            except Exception as pe:
+                print(f"[TTS pyttsx3 Warning] {pe}")
+
             if SAPI_AVAILABLE:
                 try:
+                    import pythoncom
+                    pythoncom.CoInitialize()
                     speaker = win32com.client.Dispatch("SAPI.SpVoice")
                     speaker.Speak(clean_text)
                     return 0.0
