@@ -230,13 +230,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function speakAloud(text) {
-        if (!text || !text.strip ? !text.trim() : !text) return;
+        if (!text) return;
         const cleanText = text.replace(/[*#`\-\[\]]/g, ' ').replace(/\s+/g, ' ').trim();
         if (!cleanText) return;
 
-        // 1. Browser HTML5 SpeechSynthesis (Instant Web Voice)
+        // Ensure single voice response: prioritize Browser HTML5 SpeechSynthesis
         if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
+            window.speechSynthesis.cancel(); // Stop any ongoing speech
             const utterance = new SpeechSynthesisUtterance(cleanText);
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
@@ -246,14 +246,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (preferredVoice) utterance.voice = preferredVoice;
             
             window.speechSynthesis.speak(utterance);
+        } else {
+            // Fallback to backend TTS endpoint only if browser SpeechSynthesis is unavailable
+            fetch('/api/tts/speak', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: cleanText })
+            }).catch(() => {});
         }
-
-        // 2. Python Backend TTS Endpoint Trigger
-        fetch('/api/tts/speak', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: cleanText })
-        }).catch(() => {});
     }
 
     async function processUserCommand(cmd) {
