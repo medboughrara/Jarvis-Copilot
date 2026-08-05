@@ -110,7 +110,7 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 | **14**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
 | **15**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
 | **16**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
-| **17**| **📖 AAS & Claude Skill Playbooks** | `agent/skill_loader.py` & `skills/` | Standardized SKILL.md playbooks for Thermal Analysis, EMC/EMI Hardening, Sim2Real Motor Calibration, Issue Tracking, and BOM Optimization. |
+| **17**| **📖 AAS & Claude Skill Playbooks** | `agent/skill_loader.py` & `skills/` | 10 Standardized SKILL.md playbooks: `skill-comply`, `agentic-engineering`, `blueprint-architect`, `repo-scan`, `code-quality-auditor`, `pcb-thermal-analysis`, `emc-emi-hardening`, `sim2real-motor-calibration`, `github-pcb-issue-tracker`, `bom-cost-optimization`. |
 | **18**| **🔌 Stdio MCP FastMCP Protocol** | `mcp_server.py` | Registers all 35 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
 
 ---
@@ -146,7 +146,17 @@ d:/aaaassistan_pcb/
 │   ├── context_compressor.py # Incremental token budget & history compressor
 │   ├── workflows.py          # Autonomous multi-stage audit workflows
 │   └── prompts.py            # System prompt persona configuration
-├── skills/                   # AAS & Claude-style SKILL.md engineering playbooks
+├── skills/                   # AAS & Claude-style SKILL.md playbooks (10 Active Skills)
+│   ├── agentic-engineering/SKILL.md   # Subagent delegation & task decomposition
+│   ├── blueprint-architect/SKILL.md   # System architecture & sequence modeling
+│   ├── code-quality-auditor/SKILL.md  # Linting, security auditing & type safety
+│   ├── repo-scan/SKILL.md             # In-depth codebase scanning & ingestion
+│   ├── skill-comply/SKILL.md          # Architectural & rule compliance verification
+│   ├── pcb-thermal-analysis/SKILL.md  # IPC-2221 trace calculation & thermal modeling
+│   ├── emc-emi-hardening/SKILL.md     # Passive filtering & EMI mitigation rules
+│   ├── sim2real-motor-calibration/SKILL.md # Servomotor kinematics & driver alignment
+│   ├── github-pcb-issue-tracker/SKILL.md   # Issue logging & review tracking
+│   └── bom-cost-optimization/SKILL.md      # JLCPCB/LCSC component cost optimization
 ├── tools/
 │   ├── kicad_tool.py         # KiCad S-expression parser & power tree generator
 │   ├── formatters.py         # Voice audio and CLI text presentation layer
