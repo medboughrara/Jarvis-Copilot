@@ -33,6 +33,13 @@ from tools.nvidia_nim_tool import (
 )
 from tools.unlimited_ocr_tool import parse_document_unlimited_ocr
 from tools.composio_tool import composio_execute_action, composio_search_tools, composio_read_sandbox_result
+from tools.composio_apps_tool import (
+    gmail_fetch_emails, gmail_send_email, gmail_search_emails, gmail_create_draft,
+    calendar_list_events, calendar_create_event,
+    notion_search_pages, notion_create_page,
+    sheets_get_values, sheets_append_row,
+    docs_get_document, docs_create_document
+)
 
 logger = config.get_logger(__name__)
 
@@ -78,9 +85,27 @@ class JarvisAgent:
             run_nvidia_reasoning,
             parse_nemotron_ocr,
             parse_document_unlimited_ocr,
+            # Composio Generic Tools
             composio_execute_action,
             composio_search_tools,
-            composio_read_sandbox_result
+            composio_read_sandbox_result,
+            # Gmail (Active)
+            gmail_fetch_emails,
+            gmail_send_email,
+            gmail_search_emails,
+            gmail_create_draft,
+            # Google Calendar (Active)
+            calendar_list_events,
+            calendar_create_event,
+            # Notion (Active)
+            notion_search_pages,
+            notion_create_page,
+            # Google Sheets (Active)
+            sheets_get_values,
+            sheets_append_row,
+            # Google Docs (Active)
+            docs_get_document,
+            docs_create_document
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
