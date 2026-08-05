@@ -171,8 +171,11 @@ d:/aaaassistan_pcb/
 │   ├── key_manager.py        # Multi-key Gemini rotation manager & real-time metrics tracking
 │   ├── composio_router.py    # On-demand dynamic tool router & tool stacker
 │   ├── skill_loader.py       # Standardized AAS SKILL.md playbook loader
+│   ├── instincts.py          # Automatic hardware engineering reflex rules (ECC-inspired)
+│   ├── security.py           # AgentShield workspace path & tool argument security guard
+│   ├── context_compressor.py # Incremental token budget & history compressor
 │   ├── workflows.py          # Multi-stage autonomous audit workflows & report generator
-│   └── prompts.py            # System prompts configured for AutoPick / Multiverse AI
+│   └── prompts.py            # System prompt persona configuration
 ├── skills/                   # AAS & Claude-style SKILL.md hardware engineering playbooks
 │   ├── pcb-thermal-analysis/SKILL.md
 │   ├── emc-emi-hardening/SKILL.md
@@ -189,6 +192,7 @@ d:/aaaassistan_pcb/
 │   ├── supply_chain_tool.py  # Component lifecycle (Active/NRND/EOL) & distributor stock risk
 │   ├── github_tool.py        # GitHub Issue logger for PCB ERC violations & thermal alerts
 │   ├── doc_exporter_tool.py  # Engineering documentation report exporter (Markdown/JSON)
+│   ├── preferred_parts_tool.py # Preferred component library & project memory tool
 │   ├── omniparser_tool.py    # OmniParser V2 screen capture & RapidOCR layout parser
 │   ├── datasheet_rag_tool.py # PDF RAG with NVIDIA Nemotron 3 Embed 1B / HuggingFace & ChromaDB
 │   ├── nvidia_nim_tool.py    # NVIDIA NIM Cloud APIs: FLUX.1-Schnell, Whisper v3, Magpie TTS, Kimi 2.6, Nemotron 3

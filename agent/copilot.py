@@ -33,6 +33,10 @@ from tools.nvidia_nim_tool import (
 )
 from tools.unlimited_ocr_tool import parse_document_unlimited_ocr
 from tools.composio_tool import composio_execute_action, composio_search_tools, composio_read_sandbox_result
+from agent.instincts import HardwareInstinctsEngine
+from agent.security import AgentShieldGuard
+from agent.context_compressor import ContextWindowCompressor
+from tools.preferred_parts_tool import manage_preferred_parts
 from tools.composio_apps_tool import (
     gmail_fetch_emails, gmail_send_email, gmail_search_emails, gmail_create_draft,
     calendar_list_events, calendar_create_event,
@@ -85,6 +89,7 @@ class JarvisAgent:
             run_nvidia_reasoning,
             parse_nemotron_ocr,
             parse_document_unlimited_ocr,
+            manage_preferred_parts,
             # Composio Generic Tools
             composio_execute_action,
             composio_search_tools,
@@ -117,6 +122,11 @@ class JarvisAgent:
 
         # Multi-Key Gemini Engine Pool Initialization
         self.key_manager = GeminiKeyManager()
+
+        # ECC-Inspired Agent Harness Systems
+        self.instincts_engine = HardwareInstinctsEngine()
+        self.security_guard = AgentShieldGuard()
+        self.context_compressor = ContextWindowCompressor()
 
     async def process_query(self, user_query: str) -> str:
         """
@@ -178,8 +188,8 @@ class JarvisAgent:
         elif "nemotron ocr" in lower_q or "visual ocr" in lower_q:
             tool_result = parse_nemotron_ocr.invoke({"image_path": ""})
             tool_executed = True
-        elif "unlimited ocr" in lower_q or "parse pdf" in lower_q or "baidu ocr" in lower_q:
-            tool_result = parse_document_unlimited_ocr.invoke({"document_path": ""})
+        elif "preferred part" in lower_q or "preferred library" in lower_q or "component memory" in lower_q or "preferred component" in lower_q:
+            tool_result = manage_preferred_parts.invoke({"action": "list"})
             tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q:
             tool_result = self.key_manager.get_usage_summary()
@@ -188,6 +198,12 @@ class JarvisAgent:
 
         if tool_executed:
             self.last_tool_context = format_tool_output_for_cli(tool_result) if isinstance(tool_result, dict) else str(tool_result)
+        else:
+            # Evaluate Automatic Hardware Reflex Instincts
+            instincts = self.instincts_engine.evaluate_query_instincts(user_query)
+            if instincts:
+                inst_lines = [f"⚡ [{i['instinct']}]: {i['trigger_reason']} -> Action: {i['action_recommended']}" for i in instincts]
+                self.last_tool_context = "\n".join(inst_lines)
 
         messages = [SystemMessage(content=JARVIS_SYSTEM_PROMPT)]
 
@@ -201,7 +217,11 @@ class JarvisAgent:
             context_msg = f"ACTIVE SYSTEM/TOOL CONTEXT:\n{self.last_tool_context}\n\nPlease synthesize this data naturally into your conversational response."
             messages.append(SystemMessage(content=context_msg))
 
-        for item in self.history[-8:]:
+        recent_history, summary_context = self.context_compressor.compress_history(self.history)
+        if summary_context:
+            messages.append(SystemMessage(content=summary_context))
+
+        for item in recent_history:
             if item["role"] == "user":
                 messages.append(HumanMessage(content=item["content"]))
             else:
