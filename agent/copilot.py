@@ -226,7 +226,7 @@ class JarvisAgent:
                         api_key=working_key,
                         temperature=0.3
                     )
-                    if scoped_tools and hasattr(gemini_model, 'bind_tools'):
+                    if not tool_executed and scoped_tools and hasattr(gemini_model, 'bind_tools'):
                         gemini_model = gemini_model.bind_tools(scoped_tools)
                     response = await gemini_model.ainvoke(messages)
                     self.key_manager.report_success(working_key)
