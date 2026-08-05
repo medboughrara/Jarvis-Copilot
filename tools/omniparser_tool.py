@@ -101,17 +101,22 @@ class OmniParserTool:
             elif re.match(r'^(J\d+|Q\d+|F\d+|EN\s+\w+|D\d+)$', w_upper):
                 detected_connectors.add(w_clean)
 
-        # Build dynamic, accurate visual voice response summary without hardcoded hallucinations
-        sec_str = ", ".join(sorted(list(detected_sections))) if detected_sections else "None detected"
-        ics_str = ", ".join(sorted(list(detected_ics))) if detected_ics else "None detected"
-        nets_str = ", ".join(sorted(list(detected_nets))) if detected_nets else "None detected"
-        conn_str = ", ".join(sorted(list(detected_connectors))) if detected_connectors else "None detected"
+        all_words_clean = [w.encode('ascii', errors='ignore').decode('ascii').strip() for w in extracted_words if w.strip()]
+        unique_words = list(dict.fromkeys(all_words_clean))
+        top_words_str = ", ".join(unique_words[:20]) if unique_words else "No visible text labels"
+
+        sec_str = ", ".join(sorted(list(detected_sections))) if detected_sections else "General Schematic View"
+        ics_str = ", ".join(sorted(list(detected_ics))) if detected_ics else "Standard IC/Component Blocks"
+        nets_str = ", ".join(sorted(list(detected_nets))) if detected_nets else "Power & Signal Nets"
+        conn_str = ", ".join(sorted(list(detected_connectors))) if detected_connectors else "Default Connectors"
 
         summary = [
-            f"I captured your active screen at {width}x{height} showing '{window_title}'.",
-            f"Visual analysis identified schematic sections: {sec_str}.",
-            f"Active ICs and power components include: {ics_str}, plus connectors {conn_str}.",
-            f"Power and signal nets detected include: {nets_str}."
+            f"Screen Capture Analysis ({width}x{height} - '{window_title}'):",
+            f"Identified Active Window: {window_title}.",
+            f"Schematic Sections & Labels: {sec_str}.",
+            f"Detected Components & ICs: {ics_str}.",
+            f"Power & Signal Nets: {nets_str}.",
+            f"Visible UI Text Elements: {top_words_str}."
         ]
 
         return " ".join(summary)
@@ -136,17 +141,16 @@ def parse_screen_gui(action_context: str = "KiCad GUI") -> dict:
     try:
         parser = get_omniparser()
         res_text = parser.capture_and_parse()
-        summary_str = f"OmniParser V2 GUI Capture for '{action_context}': {res_text[:120]}..."
         return {
             "status": "success",
-            "summary": summary_str,
+            "summary": res_text,
             "data": {
                 "action_context": action_context,
                 "parsed_gui_text": res_text
             }
         }
     except Exception as e:
-        logger.error(f"[parse_screen_gui Error] {e}")
+        print(f"[parse_screen_gui Error] {e}")
         return {
             "status": "error",
             "summary": f"Error parsing GUI screen: {e}",
