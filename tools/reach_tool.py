@@ -177,7 +177,7 @@ def search_component_datasheet(query: str) -> dict:
 @tool
 def check_compliance_status(component_name: str) -> dict:
     """
-    Verifies RoHS and FCC regulatory compliance for electronic components used in AutoPick.
+    Verifies RoHS and FCC regulatory compliance for electronic components.
     """
     try:
         return AgentReachTool.verify_compliance(component_name)

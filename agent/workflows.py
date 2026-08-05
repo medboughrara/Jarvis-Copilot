@@ -117,7 +117,7 @@ def run_full_pcb_audit(file_path: str = "") -> dict:
         json.dump(report, f, indent=2)
 
     with open(md_path, "w", encoding="utf-8") as f:
-        f.write(f"# AutoPick Hardware Audit Report: {report['file_analyzed']}\n")
+        f.write(f"# PCB Hardware Audit Report: {report['file_analyzed']}\n")
         f.write(f"- **Timestamp**: {timestamp}\n")
         f.write(f"- **Overall Status**: {overall_status}\n")
         f.write(f"- **Derived Board Parameters**: {derived_current_a}A rail, {derived_bus} bus, MCU: {derived_mcu}, Driver: {derived_driver}\n\n")

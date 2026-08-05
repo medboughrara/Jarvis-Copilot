@@ -1,6 +1,6 @@
-# 🤖 Jarvis PCB Copilot — AutoPick (Multiverse AI)
+# 🤖 Jarvis PCB Copilot
 
-A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic review, electronic component selection, power distribution tree generation, regulatory compliance checks (RoHS/FCC), IPC-2221 thermal analysis, signal integrity, supply chain EOL tracking, and servomotor datasheet retrieval for the **AutoPick** robotic arm project at **Multiverse AI**.
+A local, voice-activated "Jarvis-style" open-source AI copilot designed for PCB schematic review, electronic component selection, power distribution tree generation, regulatory compliance checks (RoHS/FCC), IPC-2221 thermal analysis, signal integrity, supply chain EOL tracking, and KiCad EDA design automation.
 
 ![PCB-CORE_v4.2 Tactical Engineering HUD Interface](image.png)
 
@@ -8,10 +8,9 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 
 ### 🎬 Live System Demo & Tactical Engineering HUD Walkthrough
 
-<video src="test.mp4" controls="controls" muted="muted" width="100%" style="max-height: 640px; border-radius: 8px; border: 1px solid #30363d; margin-top: 12px; margin-bottom: 16px;">
-  <source src="https://raw.githubusercontent.com/medboughrara/Jarvis-PCB-Copilot/main/test.mp4" type="video/mp4">
-  Your browser does not support the video tag. <a href="https://raw.githubusercontent.com/medboughrara/Jarvis-PCB-Copilot/main/test.mp4">Click here to download test.mp4</a>.
-</video>
+![Live System Demo & Tactical Engineering HUD Walkthrough](demo.gif)
+
+[▶ Download / Watch Full Resolution Video (test.mp4)](https://raw.githubusercontent.com/medboughrara/Jarvis-PCB-Copilot/main/test.mp4)
 
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)
 ![CUDA 12.1](https://img.shields.io/badge/CUDA-12.1-green.svg?style=for-the-badge&logo=nvidia&logoColor=white)
@@ -314,4 +313,4 @@ res = composio_execute_action.invoke({
 ---
 
 ## 📄 License & Credits
-Developed for **AutoPick** at **Multiverse AI**. Powered by LangChain, Google Gemini, Ollama, FastMCP, openWakeWord, Faster-Whisper, Kokoro-82M, Microsoft OmniParser V2, Composio MCP, and KiCad S-Expression tools.
+Developed as an open-source personal AI hardware engineering assistant. Powered by LangChain, Google Gemini, Ollama, FastMCP, openWakeWord, Faster-Whisper, Kokoro-82M, Microsoft OmniParser V2, Composio MCP, and KiCad S-Expression tools.

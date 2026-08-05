@@ -236,7 +236,7 @@ class KiCadParser:
         """Generates structured power distribution tree string (backward compatible)."""
         model = self.parse_to_model()
         tree = []
-        tree.append(f"⚡ [AutoPick PCB Power Tree Analysis: {os.path.basename(self.file_path)}]")
+        tree.append(f"⚡ [PCB Power Tree Analysis: {os.path.basename(self.file_path)}]")
         tree.append("==========================================")
 
         if model.power_rails:
@@ -268,7 +268,7 @@ class KiCadParser:
             for m in mcus:
                 tree.append(f"       └── MCU Load: {m['reference']} ({m['value']})")
         else:
-            tree.append("       └── MCU Load: AutoPick Main Controller")
+            tree.append("       └── MCU Load: Primary Microcontroller")
 
         return "\n".join(tree)
 
@@ -278,34 +278,31 @@ class KiCadParser:
         return res_dict.get("summary", str(res_dict))
 
     def generate_bom(self) -> str:
-        """Generates a Bill of Materials summary (backward compatible)."""
+        """Generates Bill of Materials summary (backward compatible)."""
         res_dict = generate_bom_report.invoke({"file_path": self.file_path})
         return res_dict.get("summary", str(res_dict))
 
 
 # ---------------------------------------------------------------------------
-# LangChain Tool Functions ({status, data, summary} Dict Contract)
+# LangChain Tool Functions
 # ---------------------------------------------------------------------------
 
 @tool
 def analyze_kicad_file(file_path: str = "") -> dict:
     """
-    Parses a KiCad schematic (.kicad_sch) or PCB (.kicad_pcb) file and returns component counts, references, and values.
+    Parses a KiCad schematic (.kicad_sch) AST S-expression into a structured SchematicModel.
     """
     try:
-        parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
-        model = parser.parse_to_model()
-
-        warning_prefix = "⚠️ Notice: No project file specified or found. Using fallback sample file: tests/sample_autopick.kicad_sch\n\n" if model.is_sample else ""
-        summary_str = f"{warning_prefix}KiCad Analysis for '{os.path.basename(model.file_path)}': {len(model.components)} components, {len(model.power_rails)} power rails."
-
+        engine = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
+        model = engine.parse_to_model()
+        warning_prefix = f"⚠️ Notice: No project file specified or found. Using fallback sample file: {os.path.basename(model.file_path)}\n\n" if model.is_sample else ""
         return {
             "status": "success",
-            "summary": summary_str,
+            "summary": f"{warning_prefix}Analyzed '{os.path.basename(model.file_path)}': {len(model.components)} components, {len(model.nets)} nets, power rails [{', '.join(model.power_rails)}].",
             "data": {
                 "file_path": model.file_path,
-                "is_sample": model.is_sample,
                 "component_count": len(model.components),
+                "net_count": len(model.nets),
                 "power_rails": model.power_rails,
                 "components": model.components
             }
@@ -322,7 +319,7 @@ def analyze_kicad_file(file_path: str = "") -> dict:
 @tool
 def get_power_tree(file_path: str = "") -> dict:
     """
-    Generates a hierarchical power tree analysis from a KiCad file for AutoPick robotic arm servomotors and control logic.
+    Generates a hierarchical power tree analysis from a KiCad file for motor drivers and control logic.
     """
     try:
         parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)

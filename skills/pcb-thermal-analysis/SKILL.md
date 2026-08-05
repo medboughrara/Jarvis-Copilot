@@ -5,7 +5,7 @@ description: "Guidelines and calculations for high-current copper trace power lo
 
 # PCB Thermal Analysis Playbook
 
-When analyzing PCB thermal loss or linear regulator power dissipation for the AutoPick robotic arm:
+When analyzing PCB thermal loss or linear regulator power dissipation for PCB hardware:
 
 1. **Calculate IPC-2221 Current Density**:
    - Use `calculate_thermal_loss` tool to verify trace width in mils against motor current in Amps.

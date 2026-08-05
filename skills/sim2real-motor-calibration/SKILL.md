@@ -1,11 +1,11 @@
 ---
 name: sim2real-motor-calibration
-description: "Servomotor torque, current, and kinematic alignment for AutoPick robotic arm hardware."
+description: "Servomotor torque, current, and kinematic alignment for servomotor driver hardware."
 ---
 
-# Sim2Real Motor Calibration Playbook
+# Sim2Real Servomotor Calibration Playbook
 
-When analyzing servomotor kinematics or motor driver schematics for AutoPick:
+When analyzing servomotor kinematics or motor driver schematics:
 
 1. **Torque & Voltage Matching**:
    - Verify **Feetech STS3215 / MG996R** operating voltage (6.0V - 7.4V).

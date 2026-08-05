@@ -34,9 +34,9 @@ class JarvisConfig(BaseSettings):
     """Pydantic Settings Schema for Jarvis PCB Copilot with fail-fast startup validation."""
 
     # Project Metadata
-    PROJECT_NAME: str = "AutoPick"
-    COMPANY_NAME: str = "Multiverse AI"
-    DOMAIN_CONTEXT: str = "Sim2Real, servomotors, PCB schematics, component compliance"
+    PROJECT_NAME: str = "Jarvis PCB Copilot"
+    COMPANY_NAME: str = "Personal Open Source"
+    DOMAIN_CONTEXT: str = "PCB schematics, component compliance, signal integrity, thermal analysis"
 
     # Audio Recording Settings
     SAMPLE_RATE: int = 16000
@@ -51,7 +51,7 @@ class JarvisConfig(BaseSettings):
     STT_MODEL_SIZE: str = "base.en"
     STT_DEVICE: str = "cpu"
     STT_COMPUTE_TYPE: str = "int8"
-    STT_INITIAL_PROMPT: str = "AutoPick, Multiverse AI, Sim2Real, servomotors, PCB, schematic, KiCad, RoHS, FCC"
+    STT_INITIAL_PROMPT: str = "Jarvis PCB Copilot, PCB, schematic, KiCad, RoHS, FCC, thermal, signal integrity"
 
     # Text-to-Speech
     TTS_MODEL_NAME: str = "kokoro-v1.0.onnx"

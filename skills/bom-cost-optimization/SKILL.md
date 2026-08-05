@@ -5,7 +5,7 @@ description: "Playbook for cross-referencing LCSC and JLCPCB Basic vs Extended c
 
 # BOM Cost & Sourcing Optimization Playbook
 
-When optimizing the Bill of Materials (BOM) for AutoPick PCB manufacturing:
+When optimizing the Bill of Materials (BOM) for PCB manufacturing:
 
 1. **Prioritize Basic Parts on JLCPCB**:
    - Verify if passives (0603/0805 resistors, MLCC capacitors) and standard regulators (AMS1117-3.3, PCA9685) are tagged as **Basic Parts** on JLCPCB. Basic parts do not incur extra setup reel loading fees.

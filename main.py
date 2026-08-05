@@ -1,10 +1,10 @@
 """
-Main Async Execution Loop for Jarvis PCB Copilot (AutoPick / Multiverse AI).
+Main Async Execution Loop for Jarvis PCB Copilot.
 
 Pipeline Flow:
 1. Continuous background wake word detection (`openWakeWord` on CPU).
-2. Upon wake word trigger ("jarvis"), activate `Faster-Whisper` STT with custom domain prompt ("AutoPick, Multiverse AI, Sim2Real, servomotors").
-3. Process transcribed query through LangChain `JarvisAgent` (Ollama GPU backend).
+2. Upon wake word trigger ("jarvis"), activate `Faster-Whisper` STT.
+3. Process transcribed query through LangChain `JarvisAgent`.
 4. Synthesize agent response via `Kokoro TTS` (CPU) and stream to audio output.
 """
 
@@ -19,7 +19,7 @@ from agent.copilot import JarvisAgent
 
 async def main_loop():
     print("=" * 65)
-    print("      JARVIS PCB COPILOT - MULTIVERSE AI (AutoPick Project)")
+    print("      JARVIS PCB COPILOT - AI HARDWARE ASSISTANT")
     print("=" * 65)
     print("[System] Initializing voice pipeline & agent engine...")
 
