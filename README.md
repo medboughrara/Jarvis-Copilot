@@ -4,14 +4,18 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 
 ![PCB-CORE_v4.2 Tactical Engineering HUD Interface](image.png)
 
-![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg)
-![CUDA 12.1](https://img.shields.io/badge/CUDA-12.1-green.svg)
-![PyTorch 2.4.1](https://img.shields.io/badge/PyTorch-2.4.1%2Bcu121-orange.svg)
-![LangChain](https://img.shields.io/badge/Orchestration-LangChain-purple.svg)
-![Gemini 3.6 Flash](https://img.shields.io/badge/LLM-Gemini%203.6%20Flash-blue.svg)
-![MCP Server](https://img.shields.io/badge/Protocol-Model%20Context%20Protocol-red.svg)
-![Kokoro 24kHz](https://img.shields.io/badge/TTS-Kokoro--82M%2024kHz-brightgreen.svg)
-![Cyberpunk HUD](https://img.shields.io/badge/UI-PCB--CORE__v4.2%20HUD-cyan.svg)
+<div align="center">
+
+![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)
+![CUDA 12.1](https://img.shields.io/badge/CUDA-12.1-green.svg?style=for-the-badge&logo=nvidia&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-orange.svg?style=for-the-badge&logo=pytorch&logoColor=white)
+![LangChain](https://img.shields.io/badge/Orchestration-LangChain-purple.svg?style=for-the-badge&logo=chainlink&logoColor=white)
+![Gemini 3.6 Flash](https://img.shields.io/badge/LLM-Gemini_3.6_Flash-4285F4.svg?style=for-the-badge&logo=google&logoColor=white)
+![FastMCP](https://img.shields.io/badge/Protocol-MCP-FF4B4B.svg?style=for-the-badge&logo=anthropic&logoColor=white)
+![Kokoro 24kHz](https://img.shields.io/badge/TTS-Kokoro_24kHz-00F2FF.svg?style=for-the-badge)
+![Composio MCP](https://img.shields.io/badge/Cloud_Apps-Composio_1000+-6C5CE7.svg?style=for-the-badge)
+
+</div>
 
 ---
 
@@ -20,29 +24,71 @@ A local, voice-activated "Jarvis-style" AI copilot designed for PCB schematic re
 
 ---
 
-## 🏛️ Modern Architecture & Refactoring Highlights
+## 🏛️ System Architecture & Execution Pipeline
 
-Jarvis PCB Copilot features an enterprise-grade, multi-tenant modular architecture:
+```mermaid
+graph TD
+    subgraph Input Layer
+        MIC[🎙️ Push-To-Talk Mic / Audio] --> STT[⚡ Faster-Whisper / NVIDIA Whisper v3 STT]
+        UI[🖥️ Cyberpunk Glassmorphic HUD] --> CMD[💬 REST API / Command Input]
+    end
+    
+    subgraph AI Orchestration Layer
+        STT --> AGENT[🧠 LangChain JarvisAgent]
+        CMD --> AGENT
+        AGENT --> ROUTER[🔄 Composio Dynamic Tool Router]
+        AGENT --> SKILLS[📖 AAS Hardware Playbooks]
+    end
+    
+    subgraph Multi-Tier LLM Brain
+        AGENT --> T1[⚡ Tier 1: Gemini 3.6 Flash Multi-Key Pool]
+        T1 -. Fallback .-> T2[🌌 Tier 2: NVIDIA NIM Cloud - Kimi 2.6 / Nemotron 3]
+        T2 -. Fallback .-> T3[☁️ Tier 3: Ollama Cloud - GLM-5.2 / Kimi-K3]
+        T3 -. Fallback .-> T4[💻 Tier 4: Local RTX 3050 Llama3:8b]
+    end
+    
+    subgraph EDA & Hardware Solvers
+        ROUTER --> KICAD[📐 KiCad S-Expression AST Parser]
+        ROUTER --> THM[🔥 IPC-2221 Thermal & Joule Loss Solver]
+        ROUTER --> SIG[⚡ Signal Integrity Bounds Solver]
+        ROUTER --> SUP[📦 Supply Chain Lifecycle & Risk Tracker]
+        ROUTER --> OCR[👁️ OmniParser V2 GUI Vision & RapidOCR]
+        ROUTER --> CMP[🔗 Composio MCP Hub - Gmail / Calendar / GitHub / Notion]
+    end
+    
+    subgraph Output Layer
+        AGENT --> TTS[🔊 Kokoro-82M 24kHz Neural TTS / SAPI5]
+        TTS --> SPK[📣 Speaker Playback & Audio Uplink]
+        AGENT --> HUD_LOG[💻 Live Tactical Terminal Log Stream]
+```
 
-1. **Shared Parsed Circuit Model (`SchematicModel` via `sexpdata`)**:
-   - Parses `.kicad_sch` S-expressions into an AST tree rather than ad-hoc regex.
-   - Builds a unified `SchematicModel` (components, net-to-pin maps, power rails, pin connectivity graph).
-   - Performs true graph-based floating-net detection (single-pin net declarations).
-   - Derives thermal currents, bus types, and component part numbers dynamically from the board.
-2. **Session-Scoped Engine & Cache Container (`JarvisSessionContext`)**:
-   - Replaces process-wide mutable singletons with per-agent/MCP session context objects.
-   - Caches parsed circuit models (`schematic_cache` keyed by SHA-256 file hash), ChromaDB RAG vector stores, OmniParser V2 screen OCR, and Unlimited-OCR engines without cross-session data leakage.
-3. **Structured Data Contract & Presentation Layer (`tools/formatters.py`)**:
-   - All 11 tool files return structured dicts: `{"status": "success" | "error", "summary": "...", "data": {"verdict": "PASSED" | "WARNING" | "FAILED", ...}}`.
-   - Distinguishes execution outcome (`status`) from engineering judgment (`verdict`).
-   - `tools/formatters.py` provides separate presentation layers for voice audio (`main.py`) vs CLI / MCP clients.
-4. **Dynamic FastMCP Server Tool Registration Adapter (`mcp_server.py`)**:
-   - Dynamically inspects Pydantic `args_schema` models from `JarvisAgent().tools` at startup.
-   - Automatically generates typed wrapper functions preserving parameter annotations AND default values (e.g. `current_amps: float = 3.0`) without hand-duplicating signatures.
-5. **Validated Startup Config Schema (`config.py`)**:
-   - Powered by `pydantic-settings` (`JarvisConfig`) with fail-fast startup validation ensuring at least 1 LLM tier and required API keys are configured.
-6. **Standardized Unified Logger**:
-   - Routes structured audit logs to `scratch/jarvis_session.log` while keeping terminal output clean.
+---
+
+## 🔄 6-Stage Autonomous Hardware Audit Dataflow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 👤 Hardware Lead / User
+    participant HUD as 🖥️ PCB-CORE_v4.2 HUD
+    participant Agent as 🧠 Jarvis Copilot Engine
+    participant KiCad as 📐 KiCad S-Exp AST Engine
+    participant Solver as 🔥 IPC Thermal & SI Solvers
+    participant Search as 🌐 Web & RoHS Compliance
+    participant Cloud as 🔗 Composio MCP Apps
+
+    User->>HUD: Trigger Autonomous PCB Review
+    HUD->>Agent: Send audit command request
+    Agent->>KiCad: Parse .kicad_sch AST & build SchematicModel
+    KiCad-->>Agent: Return components, net graph & power tree
+    Agent->>Solver: Calculate IPC-2221 trace heat & I2C pullup bounds
+    Solver-->>Agent: Return thermal rise & impedance verdicts
+    Agent->>Search: Check part lifecycle & RoHS 3 / FCC compliance
+    Search-->>Agent: Return compliance status & stock risk
+    Agent->>Cloud: Export findings to Google Sheet & Gmail
+    Cloud-->>Agent: Return confirmation URL & delivery status
+    Agent-->>HUD: Stream complete interactive report & speak summary out loud
+```
 
 ---
 
@@ -65,6 +111,34 @@ Designed to run smoothly on a Windows laptop with an **Intel Core i5-12450HX CPU
 
 ---
 
+## 🛠️ Complete System Capabilities Matrix
+
+Jarvis PCB Copilot integrates 19 core hardware engineering, voice, vision, and agentic capabilities:
+
+| # | Capability Domain | Subsystem / Module | Key Functions & Features |
+| :--- | :--- | :--- | :--- |
+| **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`, `NVIDIA`) | Hands-free ONNX wake word ("jarvis"), Faster-Whisper / NVIDIA Whisper v3 STT, and Kokoro 24kHz / NVIDIA Magpie TTS voice synthesis. |
+| **2** | **🧠 Multi-Tier LLM Brain** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud (Kimi 2.6 & Nemotron 3) -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
+| **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Dynamically registers all 19 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
+| **4** | **📐 KiCad S-Expression AST Parser** | `tools/kicad_tool.py` | Direct S-expression parser for `.kicad_sch` & `.kicad_pcb` files: builds `SchematicModel`, extracts components, generates power trees, builds BOM CSVs, and runs graph ERC. |
+| **5** | **🔥 IPC-2221 Thermal Analysis** | `tools/thermal_tool.py` | Calculates required trace width ($I = k \cdot \Delta T^{0.44} \cdot A^{0.725}$), $I^2R$ copper power loss, and SOT-223 voltage regulator junction temperature rise ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
+| **6** | **⚡ Signal Integrity Calculator** | `tools/signal_integrity_tool.py` | Calculates I2C pull-up resistor min/max bounds ($R_{min} / R_{max}$), UART series damping resistors (22Ω–33Ω), and CAN bus 120Ω split termination ($60\Omega + 60\Omega + 4.7\text{nF}$). |
+| **7** | **📦 Supply Chain & Lifecycle Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle status (Active vs NRND vs EOL), distributor stock availability (LCSC/Mouser/DigiKey), JLCPCB basic/extended classification, and risk levels. |
+| **8** | **🌐 Live Web & Compliance Search** | `tools/reach_tool.py` | Live DuckDuckGo web search for part datasheets, pinouts, and strict RoHS 3 (2015/863/EU) / FCC Part 15 regulatory verification. |
+| **9** | **👁️ OmniParser Screen OCR Inspector** | `tools/omniparser_tool.py` | Screen capture layout parser using `RapidOCR` ONNX engine to visually detect ICs, pin labels, power rails, and KiCad GUI dialogs. |
+| **10**| **📚 Local & Cloud Datasheet PDF RAG**| `tools/datasheet_rag_tool.py` | Incremental PDF datasheet ingestion into ChromaDB powered by **NVIDIA Nemotron 3 Embed 1B** or HuggingFace `all-MiniLM-L6-v2` embeddings. |
+| **11**| **🎫 GitHub Issue & Audit Logger** | `tools/github_tool.py` | Logs PCB schematic ERC violations, thermal alerts, or component risks directly as labeled GitHub issues via GitHub API or local JSON log (`scratch/github_issues_log.json`). |
+| **12**| **📄 Engineering Document Exporter** | `tools/doc_exporter_tool.py` | Formats and exports audit reports, thermal calculations, and BOM summaries directly to `docs/` and `scratch/` as clean markdown or JSON files. |
+| **13**| **📖 AAS & Claude Skill Playbook Engine**| `agent/skill_loader.py` & `skills/` | Dynamic SKILL.md playbook loader with YAML frontmatter for domain playbooks: Thermal Analysis, EMC/EMI Hardening, Sim2Real Motor Calibration, Issue Tracking, BOM Cost Optimization. |
+| **14**| **🔄 On-Demand Dynamic Tool Router** | `agent/composio_router.py` | Dynamically scopes active tools per prompt query intent (`ComposioRouter.filter_tools_for_query`), keeping LLM context fast and lightweight. |
+| **15**| **🤖 Autonomous 6-Stage Hardware Audit**| `agent/workflows.py` | Executes multi-phase audit workflow deriving parameters directly from parsed `SchematicModel` and writes reproducible reports (`scratch/pcb_audit_report.md`). |
+| **16**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Generates high-resolution concept block diagrams, laboratory interiors, or hardware schematics via `black-forest-labs/flux.1-schnell`. |
+| **17**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | One-shot long-horizon PDF datasheet & schematic parsing into structured Markdown using Baidu's Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
+| **18**| **👁️ NVIDIA Nemotron OCR v2** | `tools/nvidia_nim_tool.py` | Visual document & schematic OCR for extracting pinouts, table values, and component references via `nvidia/nemotron-ocr-v2`. |
+| **19**| **🔗 Composio Cloud App Integration** | `tools/composio_tool.py` | 1000+ cloud app actions (Gmail, GitHub, Slack, Notion, Google Calendar, Google Drive, etc.) via Composio's MCP HTTP API — no pip package required. |
+
+---
+
 ## 🏗️ Project Architecture & Directory Layout
 
 ```
@@ -72,9 +146,14 @@ d:/aaaassistan_pcb/
 ├── config.py                 # Validated Pydantic Settings schema & logger configuration
 ├── main.py                   # Async main execution loop linking Wake Word -> STT -> LLM -> TTS
 ├── mcp_server.py             # Dynamic FastMCP Stdio MCP server for external IDEs
-├── test_capabilities.py      # Standalone end-to-end 18-capability verification suite
+├── web_server.py             # Multi-threaded Cyberpunk HUD HTTP REST server
+├── test_capabilities.py      # Standalone end-to-end 19-capability verification suite
 ├── requirements.txt          # Dependencies with PyTorch CUDA 12.1 index & MCP packages
 ├── README.md                 # Project documentation
+├── image.png                 # PCB-CORE_v4.2 Tactical HUD interface screenshot
+├── ui/                       # Cyberpunk Glassmorphic Tactical HUD Web Application
+│   ├── index.html            # Tactical HUD HTML layout with Tailwind CSS & WebGL 3D Shader
+│   └── app.js                # Interactive application logic & REST API bindings
 ├── voice/
 │   ├── __init__.py
 │   ├── wakeword.py           # Background openWakeWord listener (CPU ONNX)
@@ -108,6 +187,7 @@ d:/aaaassistan_pcb/
 │   ├── omniparser_tool.py    # OmniParser V2 screen capture & RapidOCR layout parser
 │   ├── datasheet_rag_tool.py # PDF RAG with NVIDIA Nemotron 3 Embed 1B / HuggingFace & ChromaDB
 │   ├── nvidia_nim_tool.py    # NVIDIA NIM Cloud APIs: FLUX.1-Schnell, Whisper v3, Magpie TTS, Kimi 2.6, Nemotron 3
+│   ├── composio_tool.py      # Composio MCP JSON-RPC protocol integration
 │   └── unlimited_ocr_tool.py # Baidu Unlimited-OCR long-horizon document parser (R-SWA)
 ├── docs/                     # Exported engineering audit logs and documentation
 ├── models/                   # Downloaded ONNX model weights (Kokoro-82M 24kHz voice pack)
@@ -115,34 +195,6 @@ d:/aaaassistan_pcb/
 ├── scratch/                  # Directory for audit reports, CSVs, screen captures, and session logs
 ├── tests/                    # Comprehensive unit and integration test suite (38 test modules)
 ```
-
----
-
-## 🛠️ Complete System Capabilities Matrix
-
-Jarvis PCB Copilot integrates 18 core hardware engineering, voice, vision, and agentic capabilities:
-
-| # | Capability Domain | Subsystem / Module | Key Functions & Features |
-| :--- | :--- | :--- | :--- |
-| **1** | **🎙️ Voice STT/TTS Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`, `NVIDIA`) | Hands-free ONNX wake word ("jarvis"), Faster-Whisper / NVIDIA Whisper v3 STT, and Kokoro 24kHz / NVIDIA Magpie TTS voice synthesis. |
-| **2** | **🧠 Multi-Tier LLM Brain** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud (Kimi 2.6 & Nemotron 3) -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
-| **3** | **🔌 Stdio MCP Server** | `mcp_server.py` (`FastMCP`) | Dynamically registers all 19 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
-| **4** | **📐 KiCad S-Expression AST Parser** | `tools/kicad_tool.py` | Direct S-expression parser for `.kicad_sch` & `.kicad_pcb` files: builds `SchematicModel`, extracts components, generates power trees, builds BOM CSVs, and runs graph ERC. |
-| **5** | **🔥 IPC-2221 Thermal Analysis** | `tools/thermal_tool.py` | Calculates required trace width ($I = k \cdot \Delta T^{0.44} \cdot A^{0.725}$), $I^2R$ copper power loss, and SOT-223 voltage regulator junction temperature rise ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
-| **6** | **⚡ Signal Integrity Calculator** | `tools/signal_integrity_tool.py` | Calculates I2C pull-up resistor min/max bounds ($R_{min} / R_{max}$), UART series damping resistors (22Ω–33Ω), and CAN bus 120Ω split termination ($60\Omega + 60\Omega + 4.7\text{nF}$). |
-| **7** | **📦 Supply Chain & Lifecycle Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle status (Active vs NRND vs EOL), distributor stock availability (LCSC/Mouser/DigiKey), JLCPCB basic/extended classification, and risk levels. |
-| **8** | **🌐 Live Web & Compliance Search** | `tools/reach_tool.py` | Live DuckDuckGo web search for part datasheets, pinouts, and strict RoHS 3 (2015/863/EU) / FCC Part 15 regulatory verification. |
-| **9** | **👁️ OmniParser Screen OCR Inspector** | `tools/omniparser_tool.py` | Screen capture layout parser using `RapidOCR` ONNX engine to visually detect ICs, pin labels, power rails, and KiCad GUI dialogs. |
-| **10**| **📚 Local & Cloud Datasheet PDF RAG**| `tools/datasheet_rag_tool.py` | Incremental PDF datasheet ingestion into ChromaDB powered by **NVIDIA Nemotron 3 Embed 1B** or HuggingFace `all-MiniLM-L6-v2` embeddings. |
-| **11**| **🎫 GitHub Issue & Audit Logger** | `tools/github_tool.py` | Logs PCB schematic ERC violations, thermal alerts, or component risks directly as labeled GitHub issues via GitHub API or local JSON log (`scratch/github_issues_log.json`). |
-| **12**| **📄 Engineering Document Exporter** | `tools/doc_exporter_tool.py` | Formats and exports audit reports, thermal calculations, and BOM summaries directly to `docs/` and `scratch/` as clean markdown or JSON files. |
-| **13**| **📖 AAS & Claude Skill Playbook Engine**| `agent/skill_loader.py` & `skills/` | Dynamic SKILL.md playbook loader with YAML frontmatter for domain playbooks: Thermal Analysis, EMC/EMI Hardening, Sim2Real Motor Calibration, Issue Tracking, BOM Cost Optimization. |
-| **14**| **🔄 On-Demand Dynamic Tool Router** | `agent/composio_router.py` | Dynamically scopes active tools per prompt query intent (`ComposioRouter.filter_tools_for_query`), keeping LLM context fast and lightweight. |
-| **15**| **🤖 Autonomous 6-Stage Hardware Audit**| `agent/workflows.py` | Executes multi-phase audit workflow deriving parameters directly from parsed `SchematicModel` and writes reproducible reports (`scratch/pcb_audit_report.md`). |
-| **16**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Generates high-resolution concept block diagrams, laboratory interiors, or hardware schematics via `black-forest-labs/flux.1-schnell`. |
-| **17**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | One-shot long-horizon PDF datasheet & schematic parsing into structured Markdown using Baidu's Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
-| **18**| **👁️ NVIDIA Nemotron OCR v2** | `tools/nvidia_nim_tool.py` | Visual document & schematic OCR for extracting pinouts, table values, and component references via `nvidia/nemotron-ocr-v2`. |
-| **19**| **🔗 Composio Cloud App Integration** | `tools/composio_tool.py` | 1000+ cloud app actions (Gmail, GitHub, Slack, Notion, Google Calendar, Google Drive, etc.) via Composio's MCP HTTP API — no pip package required. |
 
 ---
 
@@ -174,36 +226,6 @@ uv pip install --index-strategy unsafe-best-match -r requirements.txt
 uv pip install torch==2.4.1+cu121 torchaudio==2.4.1+cu121 torchvision==0.19.1+cu121 --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### 4. Environment Variables Configuration (`.env`)
-Create a `.env` file in the root directory:
-```env
-# Gemini Multi-Key Rotation Pool
-GEMINI_API_KEYS=AIzaSyDl...,AQ.Ab8RN...,AQ.Ab8RN...,AQ.Ab8RN...,AQ.Ab8RN...
-USE_GEMINI=true
-GEMINI_MODEL=gemini-3.6-flash
-
-# Ollama Models (Cloud & Local)
-OLLAMA_CLOUD_MODELS=glm-5.2:cloud,kimi-k3:cloud
-OLLAMA_MODEL=llama3:8b
-
-# NVIDIA AI Foundation Models (FLUX.1-Schnell, Whisper Large v3, Magpie TTS, Kimi 2.6, Nemotron 3)
-NVIDIA_API_KEY=nvapi-YOUR_NVIDIA_API_KEY
-NVIDIA_KIMI_KEY=nvapi-YOUR_KIMI_KEY
-NVIDIA_NEMOTRON_KEY=nvapi-YOUR_NEMOTRON_KEY
-NVIDIA_NEMOTRON_OCR_KEY=nvapi-YOUR_OCR_KEY
-NVIDIA_NEMOTRON_EMBED_KEY=nvapi-YOUR_EMBED_KEY
-USE_NVIDIA_STT=false
-USE_NVIDIA_TTS=false
-
-# Baidu Unlimited-OCR Engine
-UNLIMITED_OCR_MODEL=baidu/Unlimited-OCR
-USE_UNLIMITED_OCR=true
-
-# Composio MCP Integration (Gmail, GitHub, Slack, Notion, Google Calendar, etc.)
-COMPOSIO_API_KEY=ck_YOUR_COMPOSIO_API_KEY
-COMPOSIO_MCP_URL=https://connect.composio.dev/mcp
-```
-
 ---
 
 ## 🚀 Running Jarvis PCB Copilot
@@ -231,20 +253,6 @@ python mcp_server.py
 
 Jarvis can send emails, create GitHub issues, post Slack messages, schedule calendar events, and interact with 1000+ cloud apps using [Composio](https://connect.composio.dev) — all via voice command or agent tool call.
 
-### One-Time Setup
-
-1. Connect your apps in the [Composio dashboard](https://connect.composio.dev) (Gmail OAuth, GitHub, Slack, etc.).
-2. Your `COMPOSIO_API_KEY` is already set in `.env`.
-
-### Voice Command Examples
-
-| Voice Command | Composio Action |
-| :--- | :--- |
-| *"Jarvis, fetch my 5 most recent emails."* | Calls `GMAIL_FETCH_EMAILS` via Composio MCP |
-| *"Jarvis, send an email to the team about the PCB audit results."* | Calls `GMAIL_SEND_EMAIL` |
-| *"Jarvis, create a GitHub issue for the floating net ERC warning."* | Routes to `GITHUB_CREATE_ISSUE` |
-| *"Jarvis, post the thermal analysis results to our Slack channel."* | Routes to `SLACK_SEND_MESSAGE` |
-
 ### Programmatic Usage
 
 ```python
@@ -265,9 +273,6 @@ res = composio_execute_action.invoke({
     "tool_arguments": '{"to": "team@company.com", "subject": "PCB Audit Report", "body": "See attached audit."}'
 })
 ```
-
-> [!NOTE]
-> Use `composio_search_tools` first if you're unsure of the exact `tool_slug` for a given action.
 
 ---
 
@@ -293,12 +298,7 @@ res = composio_execute_action.invoke({
 .venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
-### 2. Run MCP Server Dynamic Registration Unit Test
-```powershell
-.venv\Scripts\python.exe -m unittest tests/test_mcp_server.py
-```
-
-### 3. Run Standalone Capabilities Verification Suite (18 Capabilities)
+### 2. Run Standalone Capabilities Verification Suite (19 Capabilities)
 ```powershell
 .venv\Scripts\python.exe test_capabilities.py
 ```
@@ -306,4 +306,4 @@ res = composio_execute_action.invoke({
 ---
 
 ## 📄 License & Credits
-Developed for **AutoPick** at **Multiverse AI**. Powered by LangChain, Google Gemini, Ollama, FastMCP, openWakeWord, Faster-Whisper, Kokoro-82M, Microsoft OmniParser V2, and KiCad S-Expression tools.
+Developed for **AutoPick** at **Multiverse AI**. Powered by LangChain, Google Gemini, Ollama, FastMCP, openWakeWord, Faster-Whisper, Kokoro-82M, Microsoft OmniParser V2, Composio MCP, and KiCad S-Expression tools.
