@@ -1,12 +1,13 @@
 """
-Composio Active App Tools for Jarvis PCB Copilot.
+Composio Active App Tools for Jarvis AI Assistant.
 
-Dedicated, typed LangChain tools for the 5 actively connected Composio apps:
-  - Gmail           (fetch, send, search, reply)
+Dedicated, typed LangChain tools for actively connected Composio apps:
+  - Gmail           (fetch, send, search, draft)
   - Google Calendar (list events, create event)
-  - Notion          (search pages, create page, add block)
+  - Notion          (search pages, create page)
   - Google Sheets   (get values, append row)
   - Google Docs     (get document, create document)
+  - Discord         (send message, fetch messages, create channel)
 
 These tools call Composio's MCP HTTP endpoint directly using the shared helpers
 from tools/composio_tool.py — no composio-core pip package needed.
@@ -371,3 +372,76 @@ def docs_create_document(
     if content:
         args["text"] = content
     return _execute("GOOGLEDOCS_CREATE_DOCUMENT", f"Create Google Doc: {title}", args)
+
+
+# ---------------------------------------------------------------------------
+# 💬 Discord Tools (Composio Integration)
+# ---------------------------------------------------------------------------
+
+@tool
+def discord_send_message(
+    channel_id: str,
+    message: str
+) -> dict:
+    """
+    Sends a message to a Discord text channel via Composio connection.
+
+    Args:
+        channel_id: The Discord text channel ID (or channel name/topic).
+        message: Plain text or formatted markdown message content to post.
+
+    Returns:
+        dict with status, summary, and data containing Discord API delivery output.
+    """
+    logger.info(f"[Discord] Sending message to channel '{channel_id}'")
+    return _execute(
+        "DISCORD_SEND_MESSAGE",
+        f"Send Discord message to channel {channel_id}",
+        {"channel_id": channel_id, "content": message}
+    )
+
+
+@tool
+def discord_fetch_messages(
+    channel_id: str,
+    limit: int = 5
+) -> dict:
+    """
+    Fetches the most recent messages from a Discord text channel via Composio.
+
+    Args:
+        channel_id: The Discord text channel ID.
+        limit: Number of recent messages to retrieve (default: 5).
+
+    Returns:
+        dict with status, summary, and data containing recent channel messages.
+    """
+    logger.info(f"[Discord] Fetching {limit} messages from channel '{channel_id}'")
+    return _execute(
+        "DISCORD_FETCH_MESSAGES",
+        f"Fetch {limit} recent Discord messages from channel {channel_id}",
+        {"channel_id": channel_id, "limit": limit}
+    )
+
+
+@tool
+def discord_create_channel(
+    guild_id: str,
+    channel_name: str
+) -> dict:
+    """
+    Creates a new text channel in a Discord server (guild) via Composio.
+
+    Args:
+        guild_id: The Discord server/guild ID.
+        channel_name: Name of the new channel to create.
+
+    Returns:
+        dict with status, summary, and new channel details.
+    """
+    logger.info(f"[Discord] Creating channel '{channel_name}' in guild '{guild_id}'")
+    return _execute(
+        "DISCORD_CREATE_CHANNEL",
+        f"Create Discord channel '{channel_name}' in server {guild_id}",
+        {"guild_id": guild_id, "name": channel_name}
+    )

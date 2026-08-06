@@ -50,7 +50,8 @@ from tools.composio_apps_tool import (
     calendar_list_events, calendar_create_event,
     notion_search_pages, notion_create_page,
     sheets_get_values, sheets_append_row,
-    docs_get_document, docs_create_document
+    docs_get_document, docs_create_document,
+    discord_send_message, discord_fetch_messages, discord_create_channel
 )
 
 logger = config.get_logger(__name__)
@@ -125,7 +126,11 @@ class JarvisAgent:
             sheets_append_row,
             # Google Docs (Active)
             docs_get_document,
-            docs_create_document
+            docs_create_document,
+            # Discord (Active)
+            discord_send_message,
+            discord_fetch_messages,
+            discord_create_channel
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
@@ -223,6 +228,20 @@ class JarvisAgent:
             tool_executed = True
         elif "take note" in lower_q or "save note" in lower_q:
             tool_result = take_voice_note.invoke({"note_text": user_query})
+            tool_executed = True
+        # --- Discord intents ---
+        elif any(kw in lower_q for kw in ["discord send", "send discord", "post to discord", "message discord", "discord message"]):
+            # Extract channel id and message from user_query heuristically; LLM will refine
+            tool_result = discord_send_message.invoke({
+                "channel_id": "",
+                "message": user_query
+            })
+            tool_executed = True
+        elif any(kw in lower_q for kw in ["discord read", "read discord", "fetch discord", "discord messages", "discord channel messages"]):
+            tool_result = discord_fetch_messages.invoke({"channel_id": "", "limit": 5})
+            tool_executed = True
+        elif any(kw in lower_q for kw in ["discord create channel", "new discord channel", "create channel discord"]):
+            tool_result = discord_create_channel.invoke({"guild_id": "", "channel_name": ""})
             tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q:
             tool_result = self.key_manager.get_usage_summary()
