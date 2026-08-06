@@ -1,6 +1,6 @@
 # 🤖 Jarvis AI — Universal Personal Assistant & Autonomous Work Copilot
 
-A local, voice-activated "Jarvis-style" open-source AI assistant designed for **general productivity, daily work automation (Gmail, Calendar, Notion, Docs/Sheets), coding & software engineering, visual screen analysis, PDF document RAG, and specialized hardware/electronics design automation**.
+A local, voice-activated "Jarvis-style" open-source AI assistant designed for **general productivity, daily work automation (Discord, Gmail, Calendar, Notion, Docs/Sheets), desktop app control, visual screen analysis, PDF document RAG, and specialized hardware/electronics engineering**.
 
 <div align="center">
 
@@ -24,7 +24,7 @@ A local, voice-activated "Jarvis-style" open-source AI assistant designed for **
 ---
 
 > [!NOTE]
-> **Universal Open-Source Assistant**: Jarvis AI is a personal assistant designed for general work—combining hands-free voice interaction, app automation (Gmail, Calendar, Notion), document & code processing, visual screen capture, and domain-specific solvers (electronics, thermal, signal integrity).
+> **Universal Open-Source Personal Assistant**: Jarvis AI combines hands-free voice control, dynamic WebGL voice audio visualization, desktop app automation, real-time Discord & Google workspace messaging, document RAG, and domain-specific engineering solvers.
 
 ---
 
@@ -55,8 +55,9 @@ graph TD
         T3 -.->|Fallback| T4["💻 Tier 4: Local RTX 3050 Llama3:8b"]
     end
     
-    subgraph SUITE ["Universal Capability Tools (35 Active Tools)"]
-        ROUTER --> APPS["📬 Gmail / Google Calendar / Notion / Docs / Sheets"]
+    subgraph SUITE ["Universal Capability Tools (44 Active Tools)"]
+        ROUTER --> APPS["💬 Discord / Gmail / Calendar / Notion / Docs / Sheets"]
+        ROUTER --> SYS["💻 Desktop Control / App Launcher / Screenshots / Voice Notes"]
         ROUTER --> DEV["🎫 GitHub Issues / Document Exporter / Local RAG"]
         ROUTER --> VIS["🎨 NVIDIA FLUX.1 Image Gen / Baidu Unlimited-OCR"]
         ROUTER --> HW["📐 KiCad S-Expression / Thermal / Signal Integrity / Supply Chain"]
@@ -65,6 +66,7 @@ graph TD
     subgraph OUT ["Multimodal Output Layer"]
         AGENT --> TTS["🔊 Kokoro 24kHz Neural TTS / NVIDIA Magpie"]
         TTS --> SPK["📣 Speaker Playback & Audio Uplink"]
+        AGENT --> WEBGL["🌊 Interactive Circle Edge Voice Wave Shader"]
         AGENT --> HUD_LOG["💻 Live Web HUD Terminal Log Stream"]
     end
 ```
@@ -80,38 +82,42 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 | **Wake Word Engine** | CPU | `openWakeWord` ("jarvis") | ONNX Runtime (CPU) |
 | **Speech-to-Text (STT)** | CPU / Cloud | `Faster-Whisper` (`base.en`) / `NVIDIA Whisper v3` | `INT8` Quantization + Cloud API Fallback |
 | **Text-to-Speech (TTS)** | CPU / Cloud | `Kokoro-82M` (24kHz) / `NVIDIA Magpie TTS` | ONNX Runtime + Cloud Neural Voice |
+| **WebGL Voice Visualizer**| Web Browser | Custom GLSL Fragment Shader | Dynamic Standing Audio Wave on Arc Reactor Edge |
 | **Orchestration & Harness** | CPU | LangChain + ECC Agent Harness | Reflex Rules + AgentShield + Context Compression |
 | **LLM Tier 1 (Cloud Pool)** | Cloud Pool | `Google Gemini 3.6 Flash` (5 API Keys) | Round-Robin Rotation + 429 Rate Limit Cooling |
 | **LLM Tier 2 (Cloud Pool)** | Cloud Pool | `Moonshot Kimi 2.6` & `NVIDIA Nemotron 3` | Deep Hardware & Logical Reasoning via NVIDIA NIM |
 | **LLM Tier 3 (Cloud Pool)** | Cloud Pool | `Ollama Cloud` (`glm-5.2:cloud`, `kimi-k3:cloud`) | Secondary Cloud Fallback |
 | **LLM Tier 4 (Local GPU)** | GPU RTX 3050 | `Llama 3 8B` (`ChatOllama`) | Zero-Downtime Offline Fallback |
 | **Vision & Document OCR** | GPU / CPU | Baidu `Unlimited-OCR` & NVIDIA `Nemotron OCR v2` | Constant Memory R-SWA + Multi-Page Parsing |
-| **App & Cloud Integrations**| Cloud / HTTP | Composio MCP Apps (1000+ Services) | Gmail, Calendar, Notion, Sheets, Docs, Slack |
+| **App & Cloud Integrations**| Cloud / HTTP | Composio MCP Apps (1000+ Services) | **Discord**, Gmail, Calendar, Notion, Sheets, Docs |
 
 ---
 
-## 🛠️ Complete Personal Assistant Capabilities Matrix (35 Active Tools)
+## 🛠️ Complete Personal Assistant Capabilities Matrix (44 Active Tools)
 
 | # | Capability Domain | Subsystem / Module | Key Functions & Features |
 | :--- | :--- | :--- | :--- |
 | **1** | **🎙️ Hands-Free Voice Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`) | Voice wake word ("jarvis"), Faster-Whisper STT, and Kokoro 24kHz / NVIDIA Magpie neural speech synthesis. |
-| **2** | **🧠 Multi-Tier LLM Brain Pool** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
-| **3** | **📬 Productivity & App Automation**| `tools/composio_apps_tool.py` | Full Composio integration for **Gmail** (fetch, send, search, drafts), **Google Calendar** (list/create events), **Notion** (search/create pages), **Google Docs**, and **Google Sheets**. |
-| **4** | **⚡ ECC Agent Harness Engine** | `agent/instincts.py`, `agent/security.py`, `agent/context_compressor.py` | Automatic hardware & work reflex rules, AgentShield workspace security guard, and incremental conversation history compressor. |
-| **5** | **🗂️ Preferred Parts & Workflow Memory**| `tools/preferred_parts_tool.py` | User-preferred component library memory (JLCPCB basic parts, LDO regulators, passives, microcontrollers) persisting in `scratch/preferred_parts_library.json`. |
-| **6** | **👁️ OmniParser Screen Vision** | `tools/omniparser_tool.py` | Active screen capture layout parsing with `RapidOCR` ONNX engine to inspect UI elements, component dialogs, and code editors. |
-| **7** | **📚 Local PDF & Datasheet RAG** | `tools/datasheet_rag_tool.py` | Local document & datasheet RAG powered by **NVIDIA Nemotron 3 Embed 1B** and ChromaDB vector store. |
-| **8** | **🌐 Live Web Search & Compliance** | `tools/reach_tool.py` | Live web search for technical datasheets, general information, and regulatory compliance (RoHS 3 / FCC Part 15). |
-| **9** | **🎫 GitHub Issue & Repo Manager** | `tools/github_tool.py` | Log bugs, task reminders, or audit findings directly as labeled GitHub issues. |
-| **10**| **📄 Engineering & General Doc Exporter**| `tools/doc_exporter_tool.py` | Formats and exports audit reports, meeting notes, or general document summaries to `docs/` and `scratch/` as Markdown/JSON. |
-| **11**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Text-to-Image generation for diagrams, UI concepts, and visuals via `black-forest-labs/flux.1-schnell`. |
-| **12**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | Long-horizon document parsing into structured Markdown using Baidu Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
-| **13**| **📐 KiCad EDA & Circuit Parser** | `tools/kicad_tool.py` | KiCad `.kicad_sch` S-expression parser: builds `SchematicModel`, extracts components, generates power distribution trees, and runs ERC. |
-| **14**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
-| **15**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
-| **16**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
-| **17**| **📖 AAS & Claude Skill Playbooks** | `agent/skill_loader.py` & `skills/` | 10 Standardized SKILL.md playbooks: `skill-comply`, `agentic-engineering`, `blueprint-architect`, `repo-scan`, `code-quality-auditor`, `pcb-thermal-analysis`, `emc-emi-hardening`, `sim2real-motor-calibration`, `github-pcb-issue-tracker`, `bom-cost-optimization`. |
-| **18**| **🔌 Stdio MCP FastMCP Protocol** | `mcp_server.py` | Registers all 35 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
+| **2** | **🌊 WebGL Voice Visualizer** | `ui/index.html` & `ui/app.js` | Interactive GLSL Arc Reactor fragment shader with dynamic standing audio wave undulating along the circle edge during speech. |
+| **3** | **💬 Discord Integration** | `tools/composio_apps_tool.py` | Direct **Discord** integration: send channel messages, fetch channel message history, and create new channels (`DISCORDBOT`). |
+| **4** | **💻 Desktop & System Control** | `tools/system_control_tool.py` | Time/date & greetings, launch local apps (Notepad, Calculator, VS Code, Explorer), open URLs/websites, take screenshots, tell jokes, and log voice notes. |
+| **5** | **📬 Workspace App Automation** | `tools/composio_apps_tool.py` | Full Composio integration for **Gmail** (fetch, send, search, drafts), **Google Calendar**, **Notion**, **Google Docs**, and **Google Sheets**. |
+| **6** | **🧠 Multi-Tier LLM Brain Pool** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
+| **7** | **⚡ ECC Agent Harness Engine** | `agent/instincts.py`, `agent/security.py`, `agent/context_compressor.py` | Automatic hardware & work reflex rules, AgentShield workspace security guard, and incremental conversation history compressor. |
+| **8** | **🗂️ Preferred Parts & Workflow Memory**| `tools/preferred_parts_tool.py` | User-preferred component library memory (JLCPCB basic parts, LDO regulators, passives, microcontrollers) persisting in `scratch/preferred_parts_library.json`. |
+| **9** | **👁️ OmniParser Screen Vision** | `tools/omniparser_tool.py` | Active screen capture layout parsing with `RapidOCR` ONNX engine to inspect UI elements, component dialogs, and code editors. |
+| **10**| **📚 Local PDF & Datasheet RAG** | `tools/datasheet_rag_tool.py` | Local document & datasheet RAG powered by **NVIDIA Nemotron 3 Embed 1B** and ChromaDB vector store. |
+| **11**| **🌐 Live Web Search & Compliance** | `tools/reach_tool.py` | Live web search for technical datasheets, general information, and regulatory compliance (RoHS 3 / FCC Part 15). |
+| **12**| **🎫 GitHub Issue & Repo Manager** | `tools/github_tool.py` | Log bugs, task reminders, or audit findings directly as labeled GitHub issues. |
+| **13**| **📄 Engineering & General Doc Exporter**| `tools/doc_exporter_tool.py` | Formats and exports audit reports, meeting notes, or general document summaries to `docs/` and `scratch/` as Markdown/JSON. |
+| **14**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Text-to-Image generation for diagrams, UI concepts, and visuals via `black-forest-labs/flux.1-schnell`. |
+| **15**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | Long-horizon document parsing into structured Markdown using Baidu Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
+| **16**| **📐 KiCad EDA & Circuit Parser** | `tools/kicad_tool.py` | KiCad `.kicad_sch` S-expression parser: builds `SchematicModel`, extracts components, generates power distribution trees, and runs ERC. |
+| **17**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
+| **18**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
+| **19**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
+| **20**| **📖 AAS & Claude Skill Playbooks** | `agent/skill_loader.py` & `skills/` | 10 Standardized SKILL.md playbooks: `skill-comply`, `agentic-engineering`, `blueprint-architect`, `repo-scan`, `code-quality-auditor`, `pcb-thermal-analysis`, `emc-emi-hardening`, `sim2real-motor-calibration`, `github-pcb-issue-tracker`, `bom-cost-optimization`. |
+| **21**| **🔌 Stdio MCP FastMCP Protocol** | `mcp_server.py` | Registers all 44 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
 
 ---
 
@@ -126,17 +132,18 @@ d:/aaaassistan_pcb/
 ├── test_capabilities.py      # Standalone 18-capability system test suite
 ├── requirements.txt          # PyTorch CUDA 12.1, LangChain, & MCP dependencies
 ├── README.md                 # Project documentation
+├── DISCORD_SETUP.md          # Setup guide for Discord Composio integration
 ├── demo.gif                  # Native GitHub animated video demo
 ├── test.mp4                  # High-resolution demonstration video
 ├── ui/                       # Cyberpunk Glassmorphic Tactical HUD Web Interface
-│   ├── index.html            # Web HUD layout with Tailwind CSS & WebGL shader
-│   └── app.js                # App logic, REST API bindings, & vision feed updater
+│   ├── index.html            # Web HUD layout with Tailwind CSS & WebGL voice wave shader
+│   └── app.js                # App logic, REST API bindings, & speech audio wave hooks
 ├── voice/
 │   ├── wakeword.py           # openWakeWord CPU ONNX background listener
 │   ├── stt.py                # Faster-Whisper STT + NVIDIA Whisper Large v3
 │   └── tts.py                # Kokoro-82M 24kHz TTS + NVIDIA Magpie TTS
 ├── agent/
-│   ├── copilot.py            # LangChain JarvisAgent with 35 active tools & multi-tier LLM pool
+│   ├── copilot.py            # LangChain JarvisAgent with 44 active tools & multi-tier LLM pool
 │   ├── session_context.py    # JarvisSessionContext per-session model container
 │   ├── key_manager.py        # Multi-key Gemini rotation & real-time metrics manager
 │   ├── composio_router.py    # Dynamic tool router & context optimizer
@@ -158,6 +165,8 @@ d:/aaaassistan_pcb/
 │   ├── github-pcb-issue-tracker/SKILL.md   # Issue logging & review tracking
 │   └── bom-cost-optimization/SKILL.md      # JLCPCB/LCSC component cost optimization
 ├── tools/
+│   ├── system_control_tool.py# Desktop system control (greeting, app launcher, website, screenshot, notes)
+│   ├── composio_apps_tool.py # Active Discord, Gmail, Calendar, Notion, Docs, Sheets tools
 │   ├── kicad_tool.py         # KiCad S-expression parser & power tree generator
 │   ├── formatters.py         # Voice audio and CLI text presentation layer
 │   ├── reach_tool.py         # Web search & compliance checker
@@ -171,7 +180,6 @@ d:/aaaassistan_pcb/
 │   ├── datasheet_rag_tool.py # PDF document RAG with Nemotron Embed 1B & ChromaDB
 │   ├── nvidia_nim_tool.py    # NVIDIA NIM APIs (FLUX.1, Whisper, Magpie, Nemotron OCR)
 │   ├── composio_tool.py      # Composio MCP JSON-RPC integration
-│   ├── composio_apps_tool.py # Active Gmail, Calendar, Notion, Docs, Sheets tools
 │   └── unlimited_ocr_tool.py # Baidu Unlimited-OCR document parser
 ├── docs/                     # Exported document reports & Markdown summaries
 └── scratch/                  # Session logs, screen captures, and preferred parts memory JSON
@@ -190,7 +198,7 @@ d:/aaaassistan_pcb/
    ```powershell
    python web_server.py
    ```
-   Open `http://localhost:8000` in your web browser.
+   Open `http://localhost:8000` in your web browser to interact with the WebGL Arc Reactor voice wave visualizer.
 
 3. **Launch Hands-Free Voice Assistant**:
    ```powershell
