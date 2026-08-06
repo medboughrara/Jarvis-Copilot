@@ -395,7 +395,7 @@ def discord_send_message(
     """
     logger.info(f"[Discord] Sending message to channel '{channel_id}'")
     return _execute(
-        "DISCORD_SEND_MESSAGE",
+        "DISCORDBOT_CREATE_MESSAGE",
         f"Send Discord message to channel {channel_id}",
         {"channel_id": channel_id, "content": message}
     )
@@ -418,7 +418,7 @@ def discord_fetch_messages(
     """
     logger.info(f"[Discord] Fetching {limit} messages from channel '{channel_id}'")
     return _execute(
-        "DISCORD_FETCH_MESSAGES",
+        "DISCORDBOT_GET_MESSAGES",
         f"Fetch {limit} recent Discord messages from channel {channel_id}",
         {"channel_id": channel_id, "limit": limit}
     )
@@ -441,7 +441,7 @@ def discord_create_channel(
     """
     logger.info(f"[Discord] Creating channel '{channel_name}' in guild '{guild_id}'")
     return _execute(
-        "DISCORD_CREATE_CHANNEL",
+        "DISCORDBOT_GUILD_CHANNEL_CREATE",
         f"Create Discord channel '{channel_name}' in server {guild_id}",
         {"guild_id": guild_id, "name": channel_name}
     )
