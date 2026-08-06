@@ -159,6 +159,34 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(res).encode())
             return
 
+        elif path == "/api/agent/startup-briefing":
+            try:
+                from tools.system_control_tool import get_startup_briefing
+                res = get_startup_briefing.invoke({})
+                briefing_text = res.get("summary", "")
+                
+                def _speak_bg(text):
+                    try:
+                        from voice.tts import TextToSpeech
+                        tts = TextToSpeech()
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        loop.run_until_complete(tts.speak(text))
+                        loop.close()
+                    except Exception as tts_err:
+                        logger.warning(f"[HUD Server] Briefing TTS error: {tts_err}")
+
+                import threading
+                threading.Thread(target=_speak_bg, args=(briefing_text,), daemon=True).start()
+
+                self._set_json_headers(200)
+                self.wfile.write(json.dumps(res).encode())
+            except Exception as e:
+                logger.error(f"[HUD Server] Startup briefing error: {e}")
+                self._set_json_headers(500)
+                self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode())
+            return
+
         elif path == "/api/kicad/sch":
             sch_path = DEFAULT_SAMPLE_SCHEMATIC
             res = analyze_kicad_file.invoke({"file_path": sch_path})
@@ -258,6 +286,34 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
 
             self._set_json_headers(200)
             self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/agent/startup-briefing":
+            try:
+                from tools.system_control_tool import get_startup_briefing
+                res = get_startup_briefing.invoke({})
+                briefing_text = res.get("summary", "")
+                
+                def _speak_bg_post(text):
+                    try:
+                        from voice.tts import TextToSpeech
+                        tts = TextToSpeech()
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        loop.run_until_complete(tts.speak(text))
+                        loop.close()
+                    except Exception as tts_err:
+                        logger.warning(f"[HUD Server] Briefing TTS error: {tts_err}")
+
+                import threading
+                threading.Thread(target=_speak_bg_post, args=(briefing_text,), daemon=True).start()
+
+                self._set_json_headers(200)
+                self.wfile.write(json.dumps(res).encode())
+            except Exception as e:
+                logger.error(f"[HUD Server] Startup briefing error: {e}")
+                self._set_json_headers(500)
+                self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode())
             return
 
         elif path == "/api/thermal/calculate":

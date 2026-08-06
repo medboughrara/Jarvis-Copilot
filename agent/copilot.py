@@ -43,7 +43,8 @@ from tools.system_control_tool import (
     open_website,
     take_desktop_screenshot,
     tell_joke,
-    take_voice_note
+    take_voice_note,
+    get_startup_briefing
 )
 from tools.composio_apps_tool import (
     gmail_fetch_emails, gmail_send_email, gmail_search_emails, gmail_create_draft,
@@ -106,6 +107,7 @@ class JarvisAgent:
             take_desktop_screenshot,
             tell_joke,
             take_voice_note,
+            get_startup_briefing,
             # Composio Generic Tools
             composio_execute_action,
             composio_search_tools,
@@ -210,6 +212,9 @@ class JarvisAgent:
             tool_executed = True
         elif "preferred part" in lower_q or "preferred library" in lower_q or "component memory" in lower_q or "preferred component" in lower_q:
             tool_result = manage_preferred_parts.invoke({"action": "list"})
+            tool_executed = True
+        elif any(kw in lower_q for kw in ["briefing", "startup", "agenda", "schedule today", "tasks today", "what is scheduled", "my day"]):
+            tool_result = get_startup_briefing.invoke({})
             tool_executed = True
         elif "time" in lower_q or "date" in lower_q or "greeting" in lower_q or "what time" in lower_q:
             tool_result = get_system_time_and_greeting.invoke({})

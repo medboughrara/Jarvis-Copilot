@@ -207,7 +207,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnSideVerif = document.getElementById('btn-side-verification');
     const btnRunDrc = document.getElementById('btn-run-drc');
 
-    if (btnSideVerif) btnSideVerif.addEventListener('click', runDRCPass);
+    async function runStartupBriefing() {
+        appendAgentLog(`INITIATING JARVIS SYSTEM STARTUP BRIEFING...`, 'text-primary-container font-bold');
+        try {
+            const resp = await fetch('/api/agent/startup-briefing', { method: 'POST' });
+            const data = await resp.json();
+            const summary = data.summary || (data.data ? data.data.full_briefing : "Jarvis system online.");
+            appendTranscript(`SYS: ${summary}`, 'text-secondary-fixed-dim font-bold');
+            appendAgentLog(`Jarvis: ${summary}`, 'text-primary-container font-bold');
+            speakAloud(summary);
+        } catch (e) {
+            appendAgentLog(`Jarvis System Online. Standing by for voice commands.`, 'text-primary-container');
+            speakAloud("Jarvis system online. Standing by for voice commands.");
+        }
+    }
+
+    if (btnSideVerif) btnSideVerif.addEventListener('click', runStartupBriefing);
     if (btnRunDrc) btnRunDrc.addEventListener('click', runDRCPass);
 
     async function runDRCPass() {
@@ -320,8 +335,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 badge.textContent = `SYS.ONLINE // MODEL: ${data.model.toUpperCase()} // UPTIME: ${data.uptime}`;
             }
             appendAgentLog(`JARVIS BACKEND ONLINE: Model [ ${data.model} ] on http://${data.host}:${data.port}`, 'text-primary-container');
+            runStartupBriefing();
         })
         .catch(() => {
-            appendAgentLog(`PCB-CORE_v4.2 UI ONLINE (Standalone mode)`, 'text-primary-container');
+            appendAgentLog(`JARVIS UI ONLINE (Standalone mode)`, 'text-primary-container');
         });
 });

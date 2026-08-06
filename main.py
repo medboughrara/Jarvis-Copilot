@@ -29,7 +29,17 @@ async def main_loop():
     tts_engine = TextToSpeech()
     agent_engine = JarvisAgent()
 
-    print("\n[System] Initialization complete. Jarvis is online and listening...\n")
+    print("\n[System] Initialization complete. Performing startup briefing...\n")
+    try:
+        from tools.system_control_tool import get_startup_briefing
+        briefing_res = get_startup_briefing.invoke({})
+        briefing_text = briefing_res.get("summary", "System online and ready.")
+        print(f"[Jarvis Startup Briefing] > {briefing_text}\n")
+        await tts_engine.speak(briefing_text)
+    except Exception as be:
+        print(f"[System] Could not run initial briefing: {be}")
+
+    print("\n[System] Jarvis is online and listening for wake word 'Jarvis'...\n")
 
     try:
         tts_task = None
@@ -45,8 +55,9 @@ async def main_loop():
                     print("\n[Barge-in] Interrupted ongoing audio playback.")
                     await asyncio.sleep(0.1)
 
-                # Play brief acknowledgement audio or notification
+                # Speak brief acknowledgement audio on wake word
                 print("[Jarvis] Wake word recognized! Listening for input...")
+                tts_task = asyncio.create_task(tts_engine.speak("Yes? I am listening."))
                 
                 # Step 2: Record & Transcribe user speech using Faster-Whisper with domain prompt
                 audio_buffer = await stt_engine.record_user_audio(record_seconds=5.0)

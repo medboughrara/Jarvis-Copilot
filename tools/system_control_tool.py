@@ -214,3 +214,85 @@ def take_voice_note(note_text: str = "") -> dict:
             "summary": f"Error saving voice note: {e}",
             "data": {"error": str(e)}
         }
+
+
+@tool
+def get_startup_briefing() -> dict:
+    """
+    Generates a full Jarvis System Startup Briefing:
+    - Time-of-day greeting (Good morning / afternoon / evening)
+    - Current time, day of week, and date
+    - Google Calendar events scheduled for today
+    - Pending user tasks and voice notes logged for today
+    """
+    now = datetime.datetime.now()
+    hour = now.hour
+
+    if 5 <= hour < 12:
+        greeting = "Good morning"
+    elif 12 <= hour < 18:
+        greeting = "Good afternoon"
+    elif 18 <= hour < 22:
+        greeting = "Good evening"
+    else:
+        greeting = "Greetings"
+
+    time_str = now.strftime("%I:%M %p")
+    date_str = now.strftime("%A, %B %d, %Y")
+    today_iso = now.strftime("%Y-%m-%d")
+
+    briefing_parts = [f"{greeting}! System online. It is currently {time_str} on {date_str}."]
+
+    # 1. Check Google Calendar Events today
+    cal_summary = ""
+    try:
+        from tools.composio_apps_tool import calendar_list_events
+        cal_res = calendar_list_events.invoke({"max_results": 5})
+        if cal_res.get("status") == "success":
+            cal_data = cal_res.get("data", {}).get("result", "")
+            if cal_data and "error" not in str(cal_data).lower() and "failed" not in str(cal_data).lower():
+                cal_summary = "Here are your scheduled calendar events for today: " + str(cal_data)[:250]
+            else:
+                cal_summary = "You have no scheduled events on your Google Calendar today."
+        else:
+            cal_summary = "No scheduled events on your Google Calendar today."
+    except Exception:
+        cal_summary = "No scheduled events on your Google Calendar today."
+
+    briefing_parts.append(cal_summary)
+
+    # 2. Check pending user tasks & notes logged for today
+    task_summary = ""
+    today_notes = []
+    if os.path.exists(NOTES_FILE):
+        try:
+            with open(NOTES_FILE, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            for line in lines:
+                if today_iso in line or line.strip():
+                    today_notes.append(line.strip())
+        except Exception:
+            pass
+
+    if today_notes:
+        recent_notes = today_notes[-3:]
+        notes_clean = "; ".join([n.split("]", 1)[-1].strip() if "]" in n else n for n in recent_notes])
+        task_summary = f"You have {len(today_notes)} logged note(s) and task(s). Recent items: {notes_clean}."
+    else:
+        task_summary = "You have no pending tasks or voice notes logged for today."
+
+    briefing_parts.append(task_summary)
+
+    full_text = " ".join(briefing_parts)
+    return {
+        "status": "success",
+        "summary": full_text,
+        "data": {
+            "greeting": greeting,
+            "time": time_str,
+            "date": date_str,
+            "calendar": cal_summary,
+            "tasks": task_summary,
+            "full_briefing": full_text
+        }
+    }
