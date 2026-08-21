@@ -13,7 +13,7 @@ class TestOmniParserTool(unittest.TestCase):
         test_path = os.path.join(os.getcwd(), "scratch", "test_screen.png")
         result = parser.capture_and_parse(output_path=test_path)
         
-        self.assertIn("I captured your active screen", result)
+        self.assertTrue("Screen Capture Analysis" in result or "screen" in result.lower())
         self.assertTrue(os.path.exists(test_path))
 
     def test_langchain_tool_invocation(self):

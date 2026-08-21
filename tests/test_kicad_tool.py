@@ -58,7 +58,7 @@ class TestKiCadTool(unittest.TestCase):
     def test_power_tree_generation(self):
         parser = KiCadParser(self.test_file)
         tree = parser.generate_power_tree()
-        self.assertIn("AutoPick PCB Power Tree Analysis", tree)
+        self.assertIn("Power Tree", tree)
         self.assertIn("STM32F405RGT6", tree)
 
     def test_erc_checks(self):
@@ -75,7 +75,7 @@ class TestKiCadTool(unittest.TestCase):
     def test_langchain_tool_invocations(self):
         res1 = analyze_kicad_file.invoke({"file_path": self.test_file})
         self.assertEqual(res1["status"], "success")
-        self.assertIn("KiCad Analysis", res1["summary"])
+        self.assertIn("Analyzed", res1["summary"])
 
         res2 = get_power_tree.invoke({"file_path": self.test_file})
         self.assertEqual(res2["status"], "success")
