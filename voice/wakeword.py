@@ -1,6 +1,6 @@
 """
 Wake Word Detection module using openWakeWord (running on CPU).
-Continuously monitors microphone stream until trigger phrase ("hey_jarvis") is detected.
+Continuously monitors microphone stream until trigger phrase ("jarvis") is detected.
 """
 
 import asyncio

@@ -47,6 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        if (viewName === 'schematic' || viewName === 'routing') {
+            updatePcbViewer();
+        }
+
         appendAgentLog(`Switched view to [ ${viewName.toUpperCase()} ]`, 'text-primary-fixed-dim');
     }
 
@@ -298,6 +302,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    async function updatePcbViewer() {
+        try {
+            const resp = await fetch('/api/pcb/state');
+            const data = await resp.json();
+            if (data.status === 'success' && data.data) {
+                const info = data.data.project_info || {};
+                const sch = data.data.schematic || {};
+                const erc = data.data.erc || {};
+                
+                // Update DRC/ERC badges if elements exist
+                const drcCount = document.getElementById('bottom-drc-count');
+                if (drcCount) {
+                    const issuesCount = erc.issues ? erc.issues.length : 0;
+                    drcCount.textContent = issuesCount < 10 ? `0${issuesCount}` : `${issuesCount}`;
+                }
+                appendAgentLog(`PCB STATE UPDATED: ${info.total_components || sch.components?.length || 0} components, Power Rails: [ ${(info.power_rails || []).join(', ')} ]`, 'text-primary-container');
+            }
+        } catch (e) {
+            // Standalone fallback
+        }
+    }
+    window.updatePcbViewer = updatePcbViewer;
+
     async function processUserCommand(cmd) {
         try {
             const resp = await fetch('/api/agent/command', {
@@ -314,6 +341,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Refresh Vision Feed if query requested screen/vision
             if (cmd.toLowerCase().includes('screen') || cmd.toLowerCase().includes('capture') || cmd.toLowerCase().includes('see') || cmd.toLowerCase().includes('look')) {
                 refreshVisionFeed();
+            }
+
+            // Refresh PCB viewer if query modified schematic/pcb
+            if (cmd.toLowerCase().includes('buck') || cmd.toLowerCase().includes('resistor') || cmd.toLowerCase().includes('pcb') || cmd.toLowerCase().includes('schematic') || cmd.toLowerCase().includes('mcu') || cmd.toLowerCase().includes('route')) {
+                updatePcbViewer();
             }
 
             // Speak response aloud!

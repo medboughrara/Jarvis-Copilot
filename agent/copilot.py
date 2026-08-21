@@ -12,9 +12,19 @@ from agent.key_manager import GeminiKeyManager
 from agent.skill_loader import SkillLoader
 from agent.session_context import JarvisSessionContext
 from agent.composio_router import ComposioRouter
-from agent.workflows import run_full_pcb_audit
 from tools.formatters import format_tool_output_for_cli, format_tool_output_for_voice
-from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
+from tools.kicad_tool import (
+    analyze_kicad_file,
+    get_power_tree,
+    check_pcb_errors,
+    generate_bom_report,
+    get_project_info,
+    read_schematic,
+    add_component,
+    connect_net,
+    get_erc_violations,
+    run_drc
+)
 from tools.reach_tool import search_component_datasheet, check_compliance_status
 from tools.omniparser_tool import parse_screen_gui
 from tools.datasheet_rag_tool import query_local_datasheets
@@ -37,6 +47,10 @@ from agent.instincts import HardwareInstinctsEngine
 from agent.security import AgentShieldGuard
 from agent.context_compressor import ContextWindowCompressor
 from tools.preferred_parts_tool import manage_preferred_parts
+from tools.parts_search_tool import search_parts, parse_component_datasheet
+from tools.circuit_templates_tool import generate_from_template, list_circuit_templates
+from tools.autorouter_tool import autoroute_board, get_drc_violations, check_dfm
+from tools.manufacturing_tool import export_gerbers, export_drill, export_cpl, export_bom, estimate_cost
 from tools.system_control_tool import (
     get_system_time_and_greeting,
     launch_desktop_app,
@@ -85,6 +99,12 @@ class JarvisAgent:
             get_power_tree,
             check_pcb_errors,
             generate_bom_report,
+            get_project_info,
+            read_schematic,
+            add_component,
+            connect_net,
+            get_erc_violations,
+            run_drc,
             search_component_datasheet,
             check_compliance_status,
             parse_screen_gui,
@@ -101,6 +121,18 @@ class JarvisAgent:
             parse_nemotron_ocr,
             parse_document_unlimited_ocr,
             manage_preferred_parts,
+            search_parts,
+            parse_component_datasheet,
+            generate_from_template,
+            list_circuit_templates,
+            autoroute_board,
+            get_drc_violations,
+            check_dfm,
+            export_gerbers,
+            export_drill,
+            export_cpl,
+            export_bom,
+            estimate_cost,
             # System & Desktop Control Tools
             get_system_time_and_greeting,
             launch_desktop_app,

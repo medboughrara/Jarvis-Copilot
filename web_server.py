@@ -27,6 +27,7 @@ from tools.supply_chain_tool import check_supply_chain_status
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_SAMPLE_SCHEMATIC = os.path.join(BASE_DIR, "tests", "sample_autopick.kicad_sch")
+PORT = 8000
 START_TIME = time.time()
 
 # Global Agent Instance Singleton
@@ -228,6 +229,31 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(res).encode())
             return
 
+        elif path == "/api/pcb/state":
+            from tools.kicad_tool import read_schematic, get_erc_violations, get_project_info
+            info = get_project_info.invoke({})
+            sch = read_schematic.invoke({})
+            erc = get_erc_violations.invoke({})
+            res = {
+                "status": "success",
+                "summary": "Live PCB project state retrieved.",
+                "data": {
+                    "project_info": info.get("data", {}),
+                    "schematic": sch.get("data", {}),
+                    "erc": erc.get("data", {})
+                }
+            }
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/pcb/templates":
+            from tools.circuit_templates_tool import list_circuit_templates
+            res = list_circuit_templates.invoke({})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
         # Fallback 404
         self._set_json_headers(404)
         self.wfile.write(json.dumps({"error": f"Route '{path}' not found"}).encode())
@@ -362,6 +388,45 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
                     res = {"status": "error", "summary": str(e)}
             else:
                 res = {"status": "error", "summary": "Empty text"}
+        elif path == "/api/pcb/generate":
+            prompt = body.get("prompt", "").strip()
+            template_name = body.get("template_name", "").strip()
+            params = body.get("params", {})
+            file_path = body.get("file_path", "scratch/project.kicad_sch")
+            
+            logger.info(f"[HUD Server] PCB Generate request: prompt='{prompt}', template='{template_name}'")
+            
+            if template_name:
+                from tools.circuit_templates_tool import generate_from_template
+                res = generate_from_template.invoke({"template_name": template_name, "params": params, "file_path": file_path})
+            elif prompt:
+                from agent.verify_loop import AgenticPcbVerifyLoop
+                loop = AgenticPcbVerifyLoop(target_file=os.path.abspath(file_path))
+                res = loop.run_cycle(prompt)
+            else:
+                res = {"status": "error", "summary": "Neither prompt nor template_name was specified."}
+                
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/pcb/autoroute":
+            board_file = body.get("board_file", "scratch/board.kicad_pcb")
+            track_width = float(body.get("track_width_mm", 0.25))
+            layer = body.get("layer", "F.Cu")
+            
+            from tools.autorouter_tool import autoroute_board, get_drc_violations
+            route_res = autoroute_board.invoke({"board_file": board_file, "track_width_mm": track_width, "layer": layer})
+            drc_res = get_drc_violations.invoke({"board_file": board_file})
+            
+            res = {
+                "status": "success",
+                "summary": f"Autorouted board: {route_res.get('summary', '')} DRC: [{drc_res.get('data', {}).get('verdict', 'PASSED')}].",
+                "data": {
+                    "route": route_res.get("data", {}),
+                    "drc": drc_res.get("data", {})
+                }
+            }
             self._set_json_headers(200)
             self.wfile.write(json.dumps(res).encode())
             return

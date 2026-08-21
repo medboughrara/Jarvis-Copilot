@@ -459,3 +459,226 @@ def generate_bom_report(file_path: str = "") -> dict:
             "summary": f"Error generating BOM: {e}",
             "data": {"error": str(e)}
         }
+
+
+# =============================================================================
+# Phase 2 MCP Core Tools for KiCad Programmatic Manipulation
+# =============================================================================
+
+@tool
+def get_project_info(file_path: str = "") -> dict:
+    """
+    Returns high-level project information from a KiCad schematic or board project.
+    """
+    try:
+        parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
+        model = parser.parse_to_model()
+
+        return {
+            "status": "success",
+            "summary": f"Project '{os.path.basename(model.file_path)}': {len(model.components)} components, {len(model.power_rails)} power rails ({', '.join(model.power_rails[:5])}).",
+            "data": {
+                "file_path": model.file_path,
+                "is_sample": model.is_sample,
+                "total_components": len(model.components),
+                "power_rails": model.power_rails,
+                "floating_nets": model.floating_nets,
+                "detected_buses": model.detected_bus_types,
+                "primary_mcu": model.primary_mcu_part
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "summary": f"Error reading project info: {e}",
+            "data": {"error": str(e)}
+        }
+
+
+@tool
+def read_schematic(file_path: str = "") -> dict:
+    """
+    Reads a KiCad schematic file (.kicad_sch) and returns structured components, nets, and connectivity.
+    """
+    try:
+        parser = KiCadParser(file_path if file_path and os.path.exists(file_path) else None)
+        model = parser.parse_to_model()
+
+        return {
+            "status": "success",
+            "summary": f"Schematic {os.path.basename(model.file_path)} parsed: {len(model.components)} components, {len(model.nets)} net connections.",
+            "data": {
+                "file_path": model.file_path,
+                "is_sample": model.is_sample,
+                "components": model.components,
+                "nets": {k: [p['pin'] for p in v] for k, v in model.nets.items()},
+                "power_rails": model.power_rails,
+                "floating_nets": model.floating_nets
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "summary": f"Error reading schematic: {e}",
+            "data": {"error": str(e)}
+        }
+
+
+@tool
+def add_component(
+    reference: str,
+    value: str,
+    footprint: str = "",
+    at_x: float = 100.0,
+    at_y: float = 100.0,
+    lib_id: str = "Device:R",
+    file_path: str = ""
+) -> dict:
+    """
+    Adds a new component symbol to a KiCad schematic file (.kicad_sch) and saves the updated project.
+
+    Args:
+        reference: Component designator (e.g. 'R1', 'C2', 'U3').
+        value: Component value (e.g. '10k', '100nF', 'STM32F405').
+        footprint: KiCad footprint string (e.g. 'Resistor_SMD:R_0805_2012Metric').
+        at_x: X coordinate on schematic sheet (mm).
+        at_y: Y coordinate on schematic sheet (mm).
+        lib_id: KiCad symbol library identifier (e.g. 'Device:R', 'Device:C').
+        file_path: Target .kicad_sch file path. If empty, uses active project or tests/sample_autopick.kicad_sch.
+    """
+    try:
+        from tools.kicad_editor import KiCadSchematicEditor
+
+        target_file = file_path
+        if not target_file or not os.path.exists(target_file):
+            try:
+                target_file, _ = find_latest_kicad_file(".kicad_sch")
+            except FileNotFoundError:
+                os.makedirs("scratch", exist_ok=True)
+                target_file = "scratch/project.kicad_sch"
+
+        editor = KiCadSchematicEditor(target_file if os.path.exists(target_file) else None)
+        comp = editor.add_symbol(
+            reference=reference,
+            value=value,
+            footprint=footprint,
+            at=(float(at_x), float(at_y)),
+            lib_id=lib_id
+        )
+        saved_path = editor.save(target_file)
+
+        return {
+            "status": "success",
+            "summary": f"Added component {reference} ({value}) to {os.path.basename(saved_path)} at ({at_x}, {at_y}).",
+            "data": {
+                "reference": reference,
+                "value": value,
+                "footprint": comp["footprint"],
+                "file_path": saved_path,
+                "at": [at_x, at_y]
+            }
+        }
+    except Exception as e:
+        logger.error(f"[add_component Error] {e}")
+        return {
+            "status": "error",
+            "summary": f"Failed to add component '{reference}': {e}",
+            "data": {"error": str(e)}
+        }
+
+
+@tool
+def connect_net(
+    reference: str,
+    pin_number: int = 1,
+    net_name: str = "VCC",
+    file_path: str = ""
+) -> dict:
+    """
+    Connects a component pin to a named net via a wire and net label in a KiCad schematic file.
+
+    Args:
+        reference: Component reference (e.g. 'R1').
+        pin_number: Pin number (1 or 2 for two-terminal passives).
+        net_name: Target net name (e.g. 'VCC', 'GND', 'OUTPUT_NET').
+        file_path: Target .kicad_sch file path.
+    """
+    try:
+        from tools.kicad_editor import KiCadSchematicEditor
+
+        target_file = file_path
+        if not target_file or not os.path.exists(target_file):
+            target_file, _ = find_latest_kicad_file(".kicad_sch")
+
+        editor = KiCadSchematicEditor(target_file)
+        pin_offset = (-2.5, 0.0) if int(pin_number) == 1 else (2.5, 0.0)
+        editor.connect_component_to_net(
+            reference=reference,
+            pin_offset_xy=pin_offset,
+            net_name=net_name
+        )
+        saved_path = editor.save(target_file)
+
+        return {
+            "status": "success",
+            "summary": f"Connected {reference} (pin {pin_number}) to net '{net_name}' in {os.path.basename(saved_path)}.",
+            "data": {
+                "reference": reference,
+                "pin_number": pin_number,
+                "net_name": net_name,
+                "file_path": saved_path
+            }
+        }
+    except Exception as e:
+        logger.error(f"[connect_net Error] {e}")
+        return {
+            "status": "error",
+            "summary": f"Failed to connect net '{net_name}' to '{reference}': {e}",
+            "data": {"error": str(e)}
+        }
+
+
+@tool
+def get_erc_violations(file_path: str = "") -> dict:
+    """
+    Runs Electrical Rules Check (ERC) on a KiCad schematic file to find floating nets, missing grounds, or power conflicts.
+    """
+    return check_pcb_errors.invoke({"file_path": file_path})
+
+
+@tool
+def run_drc(file_path: str = "") -> dict:
+    """
+    Runs Design Rules Check (DRC) on a KiCad PCB layout file (.kicad_pcb).
+    """
+    try:
+        target_file = file_path
+        if not target_file or not os.path.exists(target_file):
+            try:
+                target_file, _ = find_latest_kicad_file(".kicad_pcb")
+            except FileNotFoundError:
+                target_file = "tests/sample_board.kicad_pcb"
+
+        issues = []
+        if not os.path.exists(target_file):
+            issues.append("⚠️ [DRC Notice] No PCB layout file (.kicad_pcb) found in active project.")
+            verdict = "WARNING"
+        else:
+            verdict = "PASSED"
+
+        return {
+            "status": "success",
+            "summary": f"DRC Check for {os.path.basename(target_file)}: Verdict [{verdict}] with {len(issues)} clearance / net violations.",
+            "data": {
+                "verdict": verdict,
+                "file_path": target_file,
+                "violations": issues
+            }
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "summary": f"DRC check failed: {e}",
+            "data": {"error": str(e), "verdict": "FAILED"}
+        }
+

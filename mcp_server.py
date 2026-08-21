@@ -1,40 +1,29 @@
 """
 Native Stdio Model Context Protocol (MCP) Server for Jarvis PCB Copilot.
-Dynamically registers LangChain tools from JarvisAgent at startup, preserving parameter type annotations, defaults, and docstrings.
+Dynamically registers all LangChain tools from JarvisAgent at startup, preserving parameter type annotations, defaults, and docstrings.
 """
 
+import sys
 import inspect
 from typing import List, Any
 from pydantic_core import PydanticUndefined
-
-# Compatibility aliases for mcp package version differences (McpError vs MCPError, AnyFunction)
-try:
-    import mcp.shared.exceptions
-    if not hasattr(mcp.shared.exceptions, "McpError") and hasattr(mcp.shared.exceptions, "MCPError"):
-        mcp.shared.exceptions.McpError = mcp.shared.exceptions.MCPError
-    import mcp.types
-    if not hasattr(mcp.types, "AnyFunction"):
-        mcp.types.AnyFunction = Any
-except Exception:
-    pass
-
-from fastmcp import FastMCP
+from mcp.server import MCPServer
 import config
 from agent.copilot import JarvisAgent
 from agent.workflows import run_full_pcb_audit
 
 logger = config.get_logger(__name__)
 
-# Initialize FastMCP Server
-mcp = FastMCP(
+# Initialize official MCP Server
+mcp = MCPServer(
     name="Jarvis-PCB-Copilot",
-    instructions="Local hardware copilot for KiCad schematic review, IPC-2221 thermal loss, signal integrity, and servomotor compliance."
+    instructions="AI-native PCB design tool and hardware copilot for KiCad schematic review, IPC-2221 thermal loss, signal integrity, and manufacturing exports."
 )
 
 
-def register_langchain_tools_to_mcp(mcp_server: FastMCP, tools_list: List[Any]):
+def register_langchain_tools_to_mcp(mcp_server: MCPServer, tools_list: List[Any]):
     """
-    Dynamically registers LangChain StructuredTool objects with FastMCP.
+    Dynamically registers LangChain StructuredTool objects with MCPServer.
     Inspects each tool's Pydantic args_schema to construct a typed wrapper callable
     that preserves parameter type annotations AND default values.
     """
@@ -45,13 +34,13 @@ def register_langchain_tools_to_mcp(mcp_server: FastMCP, tools_list: List[Any]):
 
         if not args_schema:
             def make_simple_wrapper(t):
-                def wrapper():
+                def wrapper() -> dict:
                     return t.invoke({})
                 return wrapper
             fn = make_simple_wrapper(tool_obj)
             fn.__name__ = tool_name
             fn.__doc__ = description
-            mcp_server.add_tool(fn)
+            mcp_server.tool(name=tool_name, description=description)(fn)
             continue
 
         fields = args_schema.model_fields if hasattr(args_schema, "model_fields") else {}
@@ -75,10 +64,10 @@ def register_langchain_tools_to_mcp(mcp_server: FastMCP, tools_list: List[Any]):
                 )
             )
 
-        sig = inspect.Signature(parameters=parameters)
+        sig = inspect.Signature(parameters=parameters, return_annotation=dict)
 
         def make_wrapper(target_tool):
-            def wrapper(**kwargs):
+            def wrapper(**kwargs) -> dict:
                 return target_tool.invoke(kwargs)
             return wrapper
 
@@ -87,20 +76,20 @@ def register_langchain_tools_to_mcp(mcp_server: FastMCP, tools_list: List[Any]):
         wrapper_fn.__doc__ = description
         wrapper_fn.__signature__ = sig
 
-        mcp_server.add_tool(wrapper_fn)
+        mcp_server.tool(name=tool_name, description=description)(wrapper_fn)
 
 
-# Create JarvisAgent instance and dynamically register tools at startup
+# Create JarvisAgent instance and dynamically register all tools at startup
 agent = JarvisAgent()
 register_langchain_tools_to_mcp(mcp, agent.tools)
 
-# Register workflow tool explicitly
-@mcp.tool()
+# Register high-level workflow tool explicitly
+@mcp.tool(name="full_pcb_audit", description="Runs autonomous 6-stage hardware review (ERC, Power, Thermal, SI, Supply Chain).")
 def full_pcb_audit(file_path: str = "") -> dict:
     """Runs autonomous 6-stage hardware review (ERC, Power, Thermal, SI, Supply Chain)."""
     return run_full_pcb_audit(file_path)
 
 
 if __name__ == "__main__":
-    logger.info(f"Starting Jarvis PCB Copilot Stdio MCP Server ({len(agent.tools)} tools registered)...")
+    logger.info("Starting Jarvis PCB Copilot Stdio MCP Server...")
     mcp.run()
