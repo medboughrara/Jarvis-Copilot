@@ -93,31 +93,32 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 
 ---
 
-## 🛠️ Complete Personal Assistant Capabilities Matrix (44 Active Tools)
+## 🛠️ Complete Personal Assistant Capabilities Matrix (47 Active Tools)
 
 | # | Capability Domain | Subsystem / Module | Key Functions & Features |
 | :--- | :--- | :--- | :--- |
 | **1** | **🎙️ Hands-Free Voice Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`) | Voice wake word ("jarvis"), Faster-Whisper STT, and Kokoro 24kHz / NVIDIA Magpie neural speech synthesis. |
 | **2** | **🌊 WebGL Voice Visualizer** | `ui/index.html` & `ui/app.js` | Interactive GLSL Arc Reactor fragment shader with dynamic standing audio wave undulating along the circle edge during speech. |
-| **3** | **💬 Discord Integration** | `tools/composio_apps_tool.py` | Direct **Discord** integration: send channel messages, fetch channel message history, and create new channels (`DISCORDBOT`). |
-| **4** | **💻 Desktop & System Control** | `tools/system_control_tool.py` | Time/date & greetings, launch local apps (Notepad, Calculator, VS Code, Explorer), open URLs/websites, take screenshots, tell jokes, and log voice notes. |
-| **5** | **📬 Workspace App Automation** | `tools/composio_apps_tool.py` | Full Composio integration for **Gmail** (fetch, send, search, drafts), **Google Calendar**, **Notion**, **Google Docs**, and **Google Sheets**. |
-| **6** | **🧠 Multi-Tier LLM Brain Pool** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
-| **7** | **⚡ ECC Agent Harness Engine** | `agent/instincts.py`, `agent/security.py`, `agent/context_compressor.py` | Automatic hardware & work reflex rules, AgentShield workspace security guard, and incremental conversation history compressor. |
-| **8** | **🗂️ Preferred Parts & Workflow Memory**| `tools/preferred_parts_tool.py` | User-preferred component library memory (JLCPCB basic parts, LDO regulators, passives, microcontrollers) persisting in `scratch/preferred_parts_library.json`. |
-| **9** | **👁️ OmniParser Screen Vision** | `tools/omniparser_tool.py` | Active screen capture layout parsing with `RapidOCR` ONNX engine to inspect UI elements, component dialogs, and code editors. |
-| **10**| **📚 Local PDF & Datasheet RAG** | `tools/datasheet_rag_tool.py` | Local document & datasheet RAG powered by **NVIDIA Nemotron 3 Embed 1B** and ChromaDB vector store. |
-| **11**| **🌐 Live Web Search & Compliance** | `tools/reach_tool.py` | Live web search for technical datasheets, general information, and regulatory compliance (RoHS 3 / FCC Part 15). |
-| **12**| **🎫 GitHub Issue & Repo Manager** | `tools/github_tool.py` | Log bugs, task reminders, or audit findings directly as labeled GitHub issues. |
-| **13**| **📄 Engineering & General Doc Exporter**| `tools/doc_exporter_tool.py` | Formats and exports audit reports, meeting notes, or general document summaries to `docs/` and `scratch/` as Markdown/JSON. |
-| **14**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Text-to-Image generation for diagrams, UI concepts, and visuals via `black-forest-labs/flux.1-schnell`. |
-| **15**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | Long-horizon document parsing into structured Markdown using Baidu Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
-| **16**| **📐 KiCad EDA & Circuit Parser** | `tools/kicad_tool.py` | KiCad `.kicad_sch` S-expression parser: builds `SchematicModel`, extracts components, generates power distribution trees, and runs ERC. |
-| **17**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
-| **18**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
-| **19**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
-| **20**| **📖 AAS & Claude Skill Playbooks** | `agent/skill_loader.py` & `skills/` | 10 Standardized SKILL.md playbooks: `skill-comply`, `agentic-engineering`, `blueprint-architect`, `repo-scan`, `code-quality-auditor`, `pcb-thermal-analysis`, `emc-emi-hardening`, `sim2real-motor-calibration`, `github-pcb-issue-tracker`, `bom-cost-optimization`. |
-| **21**| **🔌 Stdio MCP FastMCP Protocol** | `mcp_server.py` | Registers all 44 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
+| **3** | **🕷️ Scrapling Adaptive Scraping** | `tools/scrapling_tool.py` | Adaptive web scraping & crawling with **Scrapling**: Cloudflare Turnstile bypass, Chrome TLS impersonation, adaptive element relocation, and AI-targeted markdown sanitization. |
+| **4** | **💬 Discord Integration** | `tools/composio_apps_tool.py` | Direct **Discord** integration: send channel messages, fetch channel message history, and create new channels (`DISCORDBOT`). |
+| **5** | **💻 Desktop & System Control** | `tools/system_control_tool.py` | Time/date & greetings, launch local apps (Notepad, Calculator, VS Code, Explorer), open URLs/websites, take screenshots, tell jokes, and log voice notes. |
+| **6** | **📬 Workspace App Automation** | `tools/composio_apps_tool.py` | Full Composio integration for **Gmail** (fetch, send, search, drafts), **Google Calendar**, **Notion**, **Google Docs**, and **Google Sheets**. |
+| **7** | **🧠 Multi-Tier LLM Brain Pool** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
+| **8** | **⚡ ECC Agent Harness Engine** | `agent/instincts.py`, `agent/security.py`, `agent/context_compressor.py` | Automatic hardware & work reflex rules, AgentShield workspace security guard, and incremental conversation history compressor. |
+| **9** | **🗂️ Preferred Parts & Workflow Memory**| `tools/preferred_parts_tool.py` | User-preferred component library memory (JLCPCB basic parts, LDO regulators, passives, microcontrollers) persisting in `scratch/preferred_parts_library.json`. |
+| **10**| **👁️ OmniParser Screen Vision** | `tools/omniparser_tool.py` | Active screen capture layout parsing with `RapidOCR` ONNX engine to inspect UI elements, component dialogs, and code editors. |
+| **11**| **📚 Local PDF & Datasheet RAG** | `tools/datasheet_rag_tool.py` | Local document & datasheet RAG powered by **NVIDIA Nemotron 3 Embed 1B** and ChromaDB vector store. |
+| **12**| **🌐 Live Web Search & Compliance** | `tools/reach_tool.py` | Live web search for technical datasheets, general information, and regulatory compliance (RoHS 3 / FCC Part 15). |
+| **13**| **🎫 GitHub Issue & Repo Manager** | `tools/github_tool.py` | Log bugs, task reminders, or audit findings directly as labeled GitHub issues. |
+| **14**| **📄 Engineering & General Doc Exporter**| `tools/doc_exporter_tool.py` | Formats and exports audit reports, meeting notes, or general document summaries to `docs/` and `scratch/` as Markdown/JSON. |
+| **15**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Text-to-Image generation for diagrams, UI concepts, and visuals via `black-forest-labs/flux.1-schnell`. |
+| **16**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | Long-horizon document parsing into structured Markdown using Baidu Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
+| **17**| **📐 KiCad EDA & Circuit Parser** | `tools/kicad_tool.py` | KiCad `.kicad_sch` S-expression parser: builds `SchematicModel`, extracts components, generates power distribution trees, and runs ERC. |
+| **18**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
+| **19**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
+| **20**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
+| **21**| **📖 AAS & Claude Skill Playbooks** | `agent/skill_loader.py` & `skills/` | 11 Standardized SKILL.md playbooks: `web-scrapling`, `skill-comply`, `agentic-engineering`, `blueprint-architect`, `repo-scan`, `code-quality-auditor`, `pcb-thermal-analysis`, `emc-emi-hardening`, `sim2real-motor-calibration`, `github-pcb-issue-tracker`, `bom-cost-optimization`. |
+| **22**| **🔌 Stdio MCP FastMCP Protocol** | `mcp_server.py` | Registers all 47 tools over stdio Model Context Protocol for direct integration into Cursor, Antigravity, Claude Code, and VS Code. |
 
 ---
 
@@ -143,7 +144,7 @@ d:/aaaassistan_pcb/
 │   ├── stt.py                # Faster-Whisper STT + NVIDIA Whisper Large v3
 │   └── tts.py                # Kokoro-82M 24kHz TTS + NVIDIA Magpie TTS
 ├── agent/
-│   ├── copilot.py            # LangChain JarvisAgent with 44 active tools & multi-tier LLM pool
+│   ├── copilot.py            # LangChain JarvisAgent with 47 active tools & multi-tier LLM pool
 │   ├── session_context.py    # JarvisSessionContext per-session model container
 │   ├── key_manager.py        # Multi-key Gemini rotation & real-time metrics manager
 │   ├── composio_router.py    # Dynamic tool router & context optimizer
@@ -153,7 +154,8 @@ d:/aaaassistan_pcb/
 │   ├── context_compressor.py # Incremental token budget & history compressor
 │   ├── workflows.py          # Autonomous multi-stage audit workflows
 │   └── prompts.py            # System prompt persona configuration
-├── skills/                   # AAS & Claude-style SKILL.md playbooks (10 Active Skills)
+├── skills/                   # AAS & Claude-style SKILL.md playbooks (11 Active Skills)
+│   ├── web-scrapling/SKILL.md         # Scrapling adaptive stealth scraping & crawling
 │   ├── agentic-engineering/SKILL.md   # Subagent delegation & task decomposition
 │   ├── blueprint-architect/SKILL.md   # System architecture & sequence modeling
 │   ├── code-quality-auditor/SKILL.md  # Linting, security auditing & type safety
@@ -165,6 +167,7 @@ d:/aaaassistan_pcb/
 │   ├── github-pcb-issue-tracker/SKILL.md   # Issue logging & review tracking
 │   └── bom-cost-optimization/SKILL.md      # JLCPCB/LCSC component cost optimization
 ├── tools/
+│   ├── scrapling_tool.py     # Scrapling adaptive web scraping, crawling & stealth extraction
 │   ├── system_control_tool.py# Desktop system control (greeting, app launcher, website, screenshot, notes)
 │   ├── composio_apps_tool.py # Active Discord, Gmail, Calendar, Notion, Docs, Sheets tools
 │   ├── kicad_tool.py         # KiCad S-expression parser & power tree generator

@@ -54,6 +54,7 @@ from tools.composio_apps_tool import (
     docs_get_document, docs_create_document,
     discord_send_message, discord_fetch_messages, discord_create_channel
 )
+from tools.scrapling_tool import scrape_web_page, crawl_website
 
 logger = config.get_logger(__name__)
 
@@ -132,7 +133,10 @@ class JarvisAgent:
             # Discord (Active)
             discord_send_message,
             discord_fetch_messages,
-            discord_create_channel
+            discord_create_channel,
+            # Scrapling Adaptive Web Scraping & Crawling
+            scrape_web_page,
+            crawl_website
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
@@ -247,6 +251,13 @@ class JarvisAgent:
             tool_executed = True
         elif any(kw in lower_q for kw in ["discord create channel", "new discord channel", "create channel discord"]):
             tool_result = discord_create_channel.invoke({"guild_id": "", "channel_name": ""})
+            tool_executed = True
+        # --- Scrapling Adaptive Web Scraping ---
+        elif any(kw in lower_q for kw in ["scrape", "scrapling", "extract webpage", "extract site", "crawl site", "crawl web", "bypass cloudflare"]):
+            if "crawl" in lower_q:
+                tool_result = crawl_website.invoke({"start_url": user_query, "max_pages": 3})
+            else:
+                tool_result = scrape_web_page.invoke({"url": user_query, "mode": "stealth"})
             tool_executed = True
         elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q:
             tool_result = self.key_manager.get_usage_summary()

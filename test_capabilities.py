@@ -36,6 +36,7 @@ from tools.nvidia_nim_tool import (
     parse_nemotron_ocr
 )
 from tools.unlimited_ocr_tool import parse_document_unlimited_ocr
+from tools.scrapling_tool import scrape_web_page, crawl_website
 
 
 def print_header(title: str):
@@ -170,6 +171,12 @@ def run_all_capability_tests():
     assert len(agent.tools) >= 18
     print(f"Registered Agent Tools Count: {len(agent.tools)}")
     print(f"Configured Gemini Keys Pool Count: {len(agent.key_manager.api_keys)}")
+
+    # 18. Scrapling Adaptive Web Scraping & Stealth Data Extraction
+    print_header("18. Scrapling Adaptive Web Scraping & Stealth Extraction")
+    scrape_res = scrape_web_page.invoke({"url": "https://quotes.toscrape.com", "mode": "fast", "css_selector": ".quote .text::text"})
+    print_res(scrape_res)
+    print(f"Scrapling Output Preview: {scrape_res['data']['content'][:180]}...")
 
     print_header("✅ ALL CAPABILITY TESTS COMPLETED SUCCESSFULLY!")
     print("Jarvis PCB Copilot is 100% operational across all 18 hardware engineering, vision, voice, and cloud AI subsystems.")
