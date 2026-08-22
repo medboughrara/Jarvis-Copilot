@@ -2,8 +2,13 @@
 Unit tests for mcp_server.py dynamic MCP tool registration and parameter default preservation.
 """
 
+import os
+import sys
 import inspect
 import unittest
+
+sys.path.insert(0, os.path.abspath("."))
+
 from mcp.server import MCPServer
 from mcp_server import mcp, register_langchain_tools_to_mcp
 from tools.thermal_tool import calculate_thermal_loss

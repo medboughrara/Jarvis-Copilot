@@ -52,6 +52,7 @@ from tools.circuit_templates_tool import generate_from_template, list_circuit_te
 from tools.autorouter_tool import autoroute_board, get_drc_violations, check_dfm
 from tools.manufacturing_tool import export_gerbers, export_drill, export_cpl, export_bom, estimate_cost
 from gateway.mcp_gateway_tool import get_web_content, browse_web_page, start_bulk_crawl, get_crawl_status
+from tools.obsidian_knowledge_graph_tool import generate_obsidian_knowledge_graph, query_knowledge_graph
 from tools.system_control_tool import (
     get_system_time_and_greeting,
     launch_desktop_app,
@@ -139,6 +140,9 @@ class JarvisAgent:
             browse_web_page,
             start_bulk_crawl,
             get_crawl_status,
+            # Obsidian & Graphify Knowledge Graph Tools
+            generate_obsidian_knowledge_graph,
+            query_knowledge_graph,
             # System & Desktop Control Tools
             get_system_time_and_greeting,
             launch_desktop_app,

@@ -25,3 +25,7 @@ scratch/
 Thumbs.db
 .env
 
+# Graphify & Obsidian Vault Exports
+graphify-out/
+obsidian_vault/
+
