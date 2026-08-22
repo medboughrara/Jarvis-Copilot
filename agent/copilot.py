@@ -53,6 +53,12 @@ from tools.autorouter_tool import autoroute_board, get_drc_violations, check_dfm
 from tools.manufacturing_tool import export_gerbers, export_drill, export_cpl, export_bom, estimate_cost
 from gateway.mcp_gateway_tool import get_web_content, browse_web_page, start_bulk_crawl, get_crawl_status
 from tools.obsidian_knowledge_graph_tool import generate_obsidian_knowledge_graph, query_knowledge_graph
+from tools.mempalace_tool import (
+    remember_decision_or_fact,
+    recall_verbatim_memory,
+    get_mempalace_wake_up,
+    mine_codebase_to_palace
+)
 from tools.system_control_tool import (
     get_system_time_and_greeting,
     launch_desktop_app,
@@ -143,6 +149,11 @@ class JarvisAgent:
             # Obsidian & Graphify Knowledge Graph Tools
             generate_obsidian_knowledge_graph,
             query_knowledge_graph,
+            # MemPalace Long-Term Verbatim Memory Tools
+            remember_decision_or_fact,
+            recall_verbatim_memory,
+            get_mempalace_wake_up,
+            mine_codebase_to_palace,
             # System & Desktop Control Tools
             get_system_time_and_greeting,
             launch_desktop_app,
