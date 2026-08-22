@@ -51,6 +51,7 @@ from tools.parts_search_tool import search_parts, parse_component_datasheet
 from tools.circuit_templates_tool import generate_from_template, list_circuit_templates
 from tools.autorouter_tool import autoroute_board, get_drc_violations, check_dfm
 from tools.manufacturing_tool import export_gerbers, export_drill, export_cpl, export_bom, estimate_cost
+from gateway.mcp_gateway_tool import get_web_content, browse_web_page, start_bulk_crawl, get_crawl_status
 from tools.system_control_tool import (
     get_system_time_and_greeting,
     launch_desktop_app,
@@ -133,6 +134,11 @@ class JarvisAgent:
             export_cpl,
             export_bom,
             estimate_cost,
+            # MCP Web Gateway Tools (Unified Escalation Surface)
+            get_web_content,
+            browse_web_page,
+            start_bulk_crawl,
+            get_crawl_status,
             # System & Desktop Control Tools
             get_system_time_and_greeting,
             launch_desktop_app,
