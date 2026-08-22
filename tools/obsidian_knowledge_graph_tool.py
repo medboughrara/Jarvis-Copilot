@@ -45,6 +45,7 @@ def _build_obsidian_vault(
     """Generates Obsidian Vault, Canvas, and Wiki from graph.json."""
     from graphify.export import to_obsidian, to_canvas, to_html
     from graphify.wiki import to_wiki
+    from graphify.cluster import label_communities_by_hub
 
     with open(graph_json_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -58,6 +59,11 @@ def _build_obsidian_vault(
 
     communities = {int(k): v for k, v in analysis.get('communities', {}).items()}
     labels = {int(k): v for k, v in analysis.get('community_labels', {}).items()}
+    
+    # Generate meaningful hub-based labels if none or default present
+    if not labels or all(v.startswith("Community") for v in labels.values()):
+        labels = label_communities_by_hub(G, communities)
+
     cohesion = {int(k): v for k, v in analysis.get('cohesion', {}).items()}
 
     os.makedirs(output_vault_dir, exist_ok=True)
@@ -65,7 +71,7 @@ def _build_obsidian_vault(
     # 1. Export Obsidian Notes (.md with [[wikilinks]])
     notes_count = to_obsidian(G, communities, output_vault_dir, labels, cohesion)
 
-    # 2. Export Obsidian Canvas (.canvas)
+    # 2. Export Obsidian Canvas (.canvas) with Hub Labels
     canvas_path = os.path.join(output_vault_dir, "Architecture_Graph.canvas")
     to_canvas(G, communities, canvas_path, labels)
 
@@ -77,7 +83,7 @@ def _build_obsidian_vault(
     html_path = os.path.join(output_vault_dir, "Interactive_Graph.html")
     to_html(G, communities, html_path, labels)
 
-    # 5. Create default .obsidian config
+    # 5. Create fine-tuned .obsidian graph settings
     obsidian_config_dir = os.path.join(output_vault_dir, ".obsidian")
     os.makedirs(obsidian_config_dir, exist_ok=True)
     graph_config = {
@@ -86,13 +92,16 @@ def _build_obsidian_vault(
         "tags": True,
         "showLinks": True,
         "showArrow": True,
-        "textFadeMultiplier": 0,
-        "nodeSizeMultiplier": 1.2,
-        "lineSizeMultiplier": 1,
+        "textFadeMultiplier": -0.2,
+        "nodeSizeMultiplier": 1.35,
+        "lineSizeMultiplier": 1.4,
         "colorGroups": [
-            {"query": "tag:#python", "color": {"a": 1, "rgb": 3978495}},
-            {"query": "tag:#community", "color": {"a": 1, "rgb": 16744272}},
-            {"query": "tag:#hub", "color": {"a": 1, "rgb": 16724304}}
+            {"query": "path:tools/kicad OR file:KiCad", "color": {"a": 1, "rgb": 3978495}},       # Emerald Green
+            {"query": "path:agent OR file:copilot", "color": {"a": 1, "rgb": 54271}},             # Cyber Blue
+            {"query": "path:gateway OR file:gateway", "color": {"a": 1, "rgb": 65535}},           # Neon Cyan
+            {"query": "path:composio OR file:composio", "color": {"a": 1, "rgb": 16744272}},      # Amber Gold
+            {"query": "file:thermal OR file:autoroute", "color": {"a": 1, "rgb": 16731983}},      # Bright Orange
+            {"query": "file:manufacturing OR file:export", "color": {"a": 1, "rgb": 11342935}}   # Violet
         ]
     }
     with open(os.path.join(obsidian_config_dir, "graph.json"), "w", encoding="utf-8") as f:
