@@ -59,6 +59,11 @@ from tools.mempalace_tool import (
     get_mempalace_wake_up,
     mine_codebase_to_palace
 )
+from tools.img2obj_component_3d_tool import (
+    generate_3d_part_from_image_or_spec,
+    attach_3d_model_to_kicad_footprint,
+    preview_3d_component_threejs
+)
 from tools.system_control_tool import (
     get_system_time_and_greeting,
     launch_desktop_app,
@@ -154,6 +159,10 @@ class JarvisAgent:
             recall_verbatim_memory,
             get_mempalace_wake_up,
             mine_codebase_to_palace,
+            # img2obj 3D Electronic Component Modeling Tools
+            generate_3d_part_from_image_or_spec,
+            attach_3d_model_to_kicad_footprint,
+            preview_3d_component_threejs,
             # System & Desktop Control Tools
             get_system_time_and_greeting,
             launch_desktop_app,
