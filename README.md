@@ -75,6 +75,28 @@ graph TD
 
 ---
 
+## 🧠 Obsidian Knowledge Graph & Visual Canvas
+
+Jarvis uses **Graphify-Labs** AST extraction and semantic clustering to transform all codebase symbols, schematic nets, and architectural tools into an interactive **Obsidian Knowledge Graph Vault**:
+
+<div align="center">
+
+### 🌐 Global Force-Directed Knowledge Graph (850 Nodes & 1,654 Edges)
+
+![Obsidian Global Knowledge Graph View](docs/images/obsidian_graph_view.png)
+
+### 📋 Infinite Visual Whiteboard (`Architecture_Graph.canvas`)
+
+![Obsidian Visual Whiteboard Canvas](docs/images/obsidian_canvas_whiteboard.png)
+
+</div>
+
+* **Interactive Force Physics**: Color-coded clusters for KiCad EDA, Agent Orchestration, Web Gateway, Composio Workspace, and 3D Modeling.
+* **911 Bi-directional Notes**: Every function, tool, and class has its own Markdown note with `[[wikilinks]]` and caller graphs.
+* **Agent Wiki**: 61 cross-linked community articles providing high-level subsystem overviews.
+
+---
+
 ## ⚡ Hardware Constraints & Local/Cloud Resource Distribution
 
 Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5 CPU**, **24GB RAM**, and an **NVIDIA RTX 3050 GPU (6GB VRAM)**:
