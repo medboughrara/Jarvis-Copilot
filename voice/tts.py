@@ -132,35 +132,43 @@ class TextToSpeech:
             return b""
 
         if EDGE_TTS_AVAILABLE:
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+                tmp_path = tmp.name
             try:
                 communicate = edge_tts.Communicate(clean_text, voice=target_voice, rate="+4%", pitch="+0Hz")
-                audio_chunks = []
-                async for chunk in communicate.stream():
-                    if chunk["type"] == "audio":
-                        audio_chunks.append(chunk["data"])
-                return b"".join(audio_chunks)
+                await communicate.save(tmp_path)
+                if os.path.exists(tmp_path) and os.path.getsize(tmp_path) > 0:
+                    with open(tmp_path, "rb") as f:
+                        data = f.read()
+                    return data
             except Exception as e:
                 print(f"[TTS Stream Warning] Edge-TTS error: {e}")
-                audio_chunks = []
-                async for chunk in communicate.stream():
-                    if chunk["type"] == "audio":
-                        audio_chunks.append(chunk["data"])
-                return b"".join(audio_chunks)
-            except Exception as e:
-                print(f"[TTS Stream Warning] Edge-TTS error: {e}")
+            finally:
+                if os.path.exists(tmp_path):
+                    try:
+                        os.remove(tmp_path)
+                    except Exception:
+                        pass
 
-        # Fallback to file-based synthesis
-        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
-            tmp_path = tmp.name
-        try:
-            res_path = await self.synthesize_to_file(text, tmp_path, voice=voice)
-            if res_path and os.path.exists(res_path):
-                with open(res_path, "rb") as f:
-                    data = f.read()
-                os.remove(res_path)
-                return data
-        except Exception:
-            pass
+        # Fallback to local Kokoro synthesis
+        if self.kokoro_engine and SOUNDFILE_AVAILABLE:
+            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                tmp_path = tmp.name
+            try:
+                samples, sample_rate = self.kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
+                sf.write(tmp_path, samples, sample_rate)
+                if os.path.exists(tmp_path):
+                    with open(tmp_path, "rb") as f:
+                        data = f.read()
+                    return data
+            except Exception as ke:
+                print(f"[TTS Warning] Kokoro fallback error: {ke}")
+            finally:
+                if os.path.exists(tmp_path):
+                    try:
+                        os.remove(tmp_path)
+                    except Exception:
+                        pass
 
         return b""
 

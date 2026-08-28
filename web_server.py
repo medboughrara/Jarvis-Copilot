@@ -287,7 +287,17 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             
             from voice.tts import TextToSpeech
             tts = TextToSpeech(voice=voice)
-            audio_bytes = asyncio.run(tts.synthesize_bytes(text, voice=voice))
+            try:
+                audio_bytes = asyncio.run(tts.synthesize_bytes(text, voice=voice))
+            except Exception as e:
+                logger.warning(f"[TTS Server Error]: {e}")
+                audio_bytes = b""
+
+            if not audio_bytes:
+                self.send_response(204)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                return
 
             self.send_response(200)
             self.send_header("Content-Type", "audio/mpeg")
