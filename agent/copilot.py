@@ -92,6 +92,9 @@ from tools.memory_tree_tool import (
 from tools.tokenjuice_tool import tokenjuice_compress
 from tools.workflows_engine_tool import workflow_create, workflow_list, workflow_execute
 from tools.multichannel_hub_tool import channel_send_message, channel_list_status
+from tools.recipes_automation_tool import list_available_recipes, execute_recipe
+from tools.sandbox_runner_tool import run_sandbox_code
+from tools.desktop_control_tool import get_system_metrics, list_active_windows, manage_clipboard
 
 logger = config.get_logger(__name__)
 
@@ -224,7 +227,16 @@ class JarvisAgent:
             workflow_execute,
             # 4. Multi-Channel Communications Gateway
             channel_send_message,
-            channel_list_status
+            channel_list_status,
+            # 5. Universal Multi-App Automation Recipes (OpenHuman)
+            list_available_recipes,
+            execute_recipe,
+            # 6. Sandboxed Script & Math Execution
+            run_sandbox_code,
+            # 7. Desktop Automation & System Metrics
+            get_system_metrics,
+            list_active_windows,
+            manage_clipboard
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}

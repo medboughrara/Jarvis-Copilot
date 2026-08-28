@@ -279,6 +279,34 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "success", "data": {"attention_queue": queue}}).encode())
             return
 
+        elif path == "/api/recipes":
+            from tools.recipes_automation_tool import list_available_recipes
+            res = list_available_recipes.invoke({})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/cron":
+            from agent.cron_daemon import cron_daemon
+            jobs = cron_daemon.get_jobs()
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "data": {"jobs": jobs}}).encode())
+            return
+
+        elif path == "/api/system/stats":
+            from tools.desktop_control_tool import get_system_metrics
+            res = get_system_metrics.invoke({})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/desktop/apps":
+            from tools.desktop_control_tool import list_active_windows
+            res = list_active_windows.invoke({})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
         elif path == "/api/tts/synthesize":
             # Direct Neural Audio Streaming (GET /api/tts/synthesize?text=...&voice=...)
             query_params = urllib.parse.parse_qs(parsed.query)
@@ -583,6 +611,46 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "success", "summary": "Speech playback started"}).encode())
             return
 
+        elif path == "/api/recipes/run":
+            from tools.recipes_automation_tool import execute_recipe
+            recipe_name = body.get("recipe", "")
+            action = body.get("action", "")
+            params = body.get("parameters", {})
+            params_str = json.dumps(params) if isinstance(params, dict) else str(params)
+            res = execute_recipe.invoke({
+                "recipe_name": recipe_name,
+                "action": action,
+                "parameters": params_str
+            })
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/cron/trigger":
+            from agent.cron_daemon import cron_daemon
+            job_id = body.get("job_id", "")
+            res = cron_daemon.trigger_job(job_id)
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/sandbox/run":
+            from tools.sandbox_runner_tool import run_sandbox_code
+            code = body.get("code", "")
+            res = run_sandbox_code.invoke({"code": code})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/clipboard":
+            from tools.desktop_control_tool import manage_clipboard
+            action = body.get("action", "read")
+            text = body.get("text", "")
+            res = manage_clipboard.invoke({"action": action, "text_to_write": text})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
         self._set_json_headers(404)
         self.wfile.write(json.dumps({"error": f"POST route '{path}' not found"}).encode())
 
@@ -590,6 +658,13 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
 def start_server(host="localhost", port=8000):
     ThreadingHTTPServer.allow_reuse_address = True
     
+    # Start Autonomous Background Cron Daemon
+    try:
+        from agent.cron_daemon import cron_daemon
+        cron_daemon.start()
+    except Exception as ce:
+        logger.warning(f"[Cron Daemon Start Error]: {ce}")
+
     httpd = None
     for p in range(port, port + 10):
         try:

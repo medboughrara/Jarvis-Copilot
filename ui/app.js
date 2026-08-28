@@ -421,6 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewName === 'intelligence') loadMemoryAndGoals();
         if (viewName === 'workflows') loadWorkflows();
         if (viewName === 'channels') loadChannels();
+        if (viewName === 'recipes') loadRecipesAndCron();
         if (viewName === 'avatar') {
             mascot.setFaceMood('idle');
             updateAvatarSubtitles('Jarvis is online. Press the mic or hold Spacebar to talk.');
@@ -982,6 +983,146 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // =======================================================================
+    // 9. UNIVERSAL RECIPES & AUTONOMOUS CRON (OpenHuman Architecture)
+    // =======================================================================
+    async function loadRecipesAndCron() {
+        await Promise.all([loadRecipesGrid(), loadCronJobsList(), updateSystemTelemetry()]);
+    }
+
+    async function loadRecipesGrid() {
+        try {
+            const resp = await fetch('/api/recipes');
+            const data = await resp.json();
+            const recipes = data.recipes || [];
+            const grid = document.getElementById('recipes-grid');
+            if (grid) {
+                grid.innerHTML = recipes.map(r => `
+                    <div class="glass-panel p-4 rounded-xl border border-surface-border space-y-2.5 hover:border-primary/50 transition-all flex flex-col justify-between">
+                        <div class="space-y-1.5">
+                            <div class="flex justify-between items-center">
+                                <span class="material-symbols-outlined text-primary text-xl">${r.icon || 'auto_mode'}</span>
+                                <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 uppercase font-semibold">${r.category}</span>
+                            </div>
+                            <h4 class="font-headline font-bold text-xs text-on-surface">${r.name}</h4>
+                            <p class="text-[11px] text-on-surface-variant line-clamp-2 leading-relaxed">${r.description}</p>
+                        </div>
+                        <div class="pt-2 border-t border-surface-border/40 flex items-center justify-between gap-2">
+                            <select id="action-select-${r.slug}" class="bg-surface-card border border-surface-border text-[10px] text-primary rounded px-1.5 py-1 outline-none font-mono flex-1">
+                                ${r.actions.map(a => `<option value="${a}">${a.replace('_', ' ')}</option>`).join('')}
+                            </select>
+                            <button onclick="window.runRecipe('${r.slug}')" class="px-2.5 py-1 rounded bg-primary/20 hover:bg-primary text-primary hover:text-surface font-mono text-[10px] font-bold transition-all flex items-center gap-1">
+                                <span class="material-symbols-outlined text-xs">bolt</span>
+                                RUN
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            console.error('Error loading recipes:', e);
+        }
+    }
+
+    window.runRecipe = async function(slug) {
+        const actionSelect = document.getElementById(`action-select-${slug}`);
+        const action = actionSelect ? actionSelect.value : '';
+        try {
+            const resp = await fetch('/api/recipes/run', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ recipe: slug, action: action, parameters: {} })
+            });
+            const data = await resp.json();
+            switchView('chat');
+            appendMessage('assistant', `📱 **Recipe Execution [${slug.toUpperCase()} → ${action}]**:\n\n${data.summary || JSON.stringify(data.data, null, 2)}`);
+        } catch (e) {
+            alert('Recipe execution error: ' + e.message);
+        }
+    };
+
+    async function loadCronJobsList() {
+        try {
+            const resp = await fetch('/api/cron');
+            const data = await resp.json();
+            const jobs = data.data?.jobs || [];
+            const list = document.getElementById('cron-jobs-list');
+            if (list) {
+                list.innerHTML = jobs.map(j => `
+                    <div class="p-2.5 rounded-lg bg-surface-card border border-surface-border flex items-center justify-between">
+                        <div class="space-y-0.5">
+                            <div class="flex items-center gap-2">
+                                <strong class="text-xs text-on-surface">${j.name}</strong>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded ${j.last_status === 'success' ? 'bg-success/20 text-success' : 'bg-primary/20 text-primary'} uppercase font-bold">${j.last_status}</span>
+                            </div>
+                            <div class="text-[10px] text-on-surface-variant font-mono">Interval: ${j.interval_seconds}s • Runs: ${j.run_count} • Next: ${j.next_run}</div>
+                        </div>
+                        <button onclick="window.triggerCron('${j.id}')" class="px-2 py-1 rounded bg-surface border border-primary/30 text-primary hover:bg-primary hover:text-surface font-mono text-[10px] font-bold transition-all">
+                            RUN NOW
+                        </button>
+                    </div>
+                `).join('');
+            }
+        } catch (e) {
+            console.error('Error loading cron jobs:', e);
+        }
+    }
+
+    window.triggerCron = async function(jobId) {
+        try {
+            const resp = await fetch('/api/cron/trigger', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ job_id: jobId })
+            });
+            const data = await resp.json();
+            loadCronJobsList();
+            alert(`Cron Trigger: ${data.message}`);
+        } catch (e) {
+            alert('Cron trigger error: ' + e.message);
+        }
+    };
+
+    async function updateSystemTelemetry() {
+        try {
+            const resp = await fetch('/api/system/stats');
+            const data = await resp.json();
+            if (data.data) {
+                const badgeCpu = document.getElementById('badge-cpu');
+                const badgeRam = document.getElementById('badge-ram');
+                if (badgeCpu) badgeCpu.innerText = `${data.data.cpu_percent}%`;
+                if (badgeRam) badgeRam.innerText = `${data.data.mem_percent}%`;
+            }
+        } catch (e) {
+            // Silently ignore telemetry failure
+        }
+    }
+
+    const btnRunSandbox = document.getElementById('btn-run-sandbox');
+    if (btnRunSandbox) {
+        btnRunSandbox.addEventListener('click', async () => {
+            const code = document.getElementById('sandbox-code-input').value;
+            const outBox = document.getElementById('sandbox-output-box');
+            if (outBox) outBox.innerText = '⚡ Running code in sandbox...';
+            try {
+                const resp = await fetch('/api/sandbox/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                });
+                const data = await resp.json();
+                if (outBox) {
+                    outBox.innerText = data.data?.stdout || data.data?.stderr || data.summary || 'Executed with no output.';
+                }
+            } catch (e) {
+                if (outBox) outBox.innerText = 'Sandbox Error: ' + e.message;
+            }
+        });
+    }
+
+    // Periodic telemetry update (every 10s)
+    setInterval(updateSystemTelemetry, 10000);
 
     // Default start view
     switchView('chat');
