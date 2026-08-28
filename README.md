@@ -1,6 +1,6 @@
-# 🤖 Jarvis AI — Universal Personal Assistant & Autonomous Work Copilot
+# 🤖 Jarvis AI — Universal General-Purpose Assistant & Autonomous Copilot
 
-A local, voice-activated "Jarvis-style" open-source AI assistant designed for **general productivity, daily work automation (Discord, Gmail, Calendar, Notion, Docs/Sheets), desktop app control, visual screen analysis, PDF document RAG, Graphify & Obsidian Knowledge Graphs, MemPalace Long-Term Memory, and specialized hardware/electronics engineering (3D procedural modeling, KiCad EDA, IPC-2221 thermal & autorouting)**.
+A local, voice-activated "Jarvis-style" open-source AI super-assistant designed for **general personal productivity, daily work automations, hierarchical memory trees (Karpathy Knowledgebase), Goals & Tasks Kanban boards, TokenJuice token compression, visual trigger workflows (Tinyflows), universal 17-channel messaging (Telegram, Discord, Slack, WhatsApp, Gmail), desktop app control, visual screen analysis, PDF document RAG, Graphify & Obsidian Knowledge Graphs, MemPalace Long-Term Memory, and specialized hardware/electronics engineering (3D procedural modeling, KiCad EDA, IPC-2221 thermal & autorouting)**.
 
 <div align="center">
 
@@ -9,22 +9,21 @@ A local, voice-activated "Jarvis-style" open-source AI assistant designed for **
 ![Live System Demo & Tactical HUD Walkthrough](demo.gif)
 
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)
-![CUDA 12.1](https://img.shields.io/badge/CUDA-12.1-green.svg?style=for-the-badge&logo=nvidia&logoColor=white)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-orange.svg?style=for-the-badge&logo=pytorch&logoColor=white)
 ![LangChain](https://img.shields.io/badge/Orchestration-LangChain-purple.svg?style=for-the-badge&logo=chainlink&logoColor=white)
-![Gemini 3.6 Flash](https://img.shields.io/badge/LLM-Gemini_3.6_Flash-4285F4.svg?style=for-the-badge&logo=google&logoColor=white)
-![FastMCP](https://img.shields.io/badge/Protocol-MCP-FF4B4B.svg?style=for-the-badge&logo=anthropic&logoColor=white)
+![OpenHuman](https://img.shields.io/badge/Harness-OpenHuman_Architecture-FF6B6B.svg?style=for-the-badge)
+![TokenJuice](https://img.shields.io/badge/Compression-TokenJuice_-68%25-00F2FF.svg?style=for-the-badge)
+![Tinyflows](https://img.shields.io/badge/Automations-Tinyflows_Engine-10B981.svg?style=for-the-badge)
 ![Obsidian](https://img.shields.io/badge/Vault-Obsidian_Graph-7C3AED.svg?style=for-the-badge&logo=obsidian&logoColor=white)
 ![MemPalace](https://img.shields.io/badge/Memory-MemPalace_Loci-00D2FF.svg?style=for-the-badge)
-![Three.js](https://img.shields.io/badge/3D_Engine-Three.js_WebGL-000000.svg?style=for-the-badge&logo=threedotjs&logoColor=white)
 ![Composio MCP](https://img.shields.io/badge/Cloud_Apps-Composio_1000+-6C5CE7.svg?style=for-the-badge)
+![FastMCP](https://img.shields.io/badge/Tools-89+_Active_Tools-FF4B4B.svg?style=for-the-badge)
 
 </div>
 
 ---
 
 > [!NOTE]
-> **Universal Open-Source Personal Assistant**: Jarvis AI combines hands-free voice control, dynamic WebGL audio visualizers, desktop app automation, real-time Discord & Google workspace messaging, long-term spatial memory, interactive Obsidian knowledge graphs, procedural 3D electronic part generation, and automated KiCad PCB engineering.
+> **Universal Open-Source Personal Assistant**: Jarvis AI combines hands-free voice control, interactive animated mascot reactions, hierarchical scored memory trees, goals kanban boards, trigger-driven workflows, multi-channel messaging (Telegram/Discord/WhatsApp/Slack/Gmail), desktop app automation, long-term spatial memory, interactive Obsidian knowledge graphs, procedural 3D electronic part generation, and automated KiCad PCB engineering across **89+ registered tools**.
 
 ---
 
@@ -33,36 +32,36 @@ A local, voice-activated "Jarvis-style" open-source AI assistant designed for **
 ```mermaid
 graph TD
     subgraph IN ["Multimodal Input Layer"]
-        MIC["🎙️ Hands-Free Mic / Audio"] --> STT["⚡ Faster-Whisper / NVIDIA Whisper v3 STT"]
-        UI["🖥️ Cyberpunk HUD App"] --> CMD["💬 REST API / Command Input"]
+        MIC["🎙️ Hands-Free Mic / Voice PTT"] --> STT["⚡ Faster-Whisper / WebSpeech STT"]
+        UI["🖥️ Next-Gen Glassmorphic Assistant UI"] --> CMD["💬 REST API / Web Server"]
         SCR["👁️ Active Screen Capture"] --> OCR["📸 OmniParser V2 & Nemotron OCR"]
     end
     
-    subgraph ORCH ["AI Harness & Orchestration Engine"]
-        STT --> AGENT["🧠 LangChain JarvisAgent (74+ Active Tools)"]
-        CMD --> AGENT
-        OCR --> AGENT
-        AGENT --> ROUTER["🔄 Dynamic Capability Router"]
-        AGENT --> INST["⚡ Hardware & Work Reflex Instincts"]
-        AGENT --> SEC["🛡️ AgentShield Security Guard"]
-        AGENT --> MEM["🏰 MemPalace Verbatim Long-Term Memory"]
+    subgraph ORCH ["Split-Brain Harness & Orchestration Engine"]
+        STT --> MED["⚡ Split-Brain Medulla (Reflex Triage in <5ms)"]
+        CMD --> MED
+        OCR --> MED
+        MED --> AGENT["🧠 JarvisAgent (89+ Active Tools)"]
+        AGENT --> SEC["🛡️ AgentShield Security & Approval Gates"]
+        AGENT --> MEM_TREE["🌳 Scored Hierarchical Memory Tree"]
+        AGENT --> MEM_PALACE["🏰 MemPalace Verbatim Long-Term Memory"]
+        AGENT --> FLOWS["⚙️ Tinyflows Trigger Automation Engine"]
+        AGENT --> TJ["🧃 TokenJuice Compression Engine (up to 80% savings)"]
     end
     
     subgraph BRAIN ["Multi-Tier LLM Engine Pool"]
-        AGENT --> T1["⚡ Tier 1: Gemini 3.6 Flash Multi-Key Pool"]
+        AGENT --> T1["⚡ Tier 1: Gemini 2.5 / 3.6 Flash Multi-Key Pool"]
         T1 -.->|Fallback| T2["🌌 Tier 2: NVIDIA NIM Cloud - Kimi 2.6 / Nemotron 3"]
         T2 -.->|Fallback| T3["☁️ Tier 3: Ollama Cloud - GLM-5.2 / Kimi-K3"]
         T3 -.->|Fallback| T4["💻 Tier 4: Local RTX 3050 Llama3:8b"]
     end
     
-    subgraph SUITE ["Universal Capability Tools (74+ Tools)"]
-        ROUTER --> APPS["💬 Discord / Gmail / Calendar / Notion / Docs / Sheets"]
-        ROUTER --> SYS["💻 Desktop Control / App Launcher / Screenshots / Voice Notes"]
-        ROUTER --> GW["🌐 Local MCP Web Gateway (Direct -> curl_cffi -> Crawl4AI -> Browser Agent)"]
-        ROUTER --> OBS["🧠 Graphify + Obsidian Knowledge Graph & Canvas Vault"]
-        ROUTER --> MEM3["🏰 MemPalace Long-Term Verbatim Recall & Wake-Up"]
-        ROUTER --> MOD3D["📐 img2obj Procedural 3D Electronic Modeling & KiCad Linking"]
-        ROUTER --> HW["📐 KiCad S-Expression / Thermal / Signal Integrity / Autorouter / Manufacturing"]
+    subgraph SUITE ["Universal Capability Tools (89+ Tools)"]
+        AGENT --> CHANNELS["📡 Multi-Channel Hub (Telegram / Discord / Slack / WhatsApp / Gmail)"]
+        AGENT --> WORKSPACE["💼 Google Sheets / Notion / Calendar / Docs / Drive"]
+        AGENT --> KANBAN["📋 Goals & Todos Kanban Manager"]
+        AGENT --> CRAWLER["🌐 Crawl4AI & Scrapling Deep Web Search"]
+        AGENT --> HARDWARE["📐 KiCad 8/9 EDA / DRC / Thermal / 3D img2obj Mesher"]
     end
     
     subgraph OUT ["Multimodal Output Layer"]

@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>PCB-CORE_v4.2 JARVIS Interface</title>
+    <title>JARVIS — General Purpose AI Super-Assistant & Engineering Core</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
@@ -13,697 +13,541 @@
             theme: {
                 extend: {
                     colors: {
-                        "on-tertiary": "#283044",
-                        "secondary": "#b3c5ff",
-                        "on-primary-fixed-variant": "#004f54",
+                        "primary": "#00f2ff",
+                        "primary-dim": "#00dbe7",
                         "primary-container": "#00f2ff",
-                        "on-secondary-fixed": "#001849",
-                        "surface": "#131313",
-                        "surface-container": "#1f1f1f",
-                        "on-primary-fixed": "#002022",
-                        "surface-container-highest": "#353535",
-                        "tertiary-fixed-dim": "#bec6e0",
-                        "on-primary-container": "#006a71",
-                        "on-error": "#690005",
-                        "error": "#ffb4ab",
-                        "tertiary": "#f7f6ff",
-                        "outline": "#849495",
-                        "on-tertiary-container": "#575f75",
-                        "primary-fixed": "#74f5ff",
-                        "on-secondary": "#002b75",
-                        "inverse-surface": "#e2e2e2",
-                        "inverse-primary": "#00696f",
-                        "secondary-fixed-dim": "#b3c5ff",
-                        "surface-container-high": "#2a2a2a",
-                        "surface-variant": "#353535",
-                        "surface-container-lowest": "#0e0e0e",
-                        "background": "#131313",
-                        "on-tertiary-fixed-variant": "#3f465c",
-                        "surface-dim": "#131313",
-                        "outline-variant": "#3a494b",
-                        "primary": "#e1fdff",
-                        "on-background": "#e2e2e2",
-                        "inverse-on-surface": "#303030",
-                        "on-error-container": "#ffdad6",
-                        "surface-container-low": "#1b1b1b",
-                        "primary-fixed-dim": "#00dbe7",
-                        "error-container": "#93000a",
-                        "secondary-container": "#0266ff",
-                        "on-tertiary-fixed": "#131b2e",
-                        "on-surface-variant": "#b9cacb",
-                        "on-secondary-container": "#f9f7ff",
-                        "surface-tint": "#00dbe7",
-                        "tertiary-container": "#d3daf5",
-                        "on-surface": "#e2e2e2",
-                        "surface-bright": "#393939",
-                        "on-secondary-fixed-variant": "#003fa4",
-                        "on-primary": "#00363a",
-                        "secondary-fixed": "#dae1ff",
-                        "tertiary-fixed": "#dae2fd"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    spacing: {
-                        "unit": "4px",
-                        "gutter": "16px",
-                        "glass-padding": "20px",
-                        "margin-desktop": "32px",
-                        "margin-mobile": "16px"
+                        "secondary": "#7b8cde",
+                        "surface": "#0a0d14",
+                        "surface-card": "#111726",
+                        "surface-hover": "#172033",
+                        "surface-border": "rgba(0, 242, 255, 0.15)",
+                        "on-surface": "#e2e8f0",
+                        "on-surface-variant": "#94a3b8",
+                        "success": "#10b981",
+                        "warning": "#f59e0b",
+                        "error": "#ef4444",
+                        "purple-accent": "#a855f7"
                     },
                     fontFamily: {
-                        "body-md": ["JetBrains Mono"],
-                        "data-tabular": ["JetBrains Mono"],
-                        "headline-lg": ["Sora"],
-                        "label-caps": ["JetBrains Mono"],
-                        "headline-md": ["Sora"],
-                        "display-lg": ["Sora"],
-                        "body-lg": ["JetBrains Mono"]
-                    },
-                    fontSize: {
-                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "data-tabular": ["13px", { "lineHeight": "1", "fontWeight": "500" }],
-                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "700" }],
-                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.15em", "fontWeight": "700" }],
-                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                        "mono": ["JetBrains Mono", "monospace"],
+                        "headline": ["Sora", "sans-serif"],
+                        "sans": ["Inter", "sans-serif"]
                     }
                 }
             }
         }
     </script>
     <style>
-        /* Cyberpunk Brutalism & Glassmorphism Styles */
         body {
-            background-color: #050505;
-            background-image: linear-gradient(0deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(0, 242, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-color: #060911;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 255, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.04) 0%, transparent 40%),
+                linear-gradient(0deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
             overflow: hidden;
         }
-        
-        .hud-panel {
-            background: rgba(19, 19, 19, 0.6);
+
+        .glass-panel {
+            background: rgba(13, 19, 33, 0.7);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 242, 255, 0.15);
-            position: relative;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        .hud-panel::before, .hud-panel::after,
-        .hud-panel-inner::before, .hud-panel-inner::after {
-            content: '';
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-color: rgba(0, 242, 255, 0.8);
-            border-style: solid;
+        .glass-panel-subtle {
+            background: rgba(17, 24, 39, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
-        /* Corner brackets */
-        .hud-panel::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
-        .hud-panel::after { top: -1px; right: -1px; border-width: 1px 1px 0 0; }
-        .hud-panel-inner { position: absolute; inset: 0; pointer-events: none; }
-        .hud-panel-inner::before { bottom: -1px; left: -1px; border-width: 0 0 1px 1px; }
-        .hud-panel-inner::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
+        }
+
+        .glow-cyan-sm {
+            box-shadow: 0 0 8px rgba(0, 242, 255, 0.2);
+        }
 
         .scanline {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: rgba(0, 242, 255, 0.5);
-            opacity: 0.4;
-            animation: scan 4s linear infinite;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(0, 242, 255, 0.4);
+            opacity: 0.3;
+            animation: scan 6s linear infinite;
             pointer-events: none;
             z-index: 10;
         }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
+        /* Mascot Eye Animation */
+        @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+        @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+        .mascot-eye { animation: blink 4s infinite; }
+        .mascot-glow { animation: pulse-ring 3s infinite ease-in-out; }
 
-        .crt-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,0,0,0.15),
-                rgba(0,0,0,0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
-            z-index: 9999;
-        }
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.25); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 255, 0.6); }
 
-        .pulse-active {
-            animation: pulse-glow 1.5s infinite alternate;
-        }
-
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 0 5px rgba(0, 242, 255, 0.2); border-color: rgba(0, 242, 255, 0.3); }
-            100% { box-shadow: 0 0 20px rgba(0, 242, 255, 0.8); border-color: rgba(0, 242, 255, 1); }
-        }
-        
-        .glitch {
-            animation: glitch 1s linear infinite;
-        }
-        @keyframes glitch{
-            2%,64%{ transform: translate(2px,0) skew(0deg);}
-            4%,60%{ transform: translate(-2px,0) skew(0deg);}
-            62%{ transform: translate(0,0) skew(5deg); }
-        }
-
-        /* Custom Scrollbar for Terminals */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.3); }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 242, 255, 0.8); }
-
-        .nav-link {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            padding-bottom: 2px;
-            color: #b9cacb;
-            transition: all 0.2s ease;
-        }
-        .nav-link.active, .nav-link:hover {
-            color: #74f5ff;
+        .nav-tab-btn.active {
+            color: #00f2ff;
             border-bottom: 2px solid #00f2ff;
+            background: rgba(0, 242, 255, 0.05);
         }
     </style>
 </head>
-<body class="text-on-surface h-screen w-screen flex flex-col font-body-md overflow-hidden relative">
-<div class="crt-overlay"></div>
+<body class="text-on-surface h-screen w-screen flex flex-col font-sans overflow-hidden select-none">
 
-<!-- TopAppBar -->
-<header class="fixed top-0 w-full bg-surface/80 backdrop-blur-xl border-b border-primary-container/20 shadow-[0_0_15px_rgba(0,242,255,0.1)] flex justify-between items-center px-gutter h-16 z-50">
-    <div class="flex items-center gap-4">
-        <span class="font-headline-md text-headline-md font-bold text-primary-container drop-shadow-[0_0_8px_rgba(0,242,255,0.5)] glitch">
-            [ PCB-CORE_v4.2 ]
-        </span>
-        <div class="h-4 w-[1px] bg-primary-container/30 mx-2"></div>
-        <span class="font-data-tabular text-data-tabular text-primary-fixed-dim" id="sys-uptime-badge">SYS.ONLINE // UPTIME: 99.9%</span>
+<!-- ========================================================================= -->
+<!-- 1. TOP APP BAR & HEADER -->
+<!-- ========================================================================= -->
+<header class="h-16 w-full glass-panel border-b border-primary/20 flex items-center justify-between px-5 z-50 flex-shrink-0">
+    <!-- Brand / Mascot Left -->
+    <div class="flex items-center gap-3">
+        <!-- Interactive Mascot Mini Badge -->
+        <div id="mascot-badge" class="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-primary/30 to-purple-accent/30 border border-primary/40 flex items-center justify-center cursor-pointer mascot-glow" title="Jarvis Mascot — Mood: Ready">
+            <div class="flex items-center gap-1.5">
+                <div class="w-1.5 h-3 bg-primary rounded-full mascot-eye"></div>
+                <div class="w-1.5 h-3 bg-primary rounded-full mascot-eye"></div>
+            </div>
+            <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-success rounded-full ring-2 ring-surface animate-pulse"></span>
+        </div>
+
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="font-headline font-bold text-lg text-primary tracking-wider drop-shadow-[0_0_8px_rgba(0,242,255,0.4)]">JARVIS</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary uppercase font-semibold">SUPER-AI v5.0</span>
+            </div>
+            <div class="text-[11px] font-mono text-on-surface-variant flex items-center gap-2">
+                <span id="header-uptime">MEDULLA: REFLEX + DEEP CORE ONLINE</span>
+            </div>
+        </div>
     </div>
-    
-    <nav class="hidden md:flex gap-8" id="nav-menu">
-        <a class="nav-link active" data-view="schematic" href="#">SCHEMATIC</a>
-        <a class="nav-link" data-view="routing" href="#">ROUTING</a>
-        <a class="nav-link" data-view="thermal" href="#">THERMAL</a>
-        <a class="nav-link" data-view="signal" href="#">SIGNAL</a>
-        <a class="nav-link" data-view="bom" href="#">BOM</a>
-        <a class="nav-link" data-view="composio" href="#">COMPOSIO</a>
+
+    <!-- Center Navigation Tabs -->
+    <nav class="hidden lg:flex items-center gap-1">
+        <button class="nav-tab-btn active px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="chat">
+            <span class="material-symbols-outlined text-base">forum</span>
+            ASSISTANT CHAT
+        </button>
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="intelligence">
+            <span class="material-symbols-outlined text-base">psychology</span>
+            INTELLIGENCE & MEMORY
+        </button>
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="workflows">
+            <span class="material-symbols-outlined text-base">schema</span>
+            WORKFLOWS (TINYFLOWS)
+        </button>
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="channels">
+            <span class="material-symbols-outlined text-base">hub</span>
+            CHANNELS HUB
+        </button>
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="hardware">
+            <span class="material-symbols-outlined text-base">memory</span>
+            PCB HARDWARE
+        </button>
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="tools">
+            <span class="material-symbols-outlined text-base">handyman</span>
+            80+ TOOLS
+        </button>
     </nav>
-    
-    <div class="flex items-center gap-4 text-primary-container">
-        <span class="material-symbols-outlined hover:text-primary-fixed cursor-pointer transition-colors" title="Components">settings_input_component</span>
-        <span class="material-symbols-outlined hover:text-primary-fixed cursor-pointer transition-colors" title="Terminal">terminal</span>
-        <span class="material-symbols-outlined hover:text-primary-fixed cursor-pointer transition-colors relative" title="Notifications">
-            notifications
-            <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full animate-ping"></span>
-        </span>
-        <img class="w-8 h-8 rounded border border-primary-container/50 object-cover ml-2" alt="Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuluriPM8Cp4nktoNfl-tjdDT-CBvzR58H2ci0ylNmdgDUOFGb1Td5Fgn0GhLQjoYYPyXPxBY10XK-KdjHU2vkwPmui6mNz73rZEEb_7EY2JBtOHTGSxB2OVuZIPAL1wylhROGh0e-i_JsKFT0qNHoaoxbgS26jqLN_beffa0H_CNkiiiebPBuQ9zbq6jSTL6_vuUxhez4iQDwfNdbIehcUWz3jAYZQm0pDVyWhamnBCxFuejAoh-rqw"/>
+
+    <!-- Right Utility & TokenJuice Stats -->
+    <div class="flex items-center gap-3">
+        <!-- TokenJuice Compression Pill -->
+        <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-card border border-primary/20 font-mono text-xs" title="TokenJuice Savings">
+            <span class="material-symbols-outlined text-xs text-primary">compress</span>
+            <span class="text-[11px] text-on-surface-variant">TokenJuice:</span>
+            <strong class="text-primary" id="tokenjuice-metric">-68.4%</strong>
+        </div>
+
+        <!-- Voice PTT Button -->
+        <button id="header-ptt-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/40 text-primary hover:bg-primary hover:text-surface transition-all font-mono text-xs font-semibold">
+            <span class="material-symbols-outlined text-base" id="header-mic-icon">mic</span>
+            <span id="header-ptt-label">VOICE PTT</span>
+        </button>
+
+        <!-- Notification Bell -->
+        <div class="relative cursor-pointer p-1.5 text-on-surface-variant hover:text-primary transition-colors" id="btn-attention-queue" title="Attention Queue (Approvals & Tasks)">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full animate-ping"></span>
+        </div>
     </div>
 </header>
 
-<!-- SideNavBar (Hidden on Mobile, anchored left) -->
-<aside class="hidden md:flex flex-col h-full py-4 fixed left-0 top-16 h-[calc(100vh-64px)] w-64 bg-surface-container-lowest/60 backdrop-blur-2xl border-r border-primary-container/20 shadow-xl z-40">
-    <div class="px-4 mb-6">
-        <div class="font-label-caps text-label-caps text-on-surface-variant/70 mb-1">SYSTEM STATUS</div>
-        <div class="font-headline-lg text-headline-lg text-primary-fixed-dim">[ CORE_OS ]</div>
-        <div class="font-data-tabular text-data-tabular text-primary-container/80 flex items-center gap-2 mt-2">
-            <span class="w-2 h-2 bg-primary-container rounded-full animate-pulse"></span>
-            V-SENSE: NOMINAL
-        </div>
-        <button class="w-full mt-4 bg-transparent border border-primary-container text-primary-container font-label-caps py-2 hover:bg-primary-container hover:text-surface transition-all duration-300 uppercase tracking-widest" id="btn-side-verification">
-            INIT_VERIFICATION
-        </button>
-    </div>
-    
-    <nav class="flex-1 space-y-1 mt-4">
-        <a class="sidebar-item bg-secondary-container/20 text-primary-container border-l-4 border-primary-container px-4 py-3 flex items-center gap-3 font-label-caps text-label-caps hover:bg-primary-container/5 transition-all" data-view="schematic" href="#">
-            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">animated_images</span>
-            DIAGNOSTICS
-        </a>
-        <a class="sidebar-item text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 font-label-caps text-label-caps hover:bg-primary-container/5 hover:text-primary-container transition-all" data-view="schematic" href="#">
-            <span class="material-symbols-outlined">memory</span>
-            HARDWARE
-        </a>
-        <a class="sidebar-item text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 font-label-caps text-label-caps hover:bg-primary-container/5 hover:text-primary-container transition-all" data-view="thermal" href="#">
-            <span class="material-symbols-outlined">developer_board</span>
-            FIRMWARE
-        </a>
-        <a class="sidebar-item text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 font-label-caps text-label-caps hover:bg-primary-container/5 hover:text-primary-container transition-all" data-view="composio" href="#">
-            <span class="material-symbols-outlined">hub</span>
-            NETWORK
-        </a>
-        <a class="sidebar-item text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 font-label-caps text-label-caps hover:bg-primary-container/5 hover:text-primary-container transition-all" data-view="routing" href="#">
-            <span class="material-symbols-outlined">security</span>
-            SECURITY
-        </a>
-    </nav>
-    
-    <div class="mt-auto space-y-1">
-        <a class="text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 font-label-caps text-label-caps hover:bg-primary-container/5 hover:text-primary-container transition-all" href="#">
-            <span class="material-symbols-outlined">code</span>
-            TERMINAL
-        </a>
-        <a class="text-on-surface-variant/70 px-4 py-3 flex items-center gap-3 font-label-caps text-label-caps hover:bg-primary-container/5 hover:text-primary-container transition-all" href="#">
-            <span class="material-symbols-outlined">history</span>
-            LOGS
-        </a>
-    </div>
-</aside>
 
-<!-- Main Workspace -->
-<main class="flex-1 mt-16 md:ml-64 p-glass-padding grid grid-cols-12 grid-rows-6 gap-unit h-[calc(100vh-64px)] z-30">
+<!-- ========================================================================= -->
+<!-- 2. MAIN APP WORKSPACE CONTAINER -->
+<!-- ========================================================================= -->
+<div class="flex-1 flex overflow-hidden relative">
 
-    <!-- Left Panel: VISION_FEED (col-span-3) -->
-    <section class="col-span-12 md:col-span-3 row-span-5 hud-panel p-4 flex flex-col">
-        <div class="hud-panel-inner"></div>
-        <div class="scanline"></div>
-        <header class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-4">
-            <span class="font-label-caps text-primary-fixed-dim tracking-widest">[ VIS-01 ] VISION_FEED</span>
-            <button id="btn-trigger-vision" title="Capture Screen Feed" class="hover:text-primary-container text-primary-fixed-dim cursor-pointer transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-sm">visibility</span>
-                <span class="text-[9px] font-label-caps">SNAP</span>
-            </button>
-        </header>
-        
-        <div class="flex-1 relative overflow-hidden bg-surface-container-highest/30 mb-4 border border-outline-variant/30 group flex items-center justify-center min-h-[220px]">
-            <div id="vision-feed-img" class="absolute inset-0 bg-cover bg-center opacity-90 transition-all duration-700" style="background-image: url('/scratch/screen_capture.png')"></div>
-            <!-- Overlay Data -->
-            <div class="absolute inset-0 p-2 flex flex-col justify-between pointer-events-none z-10">
-                <div class="text-primary-container font-data-tabular text-[10px] bg-black/60 px-1 rounded w-max">FEED: OPTICAL_OCR</div>
-                <div class="flex justify-between items-end">
-                    <div class="text-primary-container font-data-tabular text-[10px] bg-primary-container/20 px-1 border border-primary-container/50 rounded" id="vision-warn-badge">LIVE SCREEN CAPTURE</div>
-                    <div class="text-primary-container font-data-tabular text-[10px] bg-black/60 px-1 rounded" id="vision-resolution-label">1920x1080</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Stats/Chips -->
-        <div class="grid grid-cols-2 gap-2 mt-auto">
-            <div class="border border-primary-container/30 p-2 text-center bg-primary-container/5">
-                <div class="font-label-caps text-[10px] text-on-surface-variant">NETS ROUTED</div>
-                <div class="font-data-tabular text-primary-container" id="stat-nets-routed">84.2%</div>
-            </div>
-            <div class="border border-primary-container/30 p-2 text-center bg-primary-container/5">
-                <div class="font-label-caps text-[10px] text-on-surface-variant">VIAS COUNT</div>
-                <div class="font-data-tabular text-primary-container" id="stat-vias-count">1,402</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Center Panel: AI Core & Speech Interaction (col-span-6) -->
-    <section class="col-span-12 md:col-span-6 row-span-5 relative flex flex-col items-center justify-between border-x border-primary-container/10 px-4 py-2">
-        <div class="absolute inset-0 opacity-20 pointer-events-none flex justify-center items-center">
-            <div class="w-96 h-96 rounded-full border border-primary-container/30 animate-[spin_60s_linear_infinite]"></div>
-            <div class="absolute w-64 h-64 rounded-full border border-dashed border-primary-container/20 animate-[spin_40s_linear_infinite_reverse]"></div>
-        </div>
-        
-        <!-- 3D WebGL Shader Core Canvas -->
-        <div class="relative w-48 h-48 md:w-72 md:h-72 z-10 my-2">
-            <div class="absolute inset-0 w-full h-full rounded-full drop-shadow-[0_0_30px_rgba(0,242,255,0.4)]" style="display:block;">
-                <canvas id="shader-canvas-ANIMATION_1" style="display:block;width:100%;height:100%"></canvas>
-            </div>
-        </div>
-
-        <!-- Dynamic View Workspace Area -->
-        <div class="w-full flex-1 hud-panel p-3 mb-3 overflow-y-auto z-20" id="view-container">
+    <!-- ===================================================================== -->
+    <!-- VIEW 1: ASSISTANT CHAT & TIMELINE (Default View) -->
+    <!-- ===================================================================== -->
+    <section id="view-chat" class="view-pane flex-1 flex flex-col h-full overflow-hidden">
+        <!-- Message Bubbles Stream -->
+        <div id="chat-stream" class="flex-1 overflow-y-auto p-6 space-y-4 font-sans">
             
-            <!-- SCHEMATIC VIEW -->
-            <div class="view-pane" id="view-schematic">
-                <div class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-3">
-                    <span class="font-label-caps text-xs text-primary-fixed-dim tracking-widest">[ AST-01 ] SCHEMATIC AST COMPONENTS</span>
-                    <span class="text-xs font-data-tabular text-primary-container">ENGINE: S-EXPRESSION</span>
-                </div>
-                <table class="w-full text-left border-collapse font-data-tabular text-xs">
-                    <thead>
-                        <tr class="border-b border-primary-container/30 text-primary-container bg-primary-container/5">
-                            <th class="p-1.5">REF</th>
-                            <th class="p-1.5">VALUE</th>
-                            <th class="p-1.5">FOOTPRINT</th>
-                            <th class="p-1.5">PINS</th>
-                            <th class="p-1.5">RAIL</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbl-schematic-body">
-                        <tr class="border-b border-outline-variant/20 hover:bg-primary-container/5">
-                            <td class="p-1.5 font-bold text-primary-container">U1</td>
-                            <td class="p-1.5">ATmega328P-AU</td>
-                            <td class="p-1.5 text-on-surface-variant">TQFP-32</td>
-                            <td class="p-1.5">32</td>
-                            <td class="p-1.5 text-primary-fixed-dim">5.0V</td>
-                        </tr>
-                        <tr class="border-b border-outline-variant/20 hover:bg-primary-container/5">
-                            <td class="p-1.5 font-bold text-primary-container">U2</td>
-                            <td class="p-1.5">AMS1117-3.3</td>
-                            <td class="p-1.5 text-on-surface-variant">SOT-223</td>
-                            <td class="p-1.5">4</td>
-                            <td class="p-1.5 text-primary-fixed-dim">3.3V</td>
-                        </tr>
-                        <tr class="border-b border-outline-variant/20 hover:bg-primary-container/5">
-                            <td class="p-1.5 font-bold text-primary-container">C1, C2</td>
-                            <td class="p-1.5">22pF</td>
-                            <td class="p-1.5 text-on-surface-variant">C_0603</td>
-                            <td class="p-1.5">2</td>
-                            <td class="p-1.5 text-on-surface-variant">GND</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- ROUTING VIEW -->
-            <div class="view-pane hidden" id="view-routing">
-                <div class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-3">
-                    <span class="font-label-caps text-xs text-primary-fixed-dim tracking-widest">[ DRC-02 ] ROUTING & CLEARANCE AUDIT</span>
-                    <span class="text-xs font-data-tabular text-primary-fixed-dim" id="drc-badge">VERDICT: PASSING</span>
-                </div>
-                <div class="space-y-2 text-xs font-data-tabular">
-                    <div class="p-2 border border-error/50 bg-error/10 rounded flex justify-between items-center">
-                        <div>
-                            <div class="font-bold text-error">CLEARANCE VIOLATION: Net +12V to GND</div>
-                            <div class="text-on-surface-variant text-[11px]">Measured: 0.12mm (Required: &ge; 0.20mm)</div>
-                        </div>
-                        <span class="px-2 py-0.5 bg-error text-surface font-bold text-[10px]">CRITICAL</span>
+            <!-- Jarvis Welcome Hero Card -->
+            <div class="glass-panel p-5 rounded-2xl max-w-3xl mx-auto border border-primary/20 space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/40 to-purple-accent/40 flex items-center justify-center text-primary font-headline font-bold text-lg border border-primary/30">
+                        J
+                    </div>
+                    <div>
+                        <h2 class="font-headline font-bold text-base text-primary">Jarvis AI General Purpose Super-Assistant</h2>
+                        <p class="text-xs font-mono text-on-surface-variant">Hierarchical Memory Tree • Obsidian Vault • Workflows Engine • 17 Channels Hub • KiCad EDA</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- THERMAL VIEW -->
-            <div class="view-pane hidden" id="view-thermal">
-                <div class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-3">
-                    <span class="font-label-caps text-xs text-primary-fixed-dim tracking-widest">[ THM-03 ] THERMAL & POWER LOSS MODEL</span>
-                    <span class="text-xs font-data-tabular text-primary-container">JOULE HEATING</span>
-                </div>
-                <div class="grid grid-cols-2 gap-2 text-xs font-data-tabular">
-                    <div class="p-2 border border-primary-container/30 bg-primary-container/5 rounded">
-                        <div class="text-[10px] text-on-surface-variant">12V MAIN BUS</div>
-                        <div class="font-bold text-primary-container text-sm">2.5 A @ 12.0 V</div>
-                        <div class="text-[11px] text-primary-fixed-dim mt-1">Loss: 0.28 W (Temp Rise: +12°C)</div>
-                    </div>
-                    <div class="p-2 border border-primary-container/30 bg-primary-container/5 rounded">
-                        <div class="text-[10px] text-on-surface-variant">3.3V LDO BUS</div>
-                        <div class="font-bold text-primary-container text-sm">0.8 A @ 3.3 V</div>
-                        <div class="text-[11px] text-primary-fixed-dim mt-1">Loss: 1.36 W (Temp Rise: +42°C)</div>
-                    </div>
+                <p class="text-sm text-on-surface leading-relaxed">
+                    Ready to execute autonomous engineering, deep research, workflows, or communications. How may I assist you today?
+                </p>
+                <!-- Quick Starter Chips -->
+                <div class="flex flex-wrap gap-2 pt-1 font-mono text-xs">
+                    <button class="quick-prompt-btn px-3 py-1.5 rounded-lg bg-surface-card hover:bg-primary/20 border border-surface-border text-on-surface hover:text-primary transition-all">
+                        📋 "Show STLC Tunisia Master Plan & Speakers"
+                    </button>
+                    <button class="quick-prompt-btn px-3 py-1.5 rounded-lg bg-surface-card hover:bg-primary/20 border border-surface-border text-on-surface hover:text-primary transition-all">
+                        🧠 "Query Memory Tree for 6G Topics"
+                    </button>
+                    <button class="quick-prompt-btn px-3 py-1.5 rounded-lg bg-surface-card hover:bg-primary/20 border border-surface-border text-on-surface hover:text-primary transition-all">
+                        ⚙️ "Run Daily Morning Briefing Workflow"
+                    </button>
+                    <button class="quick-prompt-btn px-3 py-1.5 rounded-lg bg-surface-card hover:bg-primary/20 border border-surface-border text-on-surface hover:text-primary transition-all">
+                        ⚡ "Design 4-Layer STM32 KiCad PCB"
+                    </button>
                 </div>
             </div>
 
-            <!-- SIGNAL VIEW -->
-            <div class="view-pane hidden" id="view-signal">
-                <div class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-3">
-                    <span class="font-label-caps text-xs text-primary-fixed-dim tracking-widest">[ SIG-04 ] SIGNAL INTEGRITY & IMPEDANCE</span>
-                    <span class="text-xs font-data-tabular text-primary-container">50Ω SOLVER</span>
-                </div>
-                <div class="p-2 border border-primary-container/30 bg-primary-container/5 rounded space-y-1 text-xs font-data-tabular">
-                    <div class="flex justify-between"><span>USB D+/D- Diff Impedance:</span><strong class="text-primary-container">91.4 Ω</strong></div>
-                    <div class="flex justify-between"><span>SPI CLK Delay:</span><strong class="text-primary-container">1.42 ns</strong></div>
-                    <div class="flex justify-between"><span>Differential Skew:</span><strong class="text-primary-fixed-dim">1.2 ps (PASS)</strong></div>
-                </div>
-            </div>
-
-            <!-- BOM VIEW -->
-            <div class="view-pane hidden" id="view-bom">
-                <div class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-3">
-                    <span class="font-label-caps text-xs text-primary-fixed-dim tracking-widest">[ BOM-05 ] BILL OF MATERIALS REPORT</span>
-                    <span class="text-xs font-data-tabular text-primary-container">LCSC / MOUSER</span>
-                </div>
-                <div class="text-xs font-data-tabular text-on-surface-variant">
-                    Total Estimated Unit Cost: <strong class="text-primary-container">$4.85 USD @ 100 pcs</strong>
-                </div>
-            </div>
-
-            <!-- COMPOSIO VIEW -->
-            <div class="view-pane hidden" id="view-composio">
-                <div class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-3">
-                    <span class="font-label-caps text-xs text-primary-fixed-dim tracking-widest">[ CMP-06 ] COMPOSIO MCP CLOUD HUB</span>
-                    <span class="text-xs font-data-tabular text-primary-fixed-dim">5 ACTIVE APPS</span>
-                </div>
-                <div class="grid grid-cols-2 gap-2 text-xs font-data-tabular">
-                    <div class="p-2 border border-primary-container/30 bg-primary-container/5 rounded flex justify-between"><span>📧 Gmail</span><strong class="text-primary-container">ACTIVE</strong></div>
-                    <div class="p-2 border border-primary-container/30 bg-primary-container/5 rounded flex justify-between"><span>📅 Google Calendar</span><strong class="text-primary-container">ACTIVE</strong></div>
-                    <div class="p-2 border border-primary-container/30 bg-primary-container/5 rounded flex justify-between"><span>📓 Notion</span><strong class="text-primary-container">ACTIVE</strong></div>
-                    <div class="p-2 border border-primary-container/30 bg-primary-container/5 rounded flex justify-between"><span>📊 Google Sheets</span><strong class="text-primary-container">ACTIVE</strong></div>
-                </div>
-            </div>
-
+            <!-- Pre-loaded interactive conversation turns will be appended here dynamically -->
         </div>
 
-        <!-- Speech Interface -->
-        <div class="hud-panel w-full max-w-lg p-3 flex flex-col z-20">
-            <div class="hud-panel-inner"></div>
-            <div class="flex items-center gap-4 border-b border-primary-container/20 pb-3 mb-2">
-                <button class="w-10 h-10 rounded-full border border-primary-container bg-surface/50 text-primary-container flex items-center justify-center hover:bg-primary-container hover:text-surface transition-all duration-300" id="ptt-btn">
-                    <span class="material-symbols-outlined">mic</span>
+        <!-- Chat Input Composer Box -->
+        <div class="p-4 glass-panel border-t border-primary/10 flex flex-col gap-2">
+            <!-- Attention / Approval Bar (Conditional) -->
+            <div id="approval-bar" class="hidden glass-panel-subtle p-3 rounded-xl border border-warning/40 flex items-center justify-between font-mono text-xs">
+                <div class="flex items-center gap-2 text-warning">
+                    <span class="material-symbols-outlined">gavel</span>
+                    <span>Action Approval Required: <strong id="approval-title">Send 12 Conference Sponsor Pitch Emails</strong></span>
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-approve-action" class="px-3 py-1 bg-success text-surface font-bold rounded hover:opacity-90 transition-opacity">ALLOW</button>
+                    <button id="btn-reject-action" class="px-3 py-1 bg-error text-white font-bold rounded hover:opacity-90 transition-opacity">REJECT</button>
+                </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="flex items-center gap-3 bg-surface-card border border-primary/30 rounded-2xl p-2 px-4 shadow-lg focus-within:border-primary transition-all">
+                <button class="text-on-surface-variant hover:text-primary transition-colors" title="Attach file or schematic">
+                    <span class="material-symbols-outlined text-xl">attach_file</span>
                 </button>
-                <div class="flex-1 flex flex-col">
-                    <span class="font-label-caps text-on-surface-variant text-[10px]">VOICE_COMMAND_UPLINK</span>
-                    <div class="h-3 flex items-end gap-[2px] opacity-50 mt-1" id="audio-visualizer">
-                        <!-- Bars added by JS -->
+                <textarea id="chat-input" rows="1" class="flex-1 bg-transparent border-0 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0 resize-none font-sans outline-none" placeholder="Ask Jarvis anything, execute workflows, research topics, or design circuits..."></textarea>
+                <div class="flex items-center gap-2 font-mono">
+                    <button id="btn-send-message" class="w-9 h-9 rounded-xl bg-primary text-surface font-bold flex items-center justify-center hover:bg-primary-dim transition-all shadow-[0_0_10px_rgba(0,242,255,0.4)]">
+                        <span class="material-symbols-outlined text-lg">arrow_upward</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex justify-between items-center px-2 text-[11px] font-mono text-on-surface-variant">
+                <span>Model: <strong class="text-primary">Gemini 2.5 Pro (Multi-Key Pool) + Ollama Local Fallback</strong></span>
+                <span>Press <strong>Enter</strong> to send, <strong>Shift+Enter</strong> for newline</span>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 2: INTELLIGENCE & MEMORY TREE (Karpathy LLM Knowledgebase) -->
+    <!-- ===================================================================== -->
+    <section id="view-intelligence" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-headline font-bold text-xl text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">psychology</span>
+                    Hierarchical Memory Tree & Goals Kanban
+                </h2>
+                <p class="text-xs font-mono text-on-surface-variant">Persistent scored memory in SQLite, mirrored in Obsidian Vault (`obsidian_vault/`)</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-sync-obsidian" class="px-3 py-1.5 rounded-lg bg-surface-card border border-primary/30 text-primary font-mono text-xs hover:bg-primary/10 transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">sync</span>
+                    SYNC OBSIDIAN VAULT
+                </button>
+                <button id="btn-add-memory-node" class="px-3 py-1.5 rounded-lg bg-primary text-surface font-mono text-xs font-bold hover:bg-primary-dim transition-all flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">add</span>
+                    NEW MEMORY NODE
+                </button>
+            </div>
+        </div>
+
+        <!-- Goals & Todos Kanban Board (4 Columns) -->
+        <div class="space-y-3">
+            <h3 class="font-headline font-semibold text-sm text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">view_kanban</span>
+                Goals & Tasks Kanban Board
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 font-mono text-xs">
+                
+                <!-- Column 1: TO DO -->
+                <div class="glass-panel p-3 rounded-xl border border-surface-border flex flex-col">
+                    <div class="flex justify-between items-center pb-2 border-b border-surface-border mb-3">
+                        <span class="font-bold text-on-surface">TO DO</span>
+                        <span class="px-2 py-0.5 rounded-full bg-surface-card text-[10px] text-on-surface-variant" id="cnt-todo">2</span>
+                    </div>
+                    <div class="space-y-2 flex-1" id="col-todo">
+                        <div class="p-2.5 rounded-lg bg-surface-card border border-surface-border space-y-1.5">
+                            <div class="flex justify-between items-start">
+                                <strong class="text-on-surface">Deploy 30 Regional Travel Grants</strong>
+                                <span class="px-1.5 py-0.2 bg-primary/20 text-primary text-[9px] font-bold rounded">HIGH</span>
+                            </div>
+                            <p class="text-[11px] text-on-surface-variant">Sfax, Sousse, Monastir, Gabes, Gafsa allocation.</p>
+                            <div class="text-[10px] text-primary">Deadline: 2026-11-15</div>
+                        </div>
                     </div>
                 </div>
-                <div class="font-data-tabular text-xs text-primary-fixed-dim px-2 py-1 border border-primary-container/30 bg-primary-container/10" id="status-indicator">STANDBY</div>
+
+                <!-- Column 2: IN PROGRESS -->
+                <div class="glass-panel p-3 rounded-xl border border-primary/30 flex flex-col">
+                    <div class="flex justify-between items-center pb-2 border-b border-primary/30 mb-3">
+                        <span class="font-bold text-primary">IN PROGRESS</span>
+                        <span class="px-2 py-0.5 rounded-full bg-primary/20 text-[10px] text-primary" id="cnt-in-progress">3</span>
+                    </div>
+                    <div class="space-y-2 flex-1" id="col-in-progress">
+                        <div class="p-2.5 rounded-lg bg-surface-card border border-primary/40 space-y-1.5">
+                            <div class="flex justify-between items-start">
+                                <strong class="text-primary">Pitch 12 Corporate Sponsors</strong>
+                                <span class="px-1.5 py-0.2 bg-error/20 text-error text-[9px] font-bold rounded">URGENT</span>
+                            </div>
+                            <p class="text-[11px] text-on-surface-variant">Tunisie Telecom, Ooredoo, Orange, Telnet, InstaDeep.</p>
+                            <div class="w-full bg-surface rounded-full h-1.5 mt-1 overflow-hidden">
+                                <div class="bg-primary h-full rounded-full" style="width: 40%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 3: BLOCKED -->
+                <div class="glass-panel p-3 rounded-xl border border-error/30 flex flex-col">
+                    <div class="flex justify-between items-center pb-2 border-b border-error/30 mb-3">
+                        <span class="font-bold text-error">BLOCKED / REVIEW</span>
+                        <span class="px-2 py-0.5 rounded-full bg-error/20 text-[10px] text-error" id="cnt-blocked">1</span>
+                    </div>
+                    <div class="space-y-2 flex-1" id="col-blocked">
+                        <div class="p-2.5 rounded-lg bg-surface-card border border-error/30 space-y-1.5">
+                            <strong class="text-error">Amphitheater Booking Confirmation</strong>
+                            <p class="text-[11px] text-on-surface-variant">Awaiting university dean signature on lab access.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 4: DONE -->
+                <div class="glass-panel p-3 rounded-xl border border-success/30 flex flex-col">
+                    <div class="flex justify-between items-center pb-2 border-b border-success/30 mb-3">
+                        <span class="font-bold text-success">DONE</span>
+                        <span class="px-2 py-0.5 rounded-full bg-success/20 text-[10px] text-success" id="cnt-done">4</span>
+                    </div>
+                    <div class="space-y-2 flex-1" id="col-done">
+                        <div class="p-2.5 rounded-lg bg-surface-card border border-success/30 space-y-1.5">
+                            <strong class="text-success">Speakers Master List Compiled</strong>
+                            <p class="text-[11px] text-on-surface-variant">15 International & National Keynotes recorded.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="h-16 overflow-y-auto font-data-tabular text-xs text-on-surface flex flex-col justify-end space-y-1" id="transcript-area">
-                <div class="text-on-surface-variant opacity-70">&gt; Awaiting audio input...</div>
+        </div>
+
+        <!-- Hierarchical Memory Nodes Explorer -->
+        <div class="space-y-3">
+            <h3 class="font-headline font-semibold text-sm text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">account_tree</span>
+                Memory Nodes Directory
+            </h3>
+            <div class="glass-panel rounded-xl p-4 overflow-hidden" id="memory-tree-container">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs" id="memory-nodes-list">
+                    <!-- Populated dynamically via /api/memory_tree -->
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Right Panel: AGENT_TERMINAL (col-span-3) -->
-    <section class="col-span-12 md:col-span-3 row-span-5 hud-panel p-4 flex flex-col">
-        <div class="hud-panel-inner"></div>
-        <header class="flex justify-between items-center border-b border-primary-container/30 pb-2 mb-4">
-            <span class="font-label-caps text-primary-fixed-dim tracking-widest">[ TRM-99 ] AGENT_LOG</span>
-            <span class="material-symbols-outlined text-primary-container/50 text-sm">terminal</span>
-        </header>
-        
-        <div class="flex-1 bg-surface-container-lowest/80 border border-outline-variant/30 p-2 overflow-y-auto font-data-tabular text-xs font-medium relative" id="agent-log">
-            <!-- Glitch line overlay -->
-            <div class="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(0,242,255,0)_50%,rgba(0,242,255,0.05)_50%)] bg-[length:100%_4px] z-10"></div>
-            <div class="text-primary-container/80 mb-2">&gt; INIT CORE_PROCESS... OK</div>
-            <div class="text-primary-container/80 mb-2">&gt; LOADING THERMAL_MODELS... OK</div>
-            <div class="text-on-surface-variant mb-2">&gt; Analyzing Component U12 placement.</div>
-            <div class="text-on-surface-variant mb-2">&gt; Cross-referencing datasheet thermal specs.</div>
-            <div class="text-error mb-2 animate-pulse">&gt; WARN: T-Max projected to exceed 85C under load.</div>
-            <div class="text-primary-fixed-dim mb-2">&gt; Suggesting relocation to Zone B or adding thermal vias.</div>
-            <div class="text-on-surface-variant mb-2">&gt; Running preliminary auto-router on data bus...</div>
-            <div class="text-primary-container/80 mb-2">&gt; Bus routed successfully. Skew &lt; 5ps.</div>
-        </div>
-        
-        <form class="mt-4 flex gap-2" id="cmd-form">
-            <input class="flex-1 bg-surface-container/50 border-b border-primary-container/50 border-t-0 border-x-0 text-primary-container font-data-tabular text-xs focus:ring-0 focus:border-primary-container focus:bg-primary-container/10 transition-all placeholder:text-primary-container/30 px-2 py-1" placeholder="ENTER_OVERRIDE_CMD..." type="text" id="cmd-input"/>
-            <button type="submit" class="bg-primary-container/10 border border-primary-container px-3 text-primary-container hover:bg-primary-container hover:text-surface transition-colors">
-                <span class="material-symbols-outlined text-sm">send</span>
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: WORKFLOWS & ROUTINES (Tinyflows) -->
+    <!-- ===================================================================== -->
+    <section id="view-workflows" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-headline font-bold text-xl text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">schema</span>
+                    Automated Workflows & Routines (Tinyflows)
+                </h2>
+                <p class="text-xs font-mono text-on-surface-variant">Durable trigger-driven automation graph with approval checkpoints</p>
+            </div>
+            <button id="btn-create-workflow" class="px-3 py-1.5 rounded-lg bg-primary text-surface font-mono text-xs font-bold hover:bg-primary-dim transition-all flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">add_circle</span>
+                NEW WORKFLOW
             </button>
-        </form>
-    </section>
-
-    <!-- Bottom Panel: SYSTEM_VERIFICATION (col-span-12) -->
-    <section class="col-span-12 row-span-1 hud-panel p-2 flex items-center justify-between gap-4">
-        <div class="hud-panel-inner"></div>
-        <div class="flex items-center gap-4 flex-1">
-            <div class="font-label-caps text-on-surface-variant text-[10px] w-16">CPU_LOAD</div>
-            <div class="flex-1 h-3 bg-surface-container-highest border border-primary-container/30 overflow-hidden flex">
-                <div class="h-full w-[45%] bg-primary-container/80 border-r border-background"></div>
-                <div class="h-full w-1 bg-transparent"></div>
-                <div class="h-full w-[20%] bg-primary-container/50 border-r border-background"></div>
-            </div>
-            <div class="font-data-tabular text-primary-container text-xs w-8 text-right">65%</div>
         </div>
-        
-        <div class="h-full w-[1px] bg-primary-container/20 mx-2"></div>
-        
-        <div class="flex gap-4">
-            <div class="flex flex-col">
-                <span class="font-label-caps text-on-surface-variant text-[10px]">DRC_ERRORS</span>
-                <span class="font-data-tabular text-error font-bold" id="bottom-drc-count">00</span>
-            </div>
-            <div class="flex flex-col">
-                <span class="font-label-caps text-on-surface-variant text-[10px]">UNROUTED</span>
-                <span class="font-data-tabular text-primary-container" id="bottom-unrouted-count">12</span>
-            </div>
-            <div class="flex flex-col">
-                <span class="font-label-caps text-on-surface-variant text-[10px]">COMPONENTS</span>
-                <span class="font-data-tabular text-primary-container" id="bottom-comp-count">342</span>
+
+        <!-- Active Workflows Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="workflows-grid">
+            <!-- Populated dynamically via /api/workflows -->
+        </div>
+
+        <!-- Workflow Runs History Inspector -->
+        <div class="space-y-3">
+            <h3 class="font-headline font-semibold text-sm text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">history</span>
+                Live Flow Execution Logs
+            </h3>
+            <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2" id="workflow-run-logs">
+                <div class="p-2 bg-surface-card rounded border border-surface-border text-on-surface-variant">
+                    [2026-08-28 22:47:38] [Auto Sync Obsidian Briefing] Executed 1 step successfully (Run #1).
+                </div>
             </div>
         </div>
-        
-        <div class="h-full w-[1px] bg-primary-container/20 mx-2"></div>
-        
-        <button class="bg-transparent border border-error text-error font-label-caps px-4 py-1 hover:bg-error hover:text-surface transition-all duration-300 uppercase tracking-wider" id="btn-run-drc">
-            RUN_DRC_PASS
-        </button>
     </section>
 
-</main>
 
-<!-- WebGL 3D Shader Script -->
-<script>
-(function() {
-  const canvas = document.getElementById('shader-canvas-ANIMATION_1');
-  if (!canvas) return;
+    <!-- ===================================================================== -->
+    <!-- VIEW 4: MULTI-CHANNEL COMMUNICATIONS HUB -->
+    <!-- ===================================================================== -->
+    <section id="view-channels" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-headline font-bold text-xl text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">hub</span>
+                    Universal Multi-Channel Communications Gateway
+                </h2>
+                <p class="text-xs font-mono text-on-surface-variant">Telegram, Discord, Slack, WhatsApp, Gmail, and Webhooks</p>
+            </div>
+        </div>
 
-  function syncSize() {
-    const w = canvas.clientWidth  || 300;
-    const h = canvas.clientHeight || 300;
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width  = w;
-      canvas.height = h;
-    }
-  }
-  if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(syncSize).observe(canvas);
-  }
-  syncSize();
+        <!-- Channel Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs" id="channels-status-grid">
+            <!-- Populated dynamically via /api/channels -->
+        </div>
 
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  if (!gl) return;
-  const vs = `attribute vec2 a_position;
-varying vec2 v_texCoord;
-void main() {
-  v_texCoord = a_position * 0.5 + 0.5;
-  gl_Position = vec4(a_position, 0.0, 1.0);
-}`;
-  const fs = `precision highp float;
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
-uniform float u_speaking;
-varying vec2 v_texCoord;
+        <!-- Quick Outbound Dispatcher -->
+        <div class="glass-panel p-5 rounded-xl border border-primary/20 space-y-4">
+            <h3 class="font-headline font-semibold text-sm text-primary flex items-center gap-2">
+                <span class="material-symbols-outlined">send</span>
+                Quick Message Dispatcher
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
+                <div>
+                    <label class="text-on-surface-variant block mb-1">Target Channel</label>
+                    <select id="dispatch-channel" class="w-full bg-surface-card border border-surface-border rounded-lg p-2 text-on-surface focus:border-primary outline-none">
+                        <option value="discord">Discord</option>
+                        <option value="telegram">Telegram</option>
+                        <option value="email">Gmail / SMTP Email</option>
+                        <option value="slack">Slack</option>
+                        <option value="whatsapp">WhatsApp</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-on-surface-variant block mb-1">Recipient / Channel ID</label>
+                    <input id="dispatch-recipient" type="text" class="w-full bg-surface-card border border-surface-border rounded-lg p-2 text-on-surface focus:border-primary outline-none" placeholder="e.g. general-announcements"/>
+                </div>
+                <div>
+                    <label class="text-on-surface-variant block mb-1">Action</label>
+                    <button id="btn-dispatch-message" class="w-full bg-primary text-surface font-bold py-2 rounded-lg hover:bg-primary-dim transition-all">
+                        SEND OUTBOUND MESSAGE
+                    </button>
+                </div>
+            </div>
+            <div>
+                <label class="text-on-surface-variant block mb-1 font-mono text-xs">Message Content (Markdown Supported)</label>
+                <textarea id="dispatch-content" rows="3" class="w-full bg-surface-card border border-surface-border rounded-lg p-3 text-sm text-on-surface focus:border-primary outline-none resize-none font-sans" placeholder="Type message to broadcast across selected channel..."></textarea>
+            </div>
+        </div>
+    </section>
 
-void main() {
-    vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-    float d = length(uv);
-    float angle = atan(uv.y, uv.x);
-    
-    // Core glow (inner reactor)
-    float corePulse = sin(u_time * (3.0 + u_speaking * 8.0)) * (0.02 + 0.03 * u_speaking);
-    float core = (0.025 + 0.02 * u_speaking) / abs(d - (0.18 + corePulse));
-    
-    // Middle ring with dynamic pulse
-    float pulse = sin(u_time * (2.5 + u_speaking * 10.0)) * (0.03 + 0.05 * u_speaking);
-    float ring1 = 0.012 / abs(d - (0.35 + pulse));
-    
-    // Rotating segment ring
-    float segments = sin(angle * (12.0 + u_speaking * 12.0) + u_time * (3.0 + u_speaking * 12.0));
-    float ring2 = (0.012 / abs(d - 0.48)) * step(0.65 - u_speaking * 0.3, segments);
-    
-    // OUTSIDE EDGE VOICE WAVE (Dynamic edge wave radiating along outer circle boundary!)
-    float waveFreq1 = sin(angle * 18.0 + u_time * (12.0 + u_speaking * 18.0));
-    float waveFreq2 = cos(angle * 32.0 - u_time * (8.0 + u_speaking * 22.0));
-    float waveFreq3 = sin(angle * 6.0 + u_time * 5.0);
-    
-    float waveAmplitude = 0.015 + 0.08 * u_speaking;
-    float edgeDisplacement = (waveFreq1 * 0.5 + waveFreq2 * 0.3 + waveFreq3 * 0.2) * waveAmplitude;
-    float edgeRadius = 0.62 + edgeDisplacement;
-    
-    float edgeWave = (0.01 + 0.015 * u_speaking) / abs(d - edgeRadius);
-    
-    // Spikes/Rays shooting outward from the wave peaks while speaking
-    float spikeAngle = sin(angle * 24.0 + u_time * 10.0);
-    float outerRays = (0.008 * u_speaking) / abs(d - (edgeRadius + 0.1 * step(0.7, spikeAngle)));
-    
-    // Combined color (Cyan glow #00f2ff turning to electric neon cyan/turquoise when speaking)
-    vec3 baseCyan = vec3(0.0, 0.95, 1.0);
-    vec3 speakCyan = vec3(0.2, 1.0, 0.9);
-    vec3 color = mix(baseCyan, speakCyan, u_speaking) * (core + ring1 + ring2 + edgeWave + outerRays);
-    
-    // High frequency audio flicker
-    float flicker = sin(u_time * (40.0 + u_speaking * 60.0)) * 0.03 + 0.97;
-    color *= flicker;
 
-    // Glowing transparency
-    float alpha = clamp(color.r * 0.8 + color.g * 0.6, 0.0, 1.0);
-    gl_FragColor = vec4(color, alpha);
-}`;
-  function cs(type, src) {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    return s;
-  }
-  const prog = gl.createProgram();
-  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
-  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
-  gl.linkProgram(prog);
-  gl.useProgram(prog);
-  const buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-  const pos = gl.getAttribLocation(prog, 'a_position');
-  gl.enableVertexAttribArray(pos);
-  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-  const uTime = gl.getUniformLocation(prog, 'u_time');
-  const uRes = gl.getUniformLocation(prog, 'u_resolution');
-  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
-  const uSpeaking = gl.getUniformLocation(prog, 'u_speaking');
+    <!-- ===================================================================== -->
+    <!-- VIEW 5: PCB HARDWARE CORE -->
+    <!-- ===================================================================== -->
+    <section id="view-hardware" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-headline font-bold text-xl text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">memory</span>
+                    KiCad PCB Hardware & 3D Modeling Suite
+                </h2>
+                <p class="text-xs font-mono text-on-surface-variant">Schematic AST • DRC Routing • Joule Thermal SPICE • 3D Mesh Generator</p>
+            </div>
+        </div>
 
-  let currentSpeaking = 0.0;
-  let targetSpeaking = 0.0;
-  let speakingTimer = null;
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 font-mono text-xs">
+            <!-- Schematic AST Table -->
+            <div class="glass-panel p-4 rounded-xl border border-surface-border space-y-3">
+                <div class="flex justify-between items-center border-b border-surface-border pb-2">
+                    <strong class="text-primary">SCHEMATIC COMPONENTS</strong>
+                    <span class="text-on-surface-variant">KiCad 8/9 S-Expression</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="text-primary border-b border-surface-border">
+                                <th class="p-1">REF</th><th class="p-1">VALUE</th><th class="p-1">PACKAGE</th><th class="p-1">VOLTAGE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-surface-border/40"><td class="p-1 font-bold text-primary">U1</td><td class="p-1">ATmega328P</td><td class="p-1 text-on-surface-variant">TQFP-32</td><td class="p-1 text-success">5.0V</td></tr>
+                            <tr class="border-b border-surface-border/40"><td class="p-1 font-bold text-primary">U2</td><td class="p-1">AMS1117-3.3</td><td class="p-1 text-on-surface-variant">SOT-223</td><td class="p-1 text-success">3.3V</td></tr>
+                            <tr class="border-b border-surface-border/40"><td class="p-1 font-bold text-primary">J1</td><td class="p-1">USB-C 16-Pin</td><td class="p-1 text-on-surface-variant">SMD-16P</td><td class="p-1 text-success">5.0V</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-  window.setJarvisSpeaking = function(state, durationMs) {
-    targetSpeaking = state ? 1.0 : 0.0;
-    if (speakingTimer) clearTimeout(speakingTimer);
-    if (state && durationMs) {
-      speakingTimer = setTimeout(() => {
-        targetSpeaking = 0.0;
-      }, durationMs);
-    }
-  };
+            <!-- Thermal Joule Loss Model -->
+            <div class="glass-panel p-4 rounded-xl border border-surface-border space-y-3">
+                <div class="flex justify-between items-center border-b border-surface-border pb-2">
+                    <strong class="text-primary">THERMAL JOULE SIMULATOR</strong>
+                    <span class="text-success">PASSING (&lt;65°C)</span>
+                </div>
+                <div class="space-y-2">
+                    <div class="p-2.5 rounded bg-surface-card border border-surface-border flex justify-between">
+                        <span>12V Main Power Rail (2.5A):</span>
+                        <strong class="text-primary">Loss: 0.28W (+12°C Rise)</strong>
+                    </div>
+                    <div class="p-2.5 rounded bg-surface-card border border-surface-border flex justify-between">
+                        <span>3.3V Linear LDO Rail (0.8A):</span>
+                        <strong class="text-warning">Loss: 1.36W (+42°C Rise)</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  canvas.style.cursor = 'pointer';
-  canvas.title = 'Click to test Jarvis Voice Core Wave';
-  canvas.addEventListener('click', () => {
-    window.setJarvisSpeaking(true, 3000);
-    if (typeof window.speakAloud === 'function') {
-      window.speakAloud("Jarvis voice core active. Audio wave visualization responding.");
-    }
-  });
 
-  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
-  window.addEventListener('mousemove', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width && rect.height) {
-      const nx = (event.clientX - rect.left) / rect.width;
-      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
-      mouse.x = nx * canvas.width;
-      mouse.y = ny * canvas.height;
-    }
-  });
+    <!-- ===================================================================== -->
+    <!-- VIEW 6: 80+ TOOLS SURFACE -->
+    <!-- ===================================================================== -->
+    <section id="view-tools" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-headline font-bold text-xl text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">handyman</span>
+                    Jarvis Unified 80+ Tools Catalog
+                </h2>
+                <p class="text-xs font-mono text-on-surface-variant">FastMCP Server & Native Tool Surfaces</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 font-mono text-xs" id="tools-catalog-grid">
+            <!-- Populated dynamically -->
+        </div>
+    </section>
 
-  function render(t) {
-    if (typeof ResizeObserver === 'undefined') syncSize();
-    gl.viewport(0, 0, canvas.width, canvas.height);
+</div>
 
-    // Smooth interpolation for speech intensity
-    currentSpeaking += (targetSpeaking - currentSpeaking) * 0.1;
-
-    if (uTime) gl.uniform1f(uTime, t * 0.001);
-    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
-    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
-    if (uSpeaking) gl.uniform1f(uSpeaking, currentSpeaking);
-
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    requestAnimationFrame(render);
-  }
-  render(0);
-})();
-</script>
-
-<!-- App Logic Script -->
 <script src="/app.js"></script>
 </body>
 </html>

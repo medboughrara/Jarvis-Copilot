@@ -254,6 +254,47 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(res).encode())
             return
 
+        # -------------------------------------------------------------------
+        # OpenHuman-Inspired General Purpose Endpoints (GET)
+        # -------------------------------------------------------------------
+        elif path == "/api/memory_tree":
+            query = urllib.parse.parse_qs(parsed.query).get("query", [""])[0]
+            category = urllib.parse.parse_qs(parsed.query).get("category", [""])[0]
+            from tools.memory_tree_tool import memory_tree_query
+            res = memory_tree_query.invoke({"query": query, "category": category})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/goals":
+            status = urllib.parse.parse_qs(parsed.query).get("status", [""])[0]
+            from tools.memory_tree_tool import goals_kanban_list
+            res = goals_kanban_list.invoke({"status": status})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/workflows":
+            from tools.workflows_engine_tool import workflow_list
+            res = workflow_list.invoke({})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/channels":
+            from tools.multichannel_hub_tool import channel_list_status
+            res = channel_list_status.invoke({})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/medulla/attention":
+            from agent.medulla_reflex import medulla
+            queue = medulla.get_attention_queue()
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "data": {"attention_queue": queue}}).encode())
+            return
+
         # Fallback 404
         self._set_json_headers(404)
         self.wfile.write(json.dumps({"error": f"Route '{path}' not found"}).encode())
@@ -429,6 +470,93 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             }
             self._set_json_headers(200)
             self.wfile.write(json.dumps(res).encode())
+            return
+
+        # -------------------------------------------------------------------
+        # OpenHuman-Inspired General Purpose Endpoints (POST)
+        # -------------------------------------------------------------------
+        elif path == "/api/memory_tree":
+            from tools.memory_tree_tool import memory_tree_store
+            res = memory_tree_store.invoke({
+                "path": body.get("path", "/general/notes"),
+                "title": body.get("title", "Note"),
+                "content": body.get("content", ""),
+                "category": body.get("category", "general"),
+                "tags": body.get("tags", "memory"),
+                "importance": int(body.get("importance", 5))
+            })
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/goals":
+            from tools.memory_tree_tool import goals_kanban_upsert
+            res = goals_kanban_upsert.invoke({
+                "title": body.get("title", "New Goal"),
+                "description": body.get("description", ""),
+                "status": body.get("status", "todo"),
+                "priority": body.get("priority", "medium"),
+                "category": body.get("category", "general"),
+                "deadline": body.get("deadline", ""),
+                "progress": int(body.get("progress", 0)),
+                "goal_id": body.get("goal_id")
+            })
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/workflows/create":
+            from tools.workflows_engine_tool import workflow_create
+            res = workflow_create.invoke({
+                "name": body.get("name", "New Workflow"),
+                "description": body.get("description", ""),
+                "trigger_type": body.get("trigger_type", "manual"),
+                "trigger_config": json.dumps(body.get("trigger_config", {})),
+                "steps_json": json.dumps(body.get("steps", [])),
+                "enabled": body.get("enabled", True)
+            })
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/workflows/execute":
+            from tools.workflows_engine_tool import workflow_execute
+            wf_target = str(body.get("workflow_id_or_name", "1"))
+            payload = json.dumps(body.get("payload", {}))
+            res = workflow_execute.invoke({"workflow_id_or_name": wf_target, "payload": payload})
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/channels/send":
+            from tools.multichannel_hub_tool import channel_send_message
+            res = channel_send_message.invoke({
+                "channel": body.get("channel", "discord"),
+                "target_recipient": body.get("recipient", "general"),
+                "message_content": body.get("content", ""),
+                "attachments": body.get("attachments")
+            })
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/tokenjuice":
+            from tools.tokenjuice_tool import tokenjuice_compress
+            res = tokenjuice_compress.invoke({
+                "content": body.get("content", ""),
+                "content_type": body.get("content_type", "auto"),
+                "aggressive": body.get("aggressive", False)
+            })
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/medulla/triage":
+            from agent.medulla_reflex import medulla
+            prompt = body.get("prompt", "")
+            triage_res = medulla.triage_intent(prompt)
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "data": triage_res}).encode())
             return
 
         self._set_json_headers(404)

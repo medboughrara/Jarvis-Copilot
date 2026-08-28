@@ -82,6 +82,14 @@ from tools.composio_apps_tool import (
     discord_send_message, discord_fetch_messages, discord_create_channel
 )
 from tools.scrapling_tool import scrape_web_page, crawl_website
+from tools.memory_tree_tool import (
+    memory_tree_store, memory_tree_query,
+    goals_kanban_upsert, goals_kanban_list,
+    people_profile_upsert
+)
+from tools.tokenjuice_tool import tokenjuice_compress
+from tools.workflows_engine_tool import workflow_create, workflow_list, workflow_execute
+from tools.multichannel_hub_tool import channel_send_message, channel_list_status
 
 logger = config.get_logger(__name__)
 
@@ -198,7 +206,23 @@ class JarvisAgent:
             discord_create_channel,
             # Scrapling Adaptive Web Scraping & Crawling
             scrape_web_page,
-            crawl_website
+            crawl_website,
+            # OpenHuman-Inspired General Purpose Tools
+            # 1. Memory Tree & Goals Kanban
+            memory_tree_store,
+            memory_tree_query,
+            goals_kanban_upsert,
+            goals_kanban_list,
+            people_profile_upsert,
+            # 2. TokenJuice Token Compression
+            tokenjuice_compress,
+            # 3. Workflows & Tinyflows Engine
+            workflow_create,
+            workflow_list,
+            workflow_execute,
+            # 4. Multi-Channel Communications Gateway
+            channel_send_message,
+            channel_list_status
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}
