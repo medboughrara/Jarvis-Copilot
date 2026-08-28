@@ -470,6 +470,7 @@ class JarvisAgent:
         final_answer = ""
         if response:
             if hasattr(response, 'tool_calls') and response.tool_calls:
+                tool_texts = []
                 for tc in response.tool_calls:
                     tc_name = tc.get('name', '')
                     tc_args = tc.get('args', {})
@@ -477,9 +478,15 @@ class JarvisAgent:
                         if getattr(t, 'name', '') == tc_name:
                             try:
                                 t_res = t.invoke(tc_args)
-                                final_answer += f"\n{t_res}"
+                                if isinstance(t_res, dict):
+                                    t_text = t_res.get("summary") or format_tool_output_for_cli(t_res)
+                                else:
+                                    t_text = str(t_res)
+                                tool_texts.append(t_text)
                             except Exception as te:
                                 logger.warning(f"Tool execution error ({tc_name}): {te}")
+                if tool_texts:
+                    final_answer = "\n\n".join(tool_texts)
 
             if hasattr(response, 'content') and isinstance(response.content, str) and response.content.strip():
                 final_answer = response.content.strip()
