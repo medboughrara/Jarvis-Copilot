@@ -92,7 +92,20 @@ class TextToSpeech:
 
         os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
 
-        # Primary Option: Edge-TTS Microsoft Neural Voices
+        # Option A: NVIDIA Magpie Multilingual Cloud TTS (when requested or enabled)
+        if (getattr(config, 'USE_NVIDIA_TTS', False) or (voice and ('nvidia' in voice.lower() or 'mia' in voice.lower()))) and getattr(config, 'NVIDIA_API_KEY', ''):
+            try:
+                from tools.nvidia_nim_tool import NvidiaNIMClient
+                client = NvidiaNIMClient()
+                res = client.synthesize_speech(clean_text, voice="Magpie-Multilingual.EN-US.Mia")
+                if res.get("status") == "success" and os.path.exists(res.get("file_path", "")):
+                    import shutil
+                    shutil.copyfile(res["file_path"], output_path)
+                    return output_path
+            except Exception as ne:
+                print(f"[TTS Warning] NVIDIA Magpie TTS error ({ne}). Falling back...")
+
+        # Option B: Edge-TTS Microsoft Neural Voices
         if EDGE_TTS_AVAILABLE:
             try:
                 communicate = edge_tts.Communicate(clean_text, voice=target_voice, rate="+4%", pitch="+0Hz")
@@ -101,7 +114,7 @@ class TextToSpeech:
             except Exception as e:
                 print(f"[TTS Warning] Edge-TTS error ({e}). Trying Kokoro...")
 
-        # Secondary Option: Kokoro-82M Local ONNX
+        # Option C: Kokoro-82M Local ONNX
         if self.kokoro_engine and SOUNDFILE_AVAILABLE:
             try:
                 samples, sample_rate = self.kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
