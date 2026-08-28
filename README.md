@@ -78,38 +78,54 @@ graph TD
 
 <div align="center">
 
-### 🎙️ 1. Conversational Avatar Mode (Real-Time Voice & Reactive Mascot)
-*Full-duplex voice conversation with an expressive animated holographic mascot, dynamic mouth viseme lip-sync, real-time waveform audio equalizers, live subtitles, and hands-free auto-listening loop.*
+### 💬 1. Assistant Chat with Rich GitHub Markdown & Live Tool Execution
+*Streaming conversational interface with full Markdown formatting (headings, bold accents, bullet points, syntax-highlighted code blocks), live tool telemetry execution, and single-voice high-fidelity neural audio streaming.*
 
-![Conversational Avatar Mode](docs/images/conversational_avatar_mode.png)
-
----
-
-### 💬 2. Assistant Chat with Rich GitHub Markdown & Voice Audio Replay
-*Streaming conversational interface with full Markdown formatting (headings, bold accents, bullet points, code blocks), collapsible tool execution telemetry cards, and interactive `🔊 Replay` audio synthesis.*
-
-![Assistant Chat Interface](docs/images/assistant_chat_markdown.png)
+![Assistant Chat Interface](docs/images/01_assistant_chat.png)
 
 ---
 
-### 📡 3. Universal Multi-Channel Communications Gateway
-*Unified hub monitoring connected accounts (Gmail, Discord, Telegram, Slack, WhatsApp, Notion, Google Sheets) with quick outbound multi-channel message dispatcher.*
+### 🎙️ 2. Conversational Avatar Mode (Real-Time Voice, 3D Mascot & Reflected Aura)
+*Full-duplex voice conversation with an expressive animated 3D holographic mascot, cursor-tracking pupils, dynamic mouth viseme lip-sync, real-time waveform audio equalizers, customizable atmospheric reflected aura lighting, and hands-free auto-listening.*
 
-![Multi-Channel Communications Gateway](docs/images/multichannel_communications_hub.png)
+![Conversational Avatar Mode](docs/images/02_conversational_avatar.png)
+
+---
+
+### 🧠 3. Hierarchical Scored Memory Tree & Goals Kanban Board
+*4-Column Goals Kanban manager (`To Do`, `In Progress`, `Blocked`, `Done`) and hierarchical memory nodes with importance scoring (1–10) mirrored into Obsidian Vault.*
+
+![Hierarchical Memory Tree & Goals Kanban](docs/images/03_intelligence_memory.png)
 
 ---
 
 ### ⚙️ 4. Automated Workflows & Routines Studio (Tinyflows Engine)
-*Trigger-driven automation graph with pre-built routines (Daily Executive Briefings, Autonomous Web Research, Sponsor Outreach pipelines) and one-click execution.*
+*Trigger-driven automation graph with pre-built routines (Daily Executive Briefings, Autonomous Web Research, Sponsor Outreach pipelines, PCB DRC Audits) and one-click execution.*
 
-![Automated Workflows Studio](docs/images/automated_workflows_tinyflows.png)
+![Automated Workflows Studio](docs/images/04_workflows.png)
 
 ---
 
-### 🧠 5. Hierarchical Scored Memory Tree & Goals Kanban Board
-*4-Column Goals Kanban manager (`To Do`, `In Progress`, `Blocked`, `Done`) and hierarchical memory nodes with importance scoring (1–10) mirrored into Obsidian Vault.*
+### 📡 5. Universal Multi-Channel Communications Gateway
+*Unified hub monitoring connected accounts (Gmail, Discord, Telegram, Slack, WhatsApp, Notion, Google Sheets) with quick outbound multi-channel message dispatcher.*
 
-![Hierarchical Memory Tree & Goals Kanban](docs/images/memory_tree_goals_kanban.png)
+![Multi-Channel Communications Gateway](docs/images/05_channels_hub.png)
+
+---
+
+### 📱 6. Universal 12-App Recipes & Autonomous Cron Daemon (OpenHuman Subsystems)
+*One-click multi-platform automation recipes (Gmail, Outlook, LinkedIn, Slack, Telegram, Discord, Twitter/X, Instagram, WhatsApp, Google Meet, Zoom, BrowserScan), autonomous background scheduled heartbeat daemon, and interactive Python/Math Sandboxed Code Runner.*
+
+![Universal 12-App Recipes](docs/images/06_recipes_cron_top.png)
+
+![Autonomous Cron Daemon & Python Sandbox](docs/images/06_recipes_cron_bottom.png)
+
+---
+
+### 📐 7. KiCad PCB Hardware & 3D Modeling Suite
+*Schematic AST S-expression inspector, DRC/ERC rules checker, Joule thermal loss simulator, signal integrity estimator, and procedural 3D electronic part generator.*
+
+![KiCad PCB Hardware Suite](docs/images/07_pcb_hardware.png)
 
 </div>
 
