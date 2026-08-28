@@ -1,10 +1,41 @@
 /**
  * JARVIS General Purpose AI Super-Assistant — Interactive UI Controller
- * Integrates OpenHuman-Inspired Memory Tree, Workflows (Tinyflows), Multi-Channel Hub, 
- * Voice PTT, Mascot Reactions, and PCB Hardware Suites.
+ * Integrates Rich Markdown Parsing, Conversational Avatar Mode, Voice Speech Synthesis,
+ * Memory Tree, Goals Kanban, Tinyflows, and Multi-Channel Hub.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // -----------------------------------------------------------------------
+    // 0. Markdown Parser Setup (Marked.js + Highlight.js)
+    // -----------------------------------------------------------------------
+    if (window.marked) {
+        window.marked.setOptions({
+            gfm: true,
+            breaks: true,
+            highlight: function (code, lang) {
+                if (window.hljs) {
+                    const validLang = window.hljs.getLanguage(lang) ? lang : 'plaintext';
+                    return window.hljs.highlight(code, { language: validLang }).value;
+                }
+                return code;
+            }
+        });
+    }
+
+    function renderMarkdown(rawText) {
+        if (!rawText) return '';
+        if (window.marked) {
+            try {
+                return window.marked.parse(rawText);
+            } catch (e) {
+                console.warn('Marked parse error:', e);
+            }
+        }
+        // Fallback simple replacement if marked is unavailable
+        return rawText.replace(/\n/g, '<br/>');
+    }
+
     // -----------------------------------------------------------------------
     // 1. Navigation View Switcher
     // -----------------------------------------------------------------------
@@ -34,7 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewName === 'intelligence') loadMemoryAndGoals();
         if (viewName === 'workflows') loadWorkflows();
         if (viewName === 'channels') loadChannels();
-        if (viewName === 'tools') loadToolsCatalog();
+        if (viewName === 'avatar') {
+            setAvatarState('idle');
+            updateAvatarSubtitles('Jarvis is online. Press the mic or hold Spacebar to talk.');
+        }
     }
 
     navButtons.forEach(btn => {
@@ -44,8 +78,154 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const btnQuickVoice = document.getElementById('btn-quick-voice-mode');
+    if (btnQuickVoice) {
+        btnQuickVoice.addEventListener('click', () => switchView('avatar'));
+    }
+
+    const mascotBadge = document.getElementById('mascot-badge');
+    if (mascotBadge) {
+        mascotBadge.addEventListener('click', () => switchView('avatar'));
+    }
+
+    const btnExitAvatar = document.getElementById('btn-exit-avatar');
+    if (btnExitAvatar) {
+        btnExitAvatar.addEventListener('click', () => switchView('chat'));
+    }
+
     // -----------------------------------------------------------------------
-    // 2. Chat Stream & Message Handling
+    // 2. High-Fidelity Voice Speech Synthesis (Client & Server)
+    // -----------------------------------------------------------------------
+    let autoVoiceEnabled = true;
+    let selectedVoice = null;
+    let synth = window.speechSynthesis;
+    let lastSpokenText = "";
+
+    const toggleVoiceBtn = document.getElementById('toggle-voice-auto-speak');
+    const iconVoiceToggle = document.getElementById('icon-voice-toggle');
+    const labelVoiceToggle = document.getElementById('label-voice-toggle');
+
+    if (toggleVoiceBtn) {
+        toggleVoiceBtn.addEventListener('click', () => {
+            autoVoiceEnabled = !autoVoiceEnabled;
+            if (autoVoiceEnabled) {
+                iconVoiceToggle.innerText = 'volume_up';
+                labelVoiceToggle.innerText = 'ON';
+                labelVoiceToggle.className = 'text-success';
+            } else {
+                if (synth) synth.cancel();
+                iconVoiceToggle.innerText = 'volume_off';
+                labelVoiceToggle.innerText = 'OFF';
+                labelVoiceToggle.className = 'text-on-surface-variant';
+            }
+        });
+    }
+
+    // Populate Natural Browser Voices
+    function loadVoices() {
+        if (!synth) return;
+        const voices = synth.getVoices();
+        const voiceSelect = document.getElementById('avatar-voice-select');
+        if (!voiceSelect || voices.length === 0) return;
+
+        voiceSelect.innerHTML = '';
+        let preferredVoice = null;
+
+        voices.forEach((v, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.innerText = `${v.name} (${v.lang})`;
+            opt.className = 'bg-surface-card text-on-surface';
+            voiceSelect.appendChild(opt);
+
+            // Prefer natural English voices
+            if (!preferredVoice && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('US') || v.lang.startsWith('en'))) {
+                preferredVoice = v;
+                opt.selected = true;
+            }
+        });
+
+        selectedVoice = preferredVoice || voices[0];
+        voiceSelect.addEventListener('change', () => {
+            selectedVoice = voices[voiceSelect.value];
+        });
+    }
+
+    if (synth) {
+        loadVoices();
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = loadVoices;
+        }
+    }
+
+    function cleanTextForSpeech(raw) {
+        if (!raw) return '';
+        return raw
+            .replace(/```[\s\S]*?```/g, 'Code snippet omitted.')
+            .replace(/`([^`]+)`/g, '$1')
+            .replace(/\*\*([^*]+)\*\*/g, '$1')
+            .replace(/\*([^*]+)\*/g, '$1')
+            .replace(/#+\s+/g, '')
+            .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+            .replace(/[-*•]\s+/g, '')
+            .replace(/\|/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    function speakSpeech(text, onStart = null, onEnd = null) {
+        if (!text) return;
+        lastSpokenText = text;
+
+        if (!synth) {
+            // Server-side TTS fallback
+            fetch('/api/tts/speak', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: cleanTextForSpeech(text) })
+            }).catch(e => console.warn('Server TTS error:', e));
+            return;
+        }
+
+        try {
+            synth.cancel(); // Cancel any previous speech
+            const clean = cleanTextForSpeech(text);
+            const utterance = new SpeechSynthesisUtterance(clean);
+            
+            if (selectedVoice) utterance.voice = selectedVoice;
+            utterance.rate = 1.05;
+            utterance.pitch = 1.0;
+
+            utterance.onstart = () => {
+                setAvatarState('speaking');
+                if (onStart) onStart();
+            };
+
+            utterance.onend = () => {
+                setAvatarState('idle');
+                if (onEnd) onEnd();
+            };
+
+            utterance.onerror = (e) => {
+                console.warn('SpeechSynthesis error:', e);
+                setAvatarState('idle');
+                if (onEnd) onEnd();
+            };
+
+            synth.speak(utterance);
+        } catch (e) {
+            console.error('Speech playback failed:', e);
+            setAvatarState('idle');
+        }
+    }
+
+    // Expose speak globally for button clicks
+    window.replaySpeech = function (text) {
+        speakSpeech(text);
+    };
+
+    // -----------------------------------------------------------------------
+    // 3. Chat Stream & Message Handling with Markdown & Speaker Buttons
     // -----------------------------------------------------------------------
     const chatStream = document.getElementById('chat-stream');
     const chatInput = document.getElementById('chat-input');
@@ -63,11 +243,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let toolHtml = '';
         if (toolMeta) {
             toolHtml = `
-                <div class="mt-2 p-2.5 rounded-lg bg-surface-card border border-primary/30 font-mono text-xs space-y-1">
+                <div class="mt-3 p-2.5 rounded-lg bg-surface-card border border-primary/30 font-mono text-xs space-y-1">
                     <div class="flex items-center justify-between text-primary">
                         <span class="flex items-center gap-1 font-bold">
                             <span class="material-symbols-outlined text-xs">build</span>
-                            ${toolMeta.tool_name || 'Tool Executed'}
+                            ${toolMeta.tool_name || 'Jarvis Reasoning Core'}
                         </span>
                         <span class="text-[10px] text-success">SUCCESS (0.12s)</span>
                     </div>
@@ -76,18 +256,29 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
+        const safeId = 'msg-' + Math.random().toString(36).substring(2, 9);
+        const renderedContent = isUser ? text.replace(/\n/g, '<br/>') : renderMarkdown(text);
+
+        const speakerBtn = !isUser
+            ? `<button onclick="replaySpeech(document.getElementById('${safeId}').innerText)" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-primary/10" title="Replay voice audio">
+                 <span class="material-symbols-outlined text-xs">volume_up</span>
+                 <span class="text-[10px]">Replay</span>
+               </button>`
+            : '';
+
         const bubble = `
             <div class="space-y-1 max-w-2xl">
-                <div class="px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                <div class="px-5 py-4 rounded-2xl text-sm leading-relaxed ${
                     isUser
                         ? 'bg-primary/20 text-on-surface border border-primary/30 rounded-tr-none'
                         : 'glass-panel text-on-surface border border-surface-border rounded-tl-none'
                 }">
-                    ${text.replace(/\n/g, '<br/>')}
+                    <div id="${safeId}" class="${!isUser ? 'markdown-body' : ''}">${renderedContent}</div>
                     ${toolHtml}
                 </div>
-                <div class="text-[10px] font-mono text-on-surface-variant px-1 ${isUser ? 'text-right' : 'text-left'}">
-                    ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                <div class="flex items-center justify-between px-1 text-[10px] font-mono text-on-surface-variant">
+                    <span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    ${speakerBtn}
                 </div>
             </div>
         `;
@@ -95,15 +286,20 @@ document.addEventListener('DOMContentLoaded', () => {
         msgDiv.innerHTML = isUser ? bubble + avatar : avatar + bubble;
         chatStream.appendChild(msgDiv);
         chatStream.scrollTop = chatStream.scrollHeight;
+
+        // Automatically speak out the response if enabled
+        if (!isUser && autoVoiceEnabled) {
+            speakSpeech(text);
+        }
     }
 
-    async function handleSendMessage() {
-        const text = chatInput.value.trim();
+    async function handleSendMessage(inputOverride = null) {
+        const text = inputOverride || chatInput.value.trim();
         if (!text) return;
 
         appendMessage('user', text);
-        chatInput.value = '';
-        setMascotMood('thinking');
+        if (!inputOverride) chatInput.value = '';
+        setAvatarState('thinking');
 
         try {
             const resp = await fetch('/api/agent/command', {
@@ -112,20 +308,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ command: text })
             });
             const data = await resp.json();
-            setMascotMood('success');
-
             const summary = data.summary || (data.data && data.data.result) || JSON.stringify(data);
+            
             appendMessage('assistant', summary, {
                 tool_name: data.data?.tool_slug || 'Jarvis Reasoning Core',
                 summary: data.data?.details || data.summary
             });
+
+            updateAvatarSubtitles(summary);
         } catch (e) {
-            setMascotMood('alert');
+            setAvatarState('idle');
             appendMessage('assistant', `⚠️ Execution Error: ${e.message}`);
+            updateAvatarSubtitles(`Execution error: ${e.message}`);
         }
     }
 
-    btnSend.addEventListener('click', handleSendMessage);
+    btnSend.addEventListener('click', () => handleSendMessage());
     chatInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -135,76 +333,197 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.quick-prompt-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            chatInput.value = btn.innerText.replace(/^[^\"]*\"|\"[^\"]*$/g, '');
+            const prompt = btn.innerText.replace(/^[^\"]*\"|\"[^\"]*$/g, '');
+            chatInput.value = prompt;
             handleSendMessage();
         });
     });
 
     // -----------------------------------------------------------------------
-    // 3. Mascot Mood & Audio Visualizer Reaction
+    // 4. Conversational Avatar Mode Controller
     // -----------------------------------------------------------------------
-    const mascotBadge = document.getElementById('mascot-badge');
-    function setMascotMood(mood) {
-        if (!mascotBadge) return;
-        mascotBadge.classList.remove('glow-cyan', 'ring-2', 'ring-warning', 'ring-error', 'ring-success');
-        if (mood === 'thinking') {
-            mascotBadge.classList.add('glow-cyan', 'animate-spin');
-        } else if (mood === 'listening') {
-            mascotBadge.classList.add('ring-2', 'ring-primary', 'animate-pulse');
-        } else if (mood === 'success') {
-            mascotBadge.classList.remove('animate-spin');
-            mascotBadge.classList.add('ring-2', 'ring-success');
-            setTimeout(() => mascotBadge.classList.remove('ring-2', 'ring-success'), 2000);
-        } else if (mood === 'alert') {
-            mascotBadge.classList.remove('animate-spin');
-            mascotBadge.classList.add('ring-2', 'ring-error');
+    const avatarStageOrb = document.getElementById('avatar-stage-orb');
+    const avatarMouth = document.getElementById('avatar-mouth');
+    const avatarStatusPill = document.getElementById('avatar-status-pill');
+    const avatarStatusText = document.getElementById('avatar-status-text');
+    const avatarLiveTranscript = document.getElementById('avatar-live-transcript');
+    const btnAvatarSpeak = document.getElementById('btn-avatar-speak');
+    const avatarSpeakIcon = document.getElementById('avatar-speak-icon');
+    const btnAvatarReplay = document.getElementById('btn-avatar-replay');
+    const btnAvatarAutoLoop = document.getElementById('btn-avatar-auto-loop');
+    const iconAutoLoop = document.getElementById('icon-auto-loop');
+
+    let continuousAutoLoop = false;
+    let isAvatarRecording = false;
+
+    function setAvatarState(state) {
+        if (!avatarStageOrb) return;
+        avatarStageOrb.classList.remove('glow-avatar-idle', 'glow-avatar-speaking', 'glow-avatar-listening', 'glow-avatar-thinking');
+        avatarMouth.classList.remove('avatar-mouth-speaking');
+
+        if (state === 'idle') {
+            avatarStageOrb.classList.add('glow-avatar-idle');
+            avatarStatusText.innerText = 'JARVIS READY // CLICK MIC TO SPEAK';
+            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-surface-card border border-primary/40 font-mono text-xs font-bold text-primary flex items-center gap-2 shadow-lg';
+            avatarSpeakIcon.innerText = 'mic';
+        } else if (state === 'listening') {
+            avatarStageOrb.classList.add('glow-avatar-listening');
+            avatarStatusText.innerText = 'LISTENING... SPEAK CLEARLY';
+            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-success/20 border border-success font-mono text-xs font-bold text-success flex items-center gap-2 shadow-lg';
+            avatarSpeakIcon.innerText = 'graphic_eq';
+        } else if (state === 'thinking') {
+            avatarStageOrb.classList.add('glow-avatar-thinking');
+            avatarStatusText.innerText = 'THINKING & REASONING...';
+            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-purple-accent/20 border border-purple-accent font-mono text-xs font-bold text-purple-accent flex items-center gap-2 shadow-lg';
+            avatarSpeakIcon.innerText = 'psychology';
+        } else if (state === 'speaking') {
+            avatarStageOrb.classList.add('glow-avatar-speaking');
+            avatarMouth.classList.add('avatar-mouth-speaking');
+            avatarStatusText.innerText = 'SPEAKING OUT LOUD...';
+            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-primary/20 border border-primary font-mono text-xs font-bold text-primary flex items-center gap-2 shadow-lg';
+            avatarSpeakIcon.innerText = 'volume_up';
         }
     }
 
-    // -----------------------------------------------------------------------
-    // 4. Voice PTT (Push-To-Talk)
-    // -----------------------------------------------------------------------
-    const pttBtn = document.getElementById('header-ptt-btn');
-    const pttLabel = document.getElementById('header-ptt-label');
-    const pttIcon = document.getElementById('header-mic-icon');
-    let isListening = false;
-    let recognition = null;
+    function updateAvatarSubtitles(text) {
+        if (avatarLiveTranscript) {
+            avatarLiveTranscript.innerText = `"${cleanTextForSpeech(text).substring(0, 240)}..."`;
+        }
+    }
 
+    // Push-to-Talk SpeechRecognition
+    let recognition = null;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRec();
         recognition.continuous = false;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
         recognition.lang = 'en-US';
 
         recognition.onstart = () => {
-            isListening = true;
-            pttLabel.innerText = 'LISTENING...';
-            pttBtn.classList.add('bg-error/30', 'text-error', 'border-error');
-            setMascotMood('listening');
+            isAvatarRecording = true;
+            setAvatarState('listening');
+            updateAvatarSubtitles('Listening to your voice...');
         };
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            chatInput.value = transcript;
-            handleSendMessage();
+        recognition.onresult = (e) => {
+            const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+            updateAvatarSubtitles(transcript);
+            if (e.results[0].isFinal) {
+                recognition.stop();
+                handleAvatarVoiceTurn(transcript);
+            }
+        };
+
+        recognition.onerror = (e) => {
+            console.warn('SpeechRecognition error:', e);
+            setAvatarState('idle');
+            isAvatarRecording = false;
         };
 
         recognition.onend = () => {
-            isListening = false;
-            pttLabel.innerText = 'VOICE PTT';
-            pttBtn.classList.remove('bg-error/30', 'text-error', 'border-error');
-            setMascotMood('ready');
+            isAvatarRecording = false;
         };
+    }
 
-        pttBtn.addEventListener('click', () => {
-            if (!isListening) {
+    function toggleAvatarListening() {
+        if (!recognition) {
+            alert('Speech recognition is not supported in this browser. Please use Chrome or Edge.');
+            return;
+        }
+        if (synth) synth.cancel();
+
+        if (!isAvatarRecording) {
+            try {
                 recognition.start();
-            } else {
-                recognition.stop();
+            } catch (e) {
+                console.warn('Recognition start error:', e);
+            }
+        } else {
+            recognition.stop();
+        }
+    }
+
+    async function handleAvatarVoiceTurn(userSpeech) {
+        if (!userSpeech || !userSpeech.trim()) {
+            setAvatarState('idle');
+            return;
+        }
+
+        setAvatarState('thinking');
+        updateAvatarSubtitles(`You: "${userSpeech}"`);
+
+        try {
+            const resp = await fetch('/api/agent/command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: userSpeech })
+            });
+            const data = await resp.json();
+            const reply = data.summary || (data.data && data.data.result) || JSON.stringify(data);
+
+            updateAvatarSubtitles(reply);
+            appendMessage('user', userSpeech);
+            appendMessage('assistant', reply, {
+                tool_name: data.data?.tool_slug || 'Jarvis Voice Reasoning',
+                summary: data.data?.details || data.summary
+            });
+
+            // Speak out and loop if continuous mode is enabled
+            speakSpeech(reply, () => {
+                setAvatarState('speaking');
+            }, () => {
+                setAvatarState('idle');
+                if (continuousAutoLoop) {
+                    setTimeout(() => toggleAvatarListening(), 600);
+                }
+            });
+        } catch (e) {
+            setAvatarState('idle');
+            updateAvatarSubtitles(`Error: ${e.message}`);
+        }
+    }
+
+    if (btnAvatarSpeak) {
+        btnAvatarSpeak.addEventListener('click', toggleAvatarListening);
+    }
+
+    const chatMicBtn = document.getElementById('chat-mic-btn');
+    if (chatMicBtn) {
+        chatMicBtn.addEventListener('click', toggleAvatarListening);
+    }
+
+    if (btnAvatarReplay) {
+        btnAvatarReplay.addEventListener('click', () => {
+            if (lastSpokenText) {
+                speakSpeech(lastSpokenText);
             }
         });
     }
+
+    if (btnAvatarAutoLoop) {
+        btnAvatarAutoLoop.addEventListener('click', () => {
+            continuousAutoLoop = !continuousAutoLoop;
+            if (continuousAutoLoop) {
+                btnAvatarAutoLoop.classList.add('bg-primary/20', 'border-primary', 'text-primary');
+                iconAutoLoop.innerText = 'sync';
+                alert('Continuous Conversational Voice Mode: ON');
+            } else {
+                btnAvatarAutoLoop.classList.remove('bg-primary/20', 'border-primary', 'text-primary');
+                iconAutoLoop.innerText = 'all_inclusive';
+            }
+        });
+    }
+
+    // Spacebar PTT shortcut in Avatar Mode
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && document.getElementById('view-avatar') && !document.getElementById('view-avatar').classList.contains('hidden')) {
+            if (document.activeElement !== chatInput && !isAvatarRecording) {
+                e.preventDefault();
+                toggleAvatarListening();
+            }
+        }
+    });
 
     // -----------------------------------------------------------------------
     // 5. Memory Tree & Goals Kanban Data Fetcher
@@ -303,13 +622,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ workflow_id_or_name: wfId })
             });
             const data = await resp.json();
-            const logContainer = document.getElementById('workflow-run-logs');
-            if (logContainer) {
-                const logEntry = document.createElement('div');
-                logEntry.className = 'p-2 bg-surface-card rounded border border-success/40 text-success text-xs font-mono';
-                logEntry.innerText = `[${new Date().toLocaleTimeString()}] Executed Workflow '${data.data?.workflow_name}': Run #${data.data?.run_id} completed successfully.`;
-                logContainer.prepend(logEntry);
-            }
             switchView('chat');
             appendMessage('assistant', `⚡ Executed Workflow **${data.data?.workflow_name}** (Run #${data.data?.run_id}): All ${data.data?.steps_executed} steps finished successfully.`);
         } catch (e) {
@@ -368,37 +680,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // -----------------------------------------------------------------------
-    // 8. 80+ Tools Surface Catalog
-    // -----------------------------------------------------------------------
-    function loadToolsCatalog() {
-        const tools = [
-            { category: 'Memory & Intelligence', name: 'memory_tree_store', desc: 'Stores scored hierarchical memory node in SQLite & Obsidian' },
-            { category: 'Memory & Intelligence', name: 'goals_kanban_upsert', desc: 'Updates Goals & Tasks Kanban card' },
-            { category: 'Automation & Flows', name: 'workflow_execute', desc: 'Runs trigger-driven Tinyflows multi-step graph' },
-            { category: 'Communications', name: 'channel_send_message', desc: 'Dispatches message to Telegram, Discord, Slack, WhatsApp' },
-            { category: 'Optimization', name: 'tokenjuice_compress', desc: 'Compresses tool outputs up to 80% to save LLM tokens' },
-            { category: 'PCB & Hardware', name: 'analyze_kicad_file', desc: 'Full AST netlist, power tree, and DRC clearance parser' },
-            { category: 'PCB & Hardware', name: 'generate_3d_part_from_image_or_spec', desc: 'Procedural 3D OBJ & Three.js electronic model generator' },
-            { category: 'PCB & Hardware', name: 'calculate_thermal_loss', desc: 'Joule heating and trace temperature rise simulator' },
-            { category: 'Web & Research', name: 'browse_web_page', desc: 'Crawl4AI & Scrapling dynamic DOM crawler' },
-            { category: 'Composio Cloud', name: 'gmail_send_email', desc: 'Sends email via authenticated Gmail connection' },
-            { category: 'Composio Cloud', name: 'sheets_append_row', desc: 'Appends rows into live Google Sheets database' },
-            { category: 'Composio Cloud', name: 'notion_create_page', desc: 'Creates pages and task boards in Notion workspace' }
-        ];
-
-        const grid = document.getElementById('tools-catalog-grid');
-        if (grid) {
-            grid.innerHTML = tools.map(t => `
-                <div class="glass-panel p-3 rounded-xl border border-surface-border space-y-1.5 hover:border-primary/40 transition-all">
-                    <span class="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold uppercase">${t.category}</span>
-                    <h4 class="font-bold text-xs text-on-surface font-mono">${t.name}</h4>
-                    <p class="text-[10px] text-on-surface-variant font-sans">${t.desc}</p>
-                </div>
-            `).join('');
-        }
-    }
-
-    // Initial Load
+    // Initial default view
     switchView('chat');
 });

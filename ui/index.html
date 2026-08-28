@@ -3,10 +3,20 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>JARVIS — General Purpose AI Super-Assistant & Engineering Core</title>
+    <title>JARVIS — General Purpose AI Super-Assistant & Conversational Avatar</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <!-- Marked.js for Markdown & Highlight.js for Code Highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -17,10 +27,10 @@
                         "primary-dim": "#00dbe7",
                         "primary-container": "#00f2ff",
                         "secondary": "#7b8cde",
-                        "surface": "#0a0d14",
-                        "surface-card": "#111726",
-                        "surface-hover": "#172033",
-                        "surface-border": "rgba(0, 242, 255, 0.15)",
+                        "surface": "#070a12",
+                        "surface-card": "#0f1626",
+                        "surface-hover": "#17223b",
+                        "surface-border": "rgba(0, 242, 255, 0.18)",
                         "on-surface": "#e2e8f0",
                         "on-surface-variant": "#94a3b8",
                         "success": "#10b981",
@@ -39,10 +49,10 @@
     </script>
     <style>
         body {
-            background-color: #060911;
+            background-color: #050811;
             background-image: 
-                radial-gradient(circle at 15% 15%, rgba(0, 242, 255, 0.04) 0%, transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 20% 20%, rgba(0, 242, 255, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 45%),
                 linear-gradient(0deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
@@ -50,43 +60,68 @@
         }
 
         .glass-panel {
-            background: rgba(13, 19, 33, 0.7);
+            background: rgba(15, 22, 38, 0.75);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 242, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
         }
 
         .glass-panel-subtle {
-            background: rgba(17, 24, 39, 0.5);
+            background: rgba(17, 24, 39, 0.6);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .glow-cyan {
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.25);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.35);
         }
 
-        .glow-cyan-sm {
-            box-shadow: 0 0 8px rgba(0, 242, 255, 0.2);
+        .glow-avatar-idle {
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.25), inset 0 0 30px rgba(0, 242, 255, 0.15);
         }
 
-        .scanline {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: rgba(0, 242, 255, 0.4);
-            opacity: 0.3;
-            animation: scan 6s linear infinite;
-            pointer-events: none;
-            z-index: 10;
+        .glow-avatar-speaking {
+            animation: avatar-speak-pulse 1.2s infinite ease-in-out alternate;
         }
-        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* Mascot Eye Animation */
-        @keyframes blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
-        @keyframes pulse-ring { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
-        .mascot-eye { animation: blink 4s infinite; }
-        .mascot-glow { animation: pulse-ring 3s infinite ease-in-out; }
+        @keyframes avatar-speak-pulse {
+            0% { box-shadow: 0 0 30px rgba(0, 242, 255, 0.3), inset 0 0 20px rgba(0, 242, 255, 0.2); }
+            100% { box-shadow: 0 0 60px rgba(0, 242, 255, 0.8), inset 0 0 40px rgba(168, 85, 247, 0.5); }
+        }
+
+        .glow-avatar-listening {
+            animation: avatar-listen-pulse 1s infinite alternate;
+        }
+
+        @keyframes avatar-listen-pulse {
+            0% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.3); border-color: rgba(16, 185, 129, 0.5); }
+            100% { box-shadow: 0 0 55px rgba(16, 185, 129, 0.8); border-color: rgba(16, 185, 129, 1); }
+        }
+
+        .glow-avatar-thinking {
+            animation: avatar-think-pulse 1.4s infinite ease-in-out;
+        }
+
+        @keyframes avatar-think-pulse {
+            0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 35px rgba(168, 85, 247, 0.4); }
+            50% { transform: scale(1.03) rotate(2deg); box-shadow: 0 0 65px rgba(168, 85, 247, 0.8); }
+            100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 35px rgba(168, 85, 247, 0.4); }
+        }
+
+        /* Avatar Mascot Face Animations */
+        @keyframes eye-blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.08); } }
+        @keyframes float-gentle { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        @keyframes mouth-speak {
+            0%, 100% { height: 6px; width: 24px; border-radius: 4px; }
+            30% { height: 18px; width: 32px; border-radius: 12px; }
+            60% { height: 12px; width: 20px; border-radius: 8px; }
+            80% { height: 22px; width: 28px; border-radius: 14px; }
+        }
+
+        .avatar-eye { animation: eye-blink 3.8s infinite; transform-origin: center; }
+        .avatar-float { animation: float-gentle 4s infinite ease-in-out; }
+        .avatar-mouth-speaking { animation: mouth-speak 0.35s infinite ease-in-out; }
 
         /* Custom Scrollbars */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -97,7 +132,97 @@
         .nav-tab-btn.active {
             color: #00f2ff;
             border-bottom: 2px solid #00f2ff;
+            background: rgba(0, 242, 255, 0.06);
+        }
+
+        /* ========================================================= */
+        /* RICH MARKDOWN FORMATTING STYLES */
+        /* ========================================================= */
+        .markdown-body {
+            color: #e2e8f0;
+            line-height: 1.65;
+            font-size: 0.925rem;
+        }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+            color: #00f2ff;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            margin-top: 0.75rem;
+            margin-bottom: 0.4rem;
+        }
+        .markdown-body h1 { font-size: 1.35rem; border-bottom: 1px solid rgba(0, 242, 255, 0.2); padding-bottom: 0.3rem; }
+        .markdown-body h2 { font-size: 1.15rem; }
+        .markdown-body h3 { font-size: 1.02rem; }
+        .markdown-body p { margin-bottom: 0.6rem; }
+        .markdown-body strong { color: #00f2ff; font-weight: 600; }
+        .markdown-body em { color: #bec6e0; font-style: italic; }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.3rem; margin-bottom: 0.6rem; }
+        .markdown-body ol { list-style-type: decimal; padding-left: 1.3rem; margin-bottom: 0.6rem; }
+        .markdown-body li { margin-bottom: 0.3rem; }
+        .markdown-body li > strong:first-child { color: #00f2ff; }
+        
+        .markdown-body code:not(pre code) {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            background: rgba(0, 242, 255, 0.1);
+            color: #00f2ff;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.3rem;
+            border: 1px solid rgba(0, 242, 255, 0.25);
+        }
+
+        .markdown-body pre {
+            background: #090d18 !important;
+            border: 1px solid rgba(0, 242, 255, 0.25);
+            border-radius: 0.75rem;
+            padding: 0.85rem;
+            margin: 0.65rem 0;
+            overflow-x: auto;
+        }
+        .markdown-body pre code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: transparent !important;
+            padding: 0;
+            border: none;
+        }
+
+        .markdown-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.75rem 0;
+            font-size: 0.82rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .markdown-body th {
+            background: rgba(0, 242, 255, 0.12);
+            color: #00f2ff;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+        }
+        .markdown-body td {
+            padding: 0.45rem 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(15, 22, 38, 0.4);
+        }
+        .markdown-body tr:hover td {
+            background: rgba(0, 242, 255, 0.06);
+        }
+        .markdown-body blockquote {
+            border-left: 3px solid #00f2ff;
             background: rgba(0, 242, 255, 0.05);
+            padding: 0.5rem 0.85rem;
+            margin: 0.6rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        .markdown-body hr {
+            border: none;
+            border-top: 1px solid rgba(0, 242, 255, 0.2);
+            margin: 0.85rem 0;
         }
     </style>
 </head>
@@ -109,11 +234,11 @@
 <header class="h-16 w-full glass-panel border-b border-primary/20 flex items-center justify-between px-5 z-50 flex-shrink-0">
     <!-- Brand / Mascot Left -->
     <div class="flex items-center gap-3">
-        <!-- Interactive Mascot Mini Badge -->
-        <div id="mascot-badge" class="relative w-9 h-9 rounded-xl bg-gradient-to-tr from-primary/30 to-purple-accent/30 border border-primary/40 flex items-center justify-center cursor-pointer mascot-glow" title="Jarvis Mascot — Mood: Ready">
+        <!-- Interactive Mascot Mini Avatar -->
+        <div id="mascot-badge" class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/30 to-purple-accent/30 border border-primary/40 flex items-center justify-center cursor-pointer glow-cyan" title="Launch Conversational Avatar Mode">
             <div class="flex items-center gap-1.5">
-                <div class="w-1.5 h-3 bg-primary rounded-full mascot-eye"></div>
-                <div class="w-1.5 h-3 bg-primary rounded-full mascot-eye"></div>
+                <div class="w-1.5 h-3 bg-primary rounded-full avatar-eye"></div>
+                <div class="w-1.5 h-3 bg-primary rounded-full avatar-eye"></div>
             </div>
             <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-success rounded-full ring-2 ring-surface animate-pulse"></span>
         </div>
@@ -131,52 +256,53 @@
 
     <!-- Center Navigation Tabs -->
     <nav class="hidden lg:flex items-center gap-1">
-        <button class="nav-tab-btn active px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="chat">
+        <button class="nav-tab-btn active px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-view="chat">
             <span class="material-symbols-outlined text-base">forum</span>
             ASSISTANT CHAT
         </button>
-        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="intelligence">
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-primary hover:text-primary transition-all flex items-center gap-1.5 bg-primary/10 rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(0,242,255,0.2)]" data-view="avatar">
+            <span class="material-symbols-outlined text-base">account_circle</span>
+            🎙️ CONVERSATIONAL AVATAR
+        </button>
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-view="intelligence">
             <span class="material-symbols-outlined text-base">psychology</span>
             INTELLIGENCE & MEMORY
         </button>
-        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="workflows">
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-view="workflows">
             <span class="material-symbols-outlined text-base">schema</span>
-            WORKFLOWS (TINYFLOWS)
+            WORKFLOWS
         </button>
-        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="channels">
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-view="channels">
             <span class="material-symbols-outlined text-base">hub</span>
             CHANNELS HUB
         </button>
-        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="hardware">
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-view="hardware">
             <span class="material-symbols-outlined text-base">memory</span>
             PCB HARDWARE
         </button>
-        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-2" data-view="tools">
-            <span class="material-symbols-outlined text-base">handyman</span>
-            80+ TOOLS
-        </button>
     </nav>
 
-    <!-- Right Utility & TokenJuice Stats -->
+    <!-- Right Utility & Voice Mode Toggle -->
     <div class="flex items-center gap-3">
-        <!-- TokenJuice Compression Pill -->
-        <div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-card border border-primary/20 font-mono text-xs" title="TokenJuice Savings">
+        <!-- Voice Readout Toggle Switch -->
+        <div class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-card border border-primary/20 font-mono text-xs cursor-pointer select-none" id="toggle-voice-auto-speak" title="Toggle automatic voice speech replay for all answers">
+            <span class="material-symbols-outlined text-xs text-primary" id="icon-voice-toggle">volume_up</span>
+            <span class="text-[11px] text-on-surface-variant">Voice Output:</span>
+            <strong class="text-success" id="label-voice-toggle">ON</strong>
+        </div>
+
+        <!-- TokenJuice Pill -->
+        <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-card border border-primary/20 font-mono text-xs" title="TokenJuice Compression Savings">
             <span class="material-symbols-outlined text-xs text-primary">compress</span>
             <span class="text-[11px] text-on-surface-variant">TokenJuice:</span>
             <strong class="text-primary" id="tokenjuice-metric">-68.4%</strong>
         </div>
 
-        <!-- Voice PTT Button -->
-        <button id="header-ptt-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/40 text-primary hover:bg-primary hover:text-surface transition-all font-mono text-xs font-semibold">
-            <span class="material-symbols-outlined text-base" id="header-mic-icon">mic</span>
-            <span id="header-ptt-label">VOICE PTT</span>
+        <!-- Launch Voice Avatar Quick Button -->
+        <button id="btn-quick-voice-mode" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary/20 to-purple-accent/20 border border-primary/50 text-primary hover:bg-primary hover:text-surface transition-all font-mono text-xs font-bold shadow-[0_0_12px_rgba(0,242,255,0.3)]">
+            <span class="material-symbols-outlined text-base animate-pulse">record_voice_over</span>
+            <span>SPEAK</span>
         </button>
-
-        <!-- Notification Bell -->
-        <div class="relative cursor-pointer p-1.5 text-on-surface-variant hover:text-primary transition-colors" id="btn-attention-queue" title="Attention Queue (Approvals & Tasks)">
-            <span class="material-symbols-outlined">notifications</span>
-            <span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full animate-ping"></span>
-        </div>
     </div>
 </header>
 
@@ -191,21 +317,21 @@
     <!-- ===================================================================== -->
     <section id="view-chat" class="view-pane flex-1 flex flex-col h-full overflow-hidden">
         <!-- Message Bubbles Stream -->
-        <div id="chat-stream" class="flex-1 overflow-y-auto p-6 space-y-4 font-sans">
+        <div id="chat-stream" class="flex-1 overflow-y-auto p-6 space-y-5 font-sans">
             
             <!-- Jarvis Welcome Hero Card -->
             <div class="glass-panel p-5 rounded-2xl max-w-3xl mx-auto border border-primary/20 space-y-3">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/40 to-purple-accent/40 flex items-center justify-center text-primary font-headline font-bold text-lg border border-primary/30">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/40 to-purple-accent/40 flex items-center justify-center text-primary font-headline font-bold text-lg border border-primary/30 shadow-[0_0_10px_rgba(0,242,255,0.3)]">
                         J
                     </div>
                     <div>
                         <h2 class="font-headline font-bold text-base text-primary">Jarvis AI General Purpose Super-Assistant</h2>
-                        <p class="text-xs font-mono text-on-surface-variant">Hierarchical Memory Tree • Obsidian Vault • Workflows Engine • 17 Channels Hub • KiCad EDA</p>
+                        <p class="text-xs font-mono text-on-surface-variant">Conversational Avatar • Memory Tree • Workflows • 17 Channels • Markdown Rendering</p>
                     </div>
                 </div>
                 <p class="text-sm text-on-surface leading-relaxed">
-                    Ready to execute autonomous engineering, deep research, workflows, or communications. How may I assist you today?
+                    Welcome! All responses are rendered in rich GitHub-flavored Markdown with automated voice speech replay. You can type below or switch to the <strong>🎙️ Conversational Avatar Mode</strong> for interactive voice conversations!
                 </p>
                 <!-- Quick Starter Chips -->
                 <div class="flex flex-wrap gap-2 pt-1 font-mono text-xs">
@@ -216,20 +342,20 @@
                         🧠 "Query Memory Tree for 6G Topics"
                     </button>
                     <button class="quick-prompt-btn px-3 py-1.5 rounded-lg bg-surface-card hover:bg-primary/20 border border-surface-border text-on-surface hover:text-primary transition-all">
-                        ⚙️ "Run Daily Morning Briefing Workflow"
+                        🎙️ "Open Conversational Avatar Mode"
                     </button>
                     <button class="quick-prompt-btn px-3 py-1.5 rounded-lg bg-surface-card hover:bg-primary/20 border border-surface-border text-on-surface hover:text-primary transition-all">
-                        ⚡ "Design 4-Layer STM32 KiCad PCB"
+                        ⚡ "Analyze active screen & PCB schematic"
                     </button>
                 </div>
             </div>
 
-            <!-- Pre-loaded interactive conversation turns will be appended here dynamically -->
+            <!-- Messages appended here dynamically -->
         </div>
 
         <!-- Chat Input Composer Box -->
         <div class="p-4 glass-panel border-t border-primary/10 flex flex-col gap-2">
-            <!-- Attention / Approval Bar (Conditional) -->
+            <!-- Approval Bar -->
             <div id="approval-bar" class="hidden glass-panel-subtle p-3 rounded-xl border border-warning/40 flex items-center justify-between font-mono text-xs">
                 <div class="flex items-center gap-2 text-warning">
                     <span class="material-symbols-outlined">gavel</span>
@@ -243,26 +369,133 @@
 
             <!-- Input Bar -->
             <div class="flex items-center gap-3 bg-surface-card border border-primary/30 rounded-2xl p-2 px-4 shadow-lg focus-within:border-primary transition-all">
-                <button class="text-on-surface-variant hover:text-primary transition-colors" title="Attach file or schematic">
+                <button class="text-on-surface-variant hover:text-primary transition-colors" title="Attach file">
                     <span class="material-symbols-outlined text-xl">attach_file</span>
                 </button>
-                <textarea id="chat-input" rows="1" class="flex-1 bg-transparent border-0 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0 resize-none font-sans outline-none" placeholder="Ask Jarvis anything, execute workflows, research topics, or design circuits..."></textarea>
+                <textarea id="chat-input" rows="1" class="flex-1 bg-transparent border-0 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0 resize-none font-sans outline-none" placeholder="Ask Jarvis anything, execute workflows, or speak..."></textarea>
+                
                 <div class="flex items-center gap-2 font-mono">
-                    <button id="btn-send-message" class="w-9 h-9 rounded-xl bg-primary text-surface font-bold flex items-center justify-center hover:bg-primary-dim transition-all shadow-[0_0_10px_rgba(0,242,255,0.4)]">
+                    <!-- Mic Button -->
+                    <button id="chat-mic-btn" class="w-9 h-9 rounded-xl bg-surface-card border border-primary/30 text-primary flex items-center justify-center hover:bg-primary/20 transition-all" title="Push-to-Talk Voice Input">
+                        <span class="material-symbols-outlined text-lg" id="chat-mic-icon">mic</span>
+                    </button>
+                    <!-- Send Button -->
+                    <button id="btn-send-message" class="w-9 h-9 rounded-xl bg-primary text-surface font-bold flex items-center justify-center hover:bg-primary-dim transition-all shadow-[0_0_10px_rgba(0,242,255,0.4)]" title="Send (Enter)">
                         <span class="material-symbols-outlined text-lg">arrow_upward</span>
                     </button>
                 </div>
             </div>
             <div class="flex justify-between items-center px-2 text-[11px] font-mono text-on-surface-variant">
-                <span>Model: <strong class="text-primary">Gemini 2.5 Pro (Multi-Key Pool) + Ollama Local Fallback</strong></span>
-                <span>Press <strong>Enter</strong> to send, <strong>Shift+Enter</strong> for newline</span>
+                <span>Core: <strong class="text-primary">Multi-Key Gemini 2.5 + Ollama Local</strong></span>
+                <span>Click <strong>🔊 Speaker icon</strong> on any message to replay voice</span>
             </div>
         </div>
     </section>
 
 
     <!-- ===================================================================== -->
-    <!-- VIEW 2: INTELLIGENCE & MEMORY TREE (Karpathy LLM Knowledgebase) -->
+    <!-- VIEW 2: 🎙️ CONVERSATIONAL AVATAR (OpenHuman-Style Avatar Voice Mode) -->
+    <!-- ===================================================================== -->
+    <section id="view-avatar" class="view-pane hidden flex-1 flex flex-col items-center justify-between p-8 overflow-y-auto relative">
+        
+        <!-- Background Ambient Glow Rings -->
+        <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30 overflow-hidden">
+            <div class="w-[500px] h-[500px] rounded-full border border-primary/20 animate-[spin_40s_linear_infinite]"></div>
+            <div class="absolute w-[360px] h-[360px] rounded-full border border-dashed border-purple-accent/30 animate-[spin_25s_linear_infinite_reverse]"></div>
+        </div>
+
+        <!-- Top Header of Avatar Mode -->
+        <div class="w-full max-w-2xl flex justify-between items-center z-10 font-mono text-xs">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-success animate-pulse"></span>
+                <span class="text-primary font-bold tracking-widest">CONVERSATIONAL AVATAR MODE</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="px-3 py-1 rounded-full bg-surface-card border border-primary/30 text-on-surface flex items-center gap-2">
+                    <span class="text-on-surface-variant">Voice:</span>
+                    <select id="avatar-voice-select" class="bg-transparent border-0 text-primary text-xs font-mono outline-none cursor-pointer">
+                        <option value="default" class="bg-surface-card text-on-surface">Natural English Neural (Jarvis)</option>
+                    </select>
+                </div>
+                <button id="btn-exit-avatar" class="px-3 py-1 rounded-lg bg-surface-card hover:bg-error/20 border border-surface-border text-on-surface-variant hover:text-error transition-all flex items-center gap-1">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                    EXIT
+                </button>
+            </div>
+        </div>
+
+        <!-- Center: Interactive Avatar Stage -->
+        <div class="my-auto flex flex-col items-center justify-center space-y-6 z-10">
+            
+            <!-- Animated 3D/Hologram Avatar Mascot -->
+            <div id="avatar-stage-orb" class="relative w-64 h-64 md:w-72 md:h-72 rounded-full glass-panel border-2 border-primary/40 flex flex-col items-center justify-center glow-avatar-idle transition-all duration-500 avatar-float">
+                
+                <!-- Holographic Orbit Particle Dots -->
+                <div class="absolute inset-2 rounded-full border border-primary/20 pointer-events-none"></div>
+                <div class="absolute -top-2 w-4 h-4 rounded-full bg-primary/60 blur-xs animate-ping"></div>
+
+                <!-- Avatar Face (Eyes & Mouth) -->
+                <div class="flex flex-col items-center justify-center space-y-5 z-20">
+                    <!-- Eyes Container -->
+                    <div class="flex items-center gap-8" id="avatar-eyes">
+                        <div class="w-6 h-10 rounded-full bg-gradient-to-b from-primary to-primary-dim shadow-[0_0_15px_rgba(0,242,255,0.8)] avatar-eye"></div>
+                        <div class="w-6 h-10 rounded-full bg-gradient-to-b from-primary to-primary-dim shadow-[0_0_15px_rgba(0,242,255,0.8)] avatar-eye"></div>
+                    </div>
+                    
+                    <!-- Dynamic Mouth (Morphs during speech) -->
+                    <div id="avatar-mouth" class="w-8 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(0,242,255,0.6)] transition-all duration-75"></div>
+                </div>
+
+                <!-- Audio Equalizer Bars Inside Avatar -->
+                <div class="absolute bottom-6 flex items-center gap-1.5 opacity-60" id="avatar-audio-bars">
+                    <div class="w-1 bg-primary h-2 rounded-full transition-all duration-75"></div>
+                    <div class="w-1 bg-primary h-4 rounded-full transition-all duration-75"></div>
+                    <div class="w-1 bg-primary h-3 rounded-full transition-all duration-75"></div>
+                    <div class="w-1 bg-primary h-5 rounded-full transition-all duration-75"></div>
+                    <div class="w-1 bg-primary h-2 rounded-full transition-all duration-75"></div>
+                </div>
+            </div>
+
+            <!-- Avatar State Indicator Pill -->
+            <div id="avatar-status-pill" class="px-4 py-1.5 rounded-full bg-surface-card border border-primary/40 font-mono text-xs font-bold text-primary flex items-center gap-2 shadow-lg">
+                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                <span id="avatar-status-text">JARVIS READY // CLICK MIC TO SPEAK</span>
+            </div>
+
+            <!-- Streaming Subtitles Transcript -->
+            <div class="max-w-xl w-full text-center px-4">
+                <p id="avatar-live-transcript" class="text-sm text-on-surface font-sans leading-relaxed italic opacity-90 min-h-[3rem]">
+                    "Press the microphone or spacebar to speak directly with Jarvis..."
+                </p>
+            </div>
+        </div>
+
+        <!-- Bottom Controls Bar -->
+        <div class="w-full max-w-xl flex flex-col items-center gap-3 z-10">
+            <!-- Big Push-to-Talk / Continuous Conversation Button -->
+            <div class="flex items-center gap-4">
+                <button id="btn-avatar-replay" class="p-3 rounded-full bg-surface-card border border-surface-border text-on-surface hover:text-primary transition-all" title="Replay Last Answer">
+                    <span class="material-symbols-outlined text-xl">replay</span>
+                </button>
+
+                <button id="btn-avatar-speak" class="w-20 h-20 rounded-full bg-gradient-to-tr from-primary to-purple-accent text-surface flex items-center justify-center shadow-[0_0_25px_rgba(0,242,255,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-3xl font-bold" id="avatar-speak-icon">mic</span>
+                </button>
+
+                <button id="btn-avatar-auto-loop" class="p-3 rounded-full bg-surface-card border border-surface-border text-on-surface-variant hover:text-primary transition-all" title="Continuous Hands-Free Mode">
+                    <span class="material-symbols-outlined text-xl" id="icon-auto-loop">all_inclusive</span>
+                </button>
+            </div>
+
+            <div class="text-[11px] font-mono text-on-surface-variant">
+                <span>Hold <strong>Spacebar</strong> or click <strong>Mic</strong> to speak</span>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===================================================================== -->
+    <!-- VIEW 3: INTELLIGENCE & MEMORY TREE (Karpathy Knowledgebase) -->
     <!-- ===================================================================== -->
     <section id="view-intelligence" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
         <div class="flex justify-between items-center">
@@ -285,7 +518,7 @@
             </div>
         </div>
 
-        <!-- Goals & Todos Kanban Board (4 Columns) -->
+        <!-- Goals & Todos Kanban Board -->
         <div class="space-y-3">
             <h3 class="font-headline font-semibold text-sm text-on-surface flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-base">view_kanban</span>
@@ -297,66 +530,36 @@
                 <div class="glass-panel p-3 rounded-xl border border-surface-border flex flex-col">
                     <div class="flex justify-between items-center pb-2 border-b border-surface-border mb-3">
                         <span class="font-bold text-on-surface">TO DO</span>
-                        <span class="px-2 py-0.5 rounded-full bg-surface-card text-[10px] text-on-surface-variant" id="cnt-todo">2</span>
+                        <span class="px-2 py-0.5 rounded-full bg-surface-card text-[10px] text-on-surface-variant" id="cnt-todo">0</span>
                     </div>
-                    <div class="space-y-2 flex-1" id="col-todo">
-                        <div class="p-2.5 rounded-lg bg-surface-card border border-surface-border space-y-1.5">
-                            <div class="flex justify-between items-start">
-                                <strong class="text-on-surface">Deploy 30 Regional Travel Grants</strong>
-                                <span class="px-1.5 py-0.2 bg-primary/20 text-primary text-[9px] font-bold rounded">HIGH</span>
-                            </div>
-                            <p class="text-[11px] text-on-surface-variant">Sfax, Sousse, Monastir, Gabes, Gafsa allocation.</p>
-                            <div class="text-[10px] text-primary">Deadline: 2026-11-15</div>
-                        </div>
-                    </div>
+                    <div class="space-y-2 flex-1" id="col-todo"></div>
                 </div>
 
                 <!-- Column 2: IN PROGRESS -->
                 <div class="glass-panel p-3 rounded-xl border border-primary/30 flex flex-col">
                     <div class="flex justify-between items-center pb-2 border-b border-primary/30 mb-3">
                         <span class="font-bold text-primary">IN PROGRESS</span>
-                        <span class="px-2 py-0.5 rounded-full bg-primary/20 text-[10px] text-primary" id="cnt-in-progress">3</span>
+                        <span class="px-2 py-0.5 rounded-full bg-primary/20 text-[10px] text-primary" id="cnt-in-progress">0</span>
                     </div>
-                    <div class="space-y-2 flex-1" id="col-in-progress">
-                        <div class="p-2.5 rounded-lg bg-surface-card border border-primary/40 space-y-1.5">
-                            <div class="flex justify-between items-start">
-                                <strong class="text-primary">Pitch 12 Corporate Sponsors</strong>
-                                <span class="px-1.5 py-0.2 bg-error/20 text-error text-[9px] font-bold rounded">URGENT</span>
-                            </div>
-                            <p class="text-[11px] text-on-surface-variant">Tunisie Telecom, Ooredoo, Orange, Telnet, InstaDeep.</p>
-                            <div class="w-full bg-surface rounded-full h-1.5 mt-1 overflow-hidden">
-                                <div class="bg-primary h-full rounded-full" style="width: 40%"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="space-y-2 flex-1" id="col-in-progress"></div>
                 </div>
 
                 <!-- Column 3: BLOCKED -->
                 <div class="glass-panel p-3 rounded-xl border border-error/30 flex flex-col">
                     <div class="flex justify-between items-center pb-2 border-b border-error/30 mb-3">
                         <span class="font-bold text-error">BLOCKED / REVIEW</span>
-                        <span class="px-2 py-0.5 rounded-full bg-error/20 text-[10px] text-error" id="cnt-blocked">1</span>
+                        <span class="px-2 py-0.5 rounded-full bg-error/20 text-[10px] text-error" id="cnt-blocked">0</span>
                     </div>
-                    <div class="space-y-2 flex-1" id="col-blocked">
-                        <div class="p-2.5 rounded-lg bg-surface-card border border-error/30 space-y-1.5">
-                            <strong class="text-error">Amphitheater Booking Confirmation</strong>
-                            <p class="text-[11px] text-on-surface-variant">Awaiting university dean signature on lab access.</p>
-                        </div>
-                    </div>
+                    <div class="space-y-2 flex-1" id="col-blocked"></div>
                 </div>
 
                 <!-- Column 4: DONE -->
                 <div class="glass-panel p-3 rounded-xl border border-success/30 flex flex-col">
                     <div class="flex justify-between items-center pb-2 border-b border-success/30 mb-3">
                         <span class="font-bold text-success">DONE</span>
-                        <span class="px-2 py-0.5 rounded-full bg-success/20 text-[10px] text-success" id="cnt-done">4</span>
+                        <span class="px-2 py-0.5 rounded-full bg-success/20 text-[10px] text-success" id="cnt-done">0</span>
                     </div>
-                    <div class="space-y-2 flex-1" id="col-done">
-                        <div class="p-2.5 rounded-lg bg-surface-card border border-success/30 space-y-1.5">
-                            <strong class="text-success">Speakers Master List Compiled</strong>
-                            <p class="text-[11px] text-on-surface-variant">15 International & National Keynotes recorded.</p>
-                        </div>
-                    </div>
+                    <div class="space-y-2 flex-1" id="col-done"></div>
                 </div>
 
             </div>
@@ -370,7 +573,7 @@
             </h3>
             <div class="glass-panel rounded-xl p-4 overflow-hidden" id="memory-tree-container">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs" id="memory-nodes-list">
-                    <!-- Populated dynamically via /api/memory_tree -->
+                    <!-- Populated dynamically -->
                 </div>
             </div>
         </div>
@@ -378,7 +581,7 @@
 
 
     <!-- ===================================================================== -->
-    <!-- VIEW 3: WORKFLOWS & ROUTINES (Tinyflows) -->
+    <!-- VIEW 4: WORKFLOWS & ROUTINES (Tinyflows) -->
     <!-- ===================================================================== -->
     <section id="view-workflows" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
         <div class="flex justify-between items-center">
@@ -397,10 +600,10 @@
 
         <!-- Active Workflows Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="workflows-grid">
-            <!-- Populated dynamically via /api/workflows -->
+            <!-- Populated dynamically -->
         </div>
 
-        <!-- Workflow Runs History Inspector -->
+        <!-- Workflow Runs Logs -->
         <div class="space-y-3">
             <h3 class="font-headline font-semibold text-sm text-on-surface flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary text-base">history</span>
@@ -408,7 +611,7 @@
             </h3>
             <div class="glass-panel p-4 rounded-xl font-mono text-xs space-y-2" id="workflow-run-logs">
                 <div class="p-2 bg-surface-card rounded border border-surface-border text-on-surface-variant">
-                    [2026-08-28 22:47:38] [Auto Sync Obsidian Briefing] Executed 1 step successfully (Run #1).
+                    Ready to execute automated workflows.
                 </div>
             </div>
         </div>
@@ -416,7 +619,7 @@
 
 
     <!-- ===================================================================== -->
-    <!-- VIEW 4: MULTI-CHANNEL COMMUNICATIONS HUB -->
+    <!-- VIEW 5: MULTI-CHANNEL COMMUNICATIONS HUB -->
     <!-- ===================================================================== -->
     <section id="view-channels" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
         <div class="flex justify-between items-center">
@@ -429,9 +632,8 @@
             </div>
         </div>
 
-        <!-- Channel Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs" id="channels-status-grid">
-            <!-- Populated dynamically via /api/channels -->
+            <!-- Populated dynamically -->
         </div>
 
         <!-- Quick Outbound Dispatcher -->
@@ -458,7 +660,7 @@
                 <div>
                     <label class="text-on-surface-variant block mb-1">Action</label>
                     <button id="btn-dispatch-message" class="w-full bg-primary text-surface font-bold py-2 rounded-lg hover:bg-primary-dim transition-all">
-                        SEND OUTBOUND MESSAGE
+                        SEND MESSAGE
                     </button>
                 </div>
             </div>
@@ -471,7 +673,7 @@
 
 
     <!-- ===================================================================== -->
-    <!-- VIEW 5: PCB HARDWARE CORE -->
+    <!-- VIEW 6: PCB HARDWARE CORE -->
     <!-- ===================================================================== -->
     <section id="view-hardware" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
         <div class="flex justify-between items-center">
@@ -524,25 +726,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-
-
-    <!-- ===================================================================== -->
-    <!-- VIEW 6: 80+ TOOLS SURFACE -->
-    <!-- ===================================================================== -->
-    <section id="view-tools" class="view-pane hidden flex-1 p-6 overflow-y-auto space-y-6">
-        <div class="flex justify-between items-center">
-            <div>
-                <h2 class="font-headline font-bold text-xl text-primary flex items-center gap-2">
-                    <span class="material-symbols-outlined">handyman</span>
-                    Jarvis Unified 80+ Tools Catalog
-                </h2>
-                <p class="text-xs font-mono text-on-surface-variant">FastMCP Server & Native Tool Surfaces</p>
-            </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 font-mono text-xs" id="tools-catalog-grid">
-            <!-- Populated dynamically -->
         </div>
     </section>
 
