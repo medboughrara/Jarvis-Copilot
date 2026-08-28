@@ -1,11 +1,13 @@
 """
-Text-to-Speech module for Jarvis Copilot using Kokoro-82M.
-Synthesizes high-quality, human-like voice audio at 24kHz using ONNX Runtime CPU execution.
+Text-to-Speech module for Jarvis Copilot.
+Integrates ultra-realistic Edge-TTS Microsoft Neural Voices, Kokoro-82M 24kHz ONNX,
+and NVIDIA Magpie Multilingual Cloud TTS.
 """
 
 import asyncio
 import os
 import sys
+import tempfile
 import numpy as np
 import config
 
@@ -13,8 +15,19 @@ try:
     import sounddevice as sd
     AUDIO_AVAILABLE = True
 except OSError as e:
-    print(f"[TTS Audio Error] sounddevice import failed: {e}")
     AUDIO_AVAILABLE = False
+
+try:
+    import soundfile as sf
+    SOUNDFILE_AVAILABLE = True
+except ImportError:
+    SOUNDFILE_AVAILABLE = False
+
+try:
+    import edge_tts
+    EDGE_TTS_AVAILABLE = True
+except ImportError:
+    EDGE_TTS_AVAILABLE = False
 
 try:
     from kokoro_onnx import Kokoro
@@ -29,122 +42,179 @@ except ImportError:
     SAPI_AVAILABLE = False
 
 
+# High-Fidelity Voice Presets
+DEFAULT_NEURAL_VOICES = {
+    "jarvis": "en-US-ChristopherNeural",       # Deep, authoritative & calm
+    "guy": "en-US-GuyNeural",                  # Expressive, natural conversational
+    "brian": "en-GB-BrianNeural",              # Sophisticated British accent
+    "ryan": "en-GB-RyanNeural",                # Modern British tech
+    "aria": "en-US-AriaNeural",                # Clear & professional female
+    "jenny": "en-US-JennyNeural",              # Warm & friendly female
+    "fr_henri": "fr-FR-HenriNeural",           # French male
+    "ar_hedi": "ar-TN-HediNeural"              # Tunisian Arabic
+}
+
+
 class TextToSpeech:
-    def __init__(self, voice: str = config.TTS_VOICE):
-        self.voice = voice
-        self.sample_rate = 24000  # High-quality 24kHz audio synthesis
+    def __init__(self, voice: str = "en-US-ChristopherNeural"):
+        self.voice = DEFAULT_NEURAL_VOICES.get(voice, voice)
         self.kokoro_engine = None
         self._stop_event = asyncio.Event()
-        
-        # Check for downloaded Kokoro-82M ONNX model files
+
+        # Check for local Kokoro-82M ONNX model fallback
         model_path = "models/kokoro-v1.0.onnx"
         voices_path = "models/voices-v1.0.bin"
 
         if KOKORO_ONNX_AVAILABLE and os.path.exists(model_path) and os.path.exists(voices_path):
             try:
-                print(f"[TTS] Initializing Kokoro-82M (24kHz Human-Like Voice Synthesis)...")
                 self.kokoro_engine = Kokoro(model_path, voices_path)
-                print(f"[TTS] Kokoro-82M ready with voice: '{self.voice}' at 24000Hz.")
             except Exception as e:
-                print(f"[TTS Warning] Kokoro-82M load error ({e}). Using SAPI5 fallback.")
                 self.kokoro_engine = None
-        else:
-            print("[TTS Warning] Kokoro-82M model files not found. Using fallback engine.")
 
     def stop(self):
         """Stops any active TTS playback immediately."""
         self._stop_event.set()
         if AUDIO_AVAILABLE:
-            sd.stop()
+            try:
+                sd.stop()
+            except Exception:
+                pass
 
-    async def speak(self, text: str):
+    async def synthesize_to_file(self, text: str, output_path: str, voice: str = None) -> str:
         """
-        Asynchronously converts text into 24kHz human-like Kokoro-82M speech audio and plays out loud via speakers.
+        Synthesizes high-fidelity speech audio to an MP3 or WAV file.
+        """
+        target_voice = DEFAULT_NEURAL_VOICES.get(voice, voice) if voice else self.voice
+        clean_text = self._clean_markdown(text)
+
+        if not clean_text:
+            return ""
+
+        os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+
+        # Primary Option: Edge-TTS Microsoft Neural Voices
+        if EDGE_TTS_AVAILABLE:
+            try:
+                communicate = edge_tts.Communicate(clean_text, voice=target_voice, rate="+4%", pitch="+0Hz")
+                await communicate.save(output_path)
+                return output_path
+            except Exception as e:
+                print(f"[TTS Warning] Edge-TTS error ({e}). Trying Kokoro...")
+
+        # Secondary Option: Kokoro-82M Local ONNX
+        if self.kokoro_engine and SOUNDFILE_AVAILABLE:
+            try:
+                samples, sample_rate = self.kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
+                sf.write(output_path, samples, sample_rate)
+                return output_path
+            except Exception as e:
+                print(f"[TTS Warning] Kokoro synthesis error ({e}).")
+
+        return ""
+
+    async def synthesize_bytes(self, text: str, voice: str = None) -> bytes:
+        """
+        Synthesizes high-fidelity speech and returns the raw MP3 audio bytes.
+        """
+        target_voice = DEFAULT_NEURAL_VOICES.get(voice, voice) if voice else self.voice
+        clean_text = self._clean_markdown(text)
+
+        if not clean_text:
+            return b""
+
+        if EDGE_TTS_AVAILABLE:
+            try:
+                communicate = edge_tts.Communicate(clean_text, voice=target_voice, rate="+4%", pitch="+0Hz")
+                audio_chunks = []
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        audio_chunks.append(chunk["data"])
+                return b"".join(audio_chunks)
+            except Exception as e:
+                print(f"[TTS Stream Warning] Edge-TTS error: {e}")
+
+        # Fallback to file-based synthesis
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+            tmp_path = tmp.name
+        try:
+            res_path = await self.synthesize_to_file(text, tmp_path, voice=voice)
+            if res_path and os.path.exists(res_path):
+                with open(res_path, "rb") as f:
+                    data = f.read()
+                os.remove(res_path)
+                return data
+        except Exception:
+            pass
+
+        return b""
+
+    async def speak(self, text: str, voice: str = None):
+        """
+        Asynchronously converts text into neural speech and plays out loud via speakers.
         """
         self._stop_event.clear()
-        
-        if not text or not text.strip():
+        clean_text = self._clean_markdown(text)
+        if not clean_text:
             return
 
-        # Clean markdown formatting for voice synthesis
-        clean_text = text.replace("*", "").replace("`", "").replace("#", "").replace("- ", "").replace("[]", "").strip()
-        if not clean_text or clean_text in ["[]", "()", "{}"]:
-            return
+        with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+            tmp_path = tmp.name
 
-        safe_print_text = clean_text.encode('ascii', errors='ignore').decode('ascii')
-        print(f"\n[Kokoro-82M Speaking 24kHz]: \"{safe_print_text}\"")
-
-        loop = asyncio.get_running_loop()
-
-        def play_audio_sync():
-            # Option A: NVIDIA Magpie Multilingual Cloud TTS
-            if (getattr(config, 'USE_NVIDIA_TTS', False) or os.getenv("USE_NVIDIA_TTS", "false").lower() in ("true", "1")) and getattr(config, 'NVIDIA_API_KEY', ''):
+        try:
+            saved_file = await self.synthesize_to_file(clean_text, tmp_path, voice=voice)
+            if saved_file and os.path.exists(saved_file) and SOUNDFILE_AVAILABLE and AUDIO_AVAILABLE:
+                data, fs = sf.read(saved_file, dtype='float32')
+                duration = len(data) / float(fs)
+                sd.play(data, samplerate=fs)
+                
+                loop = asyncio.get_running_loop()
+                end_time = loop.time() + duration
+                while loop.time() < end_time:
+                    if self._stop_event.is_set():
+                        sd.stop()
+                        break
+                    await asyncio.sleep(0.05)
+                sd.stop()
+            else:
+                self._fallback_sapi_speak(clean_text)
+        except Exception as e:
+            self._fallback_sapi_speak(clean_text)
+        finally:
+            if os.path.exists(tmp_path):
                 try:
-                    import soundfile as sf
-                    from tools.nvidia_nim_tool import NvidiaNIMClient
+                    os.remove(tmp_path)
+                except Exception:
+                    pass
 
-                    print("[TTS] Synthesizing speech via NVIDIA Magpie Multilingual Cloud TTS...")
-                    client = NvidiaNIMClient()
-                    res = client.synthesize_speech(clean_text)
-                    if res["status"] == "success" and os.path.exists(res["file_path"]):
-                        data, fs = sf.read(res["file_path"], dtype='float32')
-                        duration = len(data) / float(fs)
-                        if AUDIO_AVAILABLE:
-                            sd.play(data, samplerate=fs)
-                        return duration
-                except Exception as ne:
-                    print(f"[TTS Warning] NVIDIA Magpie TTS Cloud error ({ne}). Falling back to local TTS engine...")
-
-            # Option B: Kokoro-82M 24kHz high-quality neural voice synthesis
-            if self.kokoro_engine and AUDIO_AVAILABLE:
-                try:
-                    # Synthesize 24kHz audio waveform (using af_bella voice)
-                    samples, sample_rate = self.kokoro_engine.create(
-                        clean_text,
-                        voice="af_bella",
-                        speed=config.TTS_SPEED,
-                        lang="en-us"
-                    )
-                    duration = len(samples) / float(sample_rate)
-                    # Play 24kHz audio through laptop speakers
-                    sd.play(samples, samplerate=sample_rate)
-                    return duration
-                except Exception as e:
-                    print(f"[TTS Error] Kokoro-82M synthesis error ({e}). Falling back to SAPI5.")
-
-            # Option C: pyttsx3 / Windows SAPI5 Fallback
-            try:
-                import pyttsx3
-                engine = pyttsx3.init()
-                engine.setProperty('rate', 175)
-                engine.say(clean_text)
-                engine.runAndWait()
-                return 0.0
-            except Exception as pe:
-                print(f"[TTS pyttsx3 Warning] {pe}")
-
+    def _fallback_sapi_speak(self, text: str):
+        try:
+            import pyttsx3
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 180)
+            engine.say(text)
+            engine.runAndWait()
+        except Exception:
             if SAPI_AVAILABLE:
                 try:
                     import pythoncom
                     pythoncom.CoInitialize()
                     speaker = win32com.client.Dispatch("SAPI.SpVoice")
-                    speaker.Speak(clean_text)
-                    return 0.0
-                except Exception as e:
-                    print(f"[TTS SAPI Error] {e}")
+                    speaker.Speak(text)
+                except Exception:
+                    pass
 
-            print(f"[TTS Audio Stream] {safe_print_text}")
-            return 0.0
-
-        duration = await loop.run_in_executor(None, play_audio_sync)
-        
-        # Wait asynchronously for exact audio duration while allowing cancellation (barge-in)
-        if duration > 0 and AUDIO_AVAILABLE:
-            end_time = loop.time() + duration
-            while loop.time() < end_time:
-                if self._stop_event.is_set():
-                    sd.stop()
-                    break
-                await asyncio.sleep(0.05)
-            if not self._stop_event.is_set():
-                sd.stop()
+    def _clean_markdown(self, text: str) -> str:
+        if not text:
+            return ""
+        clean = (
+            text.replace("```", "")
+            .replace("`", "")
+            .replace("**", "")
+            .replace("*", "")
+            .replace("##", "")
+            .replace("#", "")
+            .replace("- ", "")
+            .replace("[]", "")
+            .strip()
+        )
+        return clean

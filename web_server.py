@@ -295,6 +295,25 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({"status": "success", "data": {"attention_queue": queue}}).encode())
             return
 
+        elif path == "/api/tts/synthesize":
+            # Direct Neural Audio Streaming (GET /api/tts/synthesize?text=...&voice=...)
+            query_params = urllib.parse.parse_qs(parsed.query)
+            text = query_params.get("text", [""])[0]
+            voice = query_params.get("voice", ["en-US-ChristopherNeural"])[0]
+            
+            from voice.tts import TextToSpeech
+            tts = TextToSpeech(voice=voice)
+            audio_bytes = asyncio.run(tts.synthesize_bytes(text, voice=voice))
+
+            self.send_response(200)
+            self.send_header("Content-Type", "audio/mpeg")
+            self.send_header("Content-Length", str(len(audio_bytes)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Cache-Control", "no-cache")
+            self.end_headers()
+            self.wfile.write(audio_bytes)
+            return
+
         # Fallback 404
         self._set_json_headers(404)
         self.wfile.write(json.dumps({"error": f"Route '{path}' not found"}).encode())
@@ -557,6 +576,33 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             triage_res = medulla.triage_intent(prompt)
             self._set_json_headers(200)
             self.wfile.write(json.dumps({"status": "success", "data": triage_res}).encode())
+            return
+
+        elif path == "/api/tts/synthesize":
+            text = body.get("text", "")
+            voice = body.get("voice", "en-US-ChristopherNeural")
+            
+            from voice.tts import TextToSpeech
+            tts = TextToSpeech(voice=voice)
+            audio_bytes = asyncio.run(tts.synthesize_bytes(text, voice=voice))
+
+            self.send_response(200)
+            self.send_header("Content-Type", "audio/mpeg")
+            self.send_header("Content-Length", str(len(audio_bytes)))
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Cache-Control", "no-cache")
+            self.end_headers()
+            self.wfile.write(audio_bytes)
+            return
+
+        elif path == "/api/tts/speak":
+            text = body.get("text", "")
+            voice = body.get("voice", "en-US-ChristopherNeural")
+            from voice.tts import TextToSpeech
+            tts = TextToSpeech(voice=voice)
+            asyncio.run(tts.speak(text, voice=voice))
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "summary": "Speech playback started"}).encode())
             return
 
         self._set_json_headers(404)

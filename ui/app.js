@@ -469,48 +469,80 @@ document.addEventListener('DOMContentLoaded', () => {
             .trim();
     }
 
+    let currentAudioPlayer = null;
+
     function speakSpeech(text, onStart = null, onEnd = null) {
         if (!text) return;
         lastSpokenText = text;
+        const clean = cleanTextForSpeech(text);
+        if (!clean) return;
 
+        // Stop any previous playing audio
+        if (currentAudioPlayer) {
+            currentAudioPlayer.pause();
+            currentAudioPlayer.currentTime = 0;
+            currentAudioPlayer = null;
+        }
+        if (synth) synth.cancel();
+
+        const voiceSelect = document.getElementById('avatar-voice-select');
+        const neuralVoice = voiceSelect ? voiceSelect.value : 'en-US-ChristopherNeural';
+
+        // Option 1: Stream Edge-TTS High-Fidelity Microsoft Neural Audio
+        const audioUrl = `/api/tts/synthesize?text=${encodeURIComponent(clean)}&voice=${encodeURIComponent(neuralVoice)}`;
+        const player = new Audio(audioUrl);
+        currentAudioPlayer = player;
+
+        player.onplay = () => {
+            mascot.setFaceMood('speaking');
+            if (onStart) onStart();
+        };
+
+        player.onended = () => {
+            mascot.setFaceMood('idle');
+            currentAudioPlayer = null;
+            if (onEnd) onEnd();
+        };
+
+        player.onerror = (e) => {
+            console.warn('Neural audio stream error, falling back to WebSpeech:', e);
+            currentAudioPlayer = null;
+            fallbackWebSpeech(clean, onStart, onEnd);
+        };
+
+        player.play().catch(err => {
+            console.warn('Audio auto-play policy blocked, fallback to WebSpeech:', err);
+            fallbackWebSpeech(clean, onStart, onEnd);
+        });
+    }
+
+    function fallbackWebSpeech(cleanText, onStart = null, onEnd = null) {
         if (!synth) {
-            fetch('/api/tts/speak', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: cleanTextForSpeech(text) })
-            }).catch(e => console.warn('Server TTS error:', e));
+            mascot.setFaceMood('idle');
+            if (onEnd) onEnd();
             return;
         }
-
         try {
-            synth.cancel();
-            const clean = cleanTextForSpeech(text);
-            const utterance = new SpeechSynthesisUtterance(clean);
-            
+            const utterance = new SpeechSynthesisUtterance(cleanText);
             if (selectedVoice) utterance.voice = selectedVoice;
             utterance.rate = 1.05;
-            utterance.pitch = 1.0;
 
             utterance.onstart = () => {
                 mascot.setFaceMood('speaking');
                 if (onStart) onStart();
             };
-
             utterance.onend = () => {
                 mascot.setFaceMood('idle');
                 if (onEnd) onEnd();
             };
-
-            utterance.onerror = (e) => {
-                console.warn('SpeechSynthesis error:', e);
+            utterance.onerror = () => {
                 mascot.setFaceMood('idle');
                 if (onEnd) onEnd();
             };
-
             synth.speak(utterance);
-        } catch (e) {
-            console.error('Speech playback failed:', e);
+        } catch (err) {
             mascot.setFaceMood('idle');
+            if (onEnd) onEnd();
         }
     }
 
