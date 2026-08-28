@@ -335,6 +335,64 @@ document.addEventListener('DOMContentLoaded', () => {
     const mascot = new GhostyMascotController();
 
     // =======================================================================
+    // 1.5 MASCOT REFLECTED BACKLIGHT PALETTE CONTROLLER (Aura & Reflection Only)
+    // =======================================================================
+    const paletteButtons = document.querySelectorAll('.mascot-palette-btn');
+    const backlightAura = document.getElementById('mascot-backlight-aura');
+    const reflectedRing = document.getElementById('mascot-reflected-ring');
+    const groundGlow = document.getElementById('mascot-ground-glow');
+    const ambientOrbit1 = document.getElementById('ambient-orbit-1');
+    const ambientOrbit2 = document.getElementById('ambient-orbit-2');
+    const ambientOrbit3 = document.getElementById('ambient-orbit-3');
+
+    function setReflectedBacklight(colorHex) {
+        if (!colorHex) return;
+
+        // 1. Update Volumetric Reflected Halo Behind the Avatar
+        if (backlightAura) {
+            backlightAura.style.background = `radial-gradient(circle, ${colorHex} 0%, ${colorHex}40 45%, transparent 75%)`;
+        }
+
+        // 2. Update Reflected Ambient Orbital Ring
+        if (reflectedRing) {
+            reflectedRing.style.borderColor = `${colorHex}4d`;
+            reflectedRing.style.boxShadow = `0 0 35px ${colorHex}33`;
+        }
+
+        // 3. Update Reflected Ground Light Shadow Beneath Feet
+        if (groundGlow) {
+            groundGlow.style.background = `${colorHex}59`;
+            groundGlow.style.boxShadow = `0 0 25px ${colorHex}66`;
+        }
+
+        // 4. Update Atmospheric Deep Space Orbits
+        if (ambientOrbit1) ambientOrbit1.style.borderColor = `${colorHex}33`;
+        if (ambientOrbit2) ambientOrbit2.style.borderColor = `${colorHex}40`;
+        if (ambientOrbit3) ambientOrbit3.style.borderColor = `${colorHex}4d`;
+
+        // 5. Update Active Palette Button Indicator
+        paletteButtons.forEach(btn => {
+            if (btn.getAttribute('data-color') === colorHex) {
+                btn.classList.remove('border-white/20');
+                btn.classList.add('border-white', 'ring-2', 'ring-white/40', 'scale-110');
+            } else {
+                btn.classList.remove('border-white', 'ring-2', 'ring-white/40', 'scale-110');
+                btn.classList.add('border-white/20');
+            }
+        });
+    }
+
+    paletteButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const color = btn.getAttribute('data-color');
+            setReflectedBacklight(color);
+        });
+    });
+
+    // Default reflected light initialization (Cyber Cyan)
+    setReflectedBacklight('#00f2ff');
+
+    // =======================================================================
     // 2. NAVIGATION VIEW SWITCHER
     // =======================================================================
     const navButtons = document.querySelectorAll('.nav-tab-btn');
