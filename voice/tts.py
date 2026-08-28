@@ -80,11 +80,20 @@ class TextToSpeech:
             except Exception:
                 pass
 
+    def _normalize_voice(self, voice: str) -> str:
+        if not voice or voice in ["0", "1", "2", "3", "4", "5", "default", "undefined", "null"] or (isinstance(voice, str) and voice.isdigit()):
+            return "en-US-ChristopherNeural"
+        if voice in DEFAULT_NEURAL_VOICES:
+            return DEFAULT_NEURAL_VOICES[voice]
+        if "nvidia" in voice.lower() or "mia" in voice.lower():
+            return "en-US-AriaNeural"
+        return voice
+
     async def synthesize_to_file(self, text: str, output_path: str, voice: str = None) -> str:
         """
         Synthesizes high-fidelity speech audio to an MP3 or WAV file.
         """
-        target_voice = DEFAULT_NEURAL_VOICES.get(voice, voice) if voice else self.voice
+        target_voice = self._normalize_voice(voice or self.voice)
         clean_text = self._clean_markdown(text)
 
         if not clean_text:
@@ -92,20 +101,7 @@ class TextToSpeech:
 
         os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
 
-        # Option A: NVIDIA Magpie Multilingual Cloud TTS (when requested or enabled)
-        if (getattr(config, 'USE_NVIDIA_TTS', False) or (voice and ('nvidia' in voice.lower() or 'mia' in voice.lower()))) and getattr(config, 'NVIDIA_API_KEY', ''):
-            try:
-                from tools.nvidia_nim_tool import NvidiaNIMClient
-                client = NvidiaNIMClient()
-                res = client.synthesize_speech(clean_text, voice="Magpie-Multilingual.EN-US.Mia")
-                if res.get("status") == "success" and os.path.exists(res.get("file_path", "")):
-                    import shutil
-                    shutil.copyfile(res["file_path"], output_path)
-                    return output_path
-            except Exception as ne:
-                print(f"[TTS Warning] NVIDIA Magpie TTS error ({ne}). Falling back...")
-
-        # Option B: Edge-TTS Microsoft Neural Voices
+        # Primary Option: Edge-TTS Microsoft Neural Voices
         if EDGE_TTS_AVAILABLE:
             try:
                 communicate = edge_tts.Communicate(clean_text, voice=target_voice, rate="+4%", pitch="+0Hz")
@@ -114,7 +110,7 @@ class TextToSpeech:
             except Exception as e:
                 print(f"[TTS Warning] Edge-TTS error ({e}). Trying Kokoro...")
 
-        # Option C: Kokoro-82M Local ONNX
+        # Secondary Option: Kokoro-82M Local ONNX
         if self.kokoro_engine and SOUNDFILE_AVAILABLE:
             try:
                 samples, sample_rate = self.kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
@@ -129,7 +125,7 @@ class TextToSpeech:
         """
         Synthesizes high-fidelity speech and returns the raw MP3 audio bytes.
         """
-        target_voice = DEFAULT_NEURAL_VOICES.get(voice, voice) if voice else self.voice
+        target_voice = self._normalize_voice(voice or self.voice)
         clean_text = self._clean_markdown(text)
 
         if not clean_text:
@@ -138,6 +134,13 @@ class TextToSpeech:
         if EDGE_TTS_AVAILABLE:
             try:
                 communicate = edge_tts.Communicate(clean_text, voice=target_voice, rate="+4%", pitch="+0Hz")
+                audio_chunks = []
+                async for chunk in communicate.stream():
+                    if chunk["type"] == "audio":
+                        audio_chunks.append(chunk["data"])
+                return b"".join(audio_chunks)
+            except Exception as e:
+                print(f"[TTS Stream Warning] Edge-TTS error: {e}")
                 audio_chunks = []
                 async for chunk in communicate.stream():
                     if chunk["type"] == "audio":

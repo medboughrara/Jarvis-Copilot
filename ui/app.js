@@ -422,29 +422,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadVoices() {
         if (!synth) return;
         const voices = synth.getVoices();
-        const voiceSelect = document.getElementById('avatar-voice-select');
-        if (!voiceSelect || voices.length === 0) return;
+        if (voices.length === 0) return;
 
-        voiceSelect.innerHTML = '';
+        // Choose preferred browser fallback voice without wiping high-end Neural options
         let preferredVoice = null;
-
-        voices.forEach((v, idx) => {
-            const opt = document.createElement('option');
-            opt.value = idx;
-            opt.innerText = `${v.name} (${v.lang})`;
-            opt.className = 'bg-surface-card text-on-surface';
-            voiceSelect.appendChild(opt);
-
+        voices.forEach((v) => {
             if (!preferredVoice && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('US') || v.lang.startsWith('en'))) {
                 preferredVoice = v;
-                opt.selected = true;
             }
         });
-
         selectedVoice = preferredVoice || voices[0];
-        voiceSelect.addEventListener('change', () => {
-            selectedVoice = voices[voiceSelect.value];
-        });
     }
 
     if (synth) {
