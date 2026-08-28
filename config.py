@@ -66,7 +66,7 @@ class JarvisConfig(BaseSettings):
     GEMINI_API_KEYS_RAW: str = Field(default="", validation_alias="GEMINI_API_KEYS")
     GEMINI_API_KEY_RAW: str = Field(default="", validation_alias="GEMINI_API_KEY")
     GOOGLE_API_KEY_RAW: str = Field(default="", validation_alias="GOOGLE_API_KEY")
-    GEMINI_MODEL: str = Field(default="gemini-3.6-flash")
+    GEMINI_MODEL: str = Field(default="gemini-2.5-flash", validation_alias="GEMINI_MODEL")
     USE_GEMINI: bool = Field(default=True)
 
     # NVIDIA NIM Cloud Foundation Models
