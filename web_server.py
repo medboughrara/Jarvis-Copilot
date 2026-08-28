@@ -307,6 +307,22 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(res).encode())
             return
 
+        elif path == "/api/lifecycle/status":
+            from agent.service_lifecycle import service_lifecycle
+            status = service_lifecycle.get_status()
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "data": status}).encode())
+            return
+
+        elif path == "/api/memory/scoped":
+            from agent.unified_memory import unified_memory
+            query_params = urllib.parse.parse_qs(parsed.query)
+            scope = query_params.get("scope", ["project"])[0]
+            items = unified_memory.list_scope(scope)
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "scope": scope, "items": items}).encode())
+            return
+
         elif path == "/api/tts/synthesize":
             # Direct Neural Audio Streaming (GET /api/tts/synthesize?text=...&voice=...)
             query_params = urllib.parse.parse_qs(parsed.query)
@@ -649,6 +665,43 @@ class JarvisHUDHandler(BaseHTTPRequestHandler):
             res = manage_clipboard.invoke({"action": action, "text_to_write": text})
             self._set_json_headers(200)
             self.wfile.write(json.dumps(res).encode())
+            return
+
+        elif path == "/api/lifecycle/reclaim":
+            from agent.service_lifecycle import service_lifecycle
+            max_idle = body.get("max_idle_seconds", 0)
+            released = service_lifecycle.release_idle_services(max_idle_seconds=max_idle)
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "released_services_count": released}).encode())
+            return
+
+        elif path == "/api/ecc/plan":
+            from agent.ecc_instincts import ecc_instincts
+            query = body.get("query", "")
+            action = body.get("action", "")
+            target_files = body.get("target_files", [])
+            res = ecc_instincts.plan_before_build(query=query, proposed_action=action, target_files=target_files)
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "data": res}).encode())
+            return
+
+        elif path == "/api/ecc/verify":
+            from agent.ecc_instincts import ecc_instincts
+            code = body.get("code", "")
+            res = ecc_instincts.self_verify_python_code(code)
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "data": res}).encode())
+            return
+
+        elif path == "/api/memory/scoped":
+            from agent.unified_memory import unified_memory
+            scope = body.get("scope", "project")
+            key = body.get("key", "")
+            value = body.get("value", "")
+            metadata = body.get("metadata", {})
+            unified_memory.set(scope=scope, key=key, value=value, metadata=metadata)
+            self._set_json_headers(200)
+            self.wfile.write(json.dumps({"status": "success", "message": f"Saved {scope} memory '{key}'"}).encode())
             return
 
         self._set_json_headers(404)

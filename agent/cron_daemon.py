@@ -86,6 +86,16 @@ class CronDaemon:
         import psutil
         cpu = psutil.cpu_percent(interval=0.1)
         mem = psutil.virtual_memory().percent
+        
+        # Reclaim idle AI models and services to keep RAM/VRAM minimal
+        try:
+            from agent.service_lifecycle import service_lifecycle
+            released = service_lifecycle.release_idle_services(max_idle_seconds=300)
+            if released > 0:
+                logger.info(f"[Cron Heartbeat] Reclaimed {released} idle services from memory.")
+        except Exception:
+            pass
+
         logger.info(f"[Cron Heartbeat] System Health Check: CPU: {cpu}%, RAM: {mem}% - All systems optimal.")
 
     def _task_memory_sync(self):

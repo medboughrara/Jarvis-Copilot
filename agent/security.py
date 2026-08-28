@@ -60,4 +60,38 @@ class AgentShieldGuard:
         """Masks API keys for safe display (e.g., 'AIzaSyDl...4A8b')."""
         if not secret_val or len(secret_val) < 8:
             return "***"
-        return f"{secret_val[:6]}...{secret_val[-4:]}"
+        return f"{secret_val[:8]}...{secret_val[-4:]}"
+
+    @staticmethod
+    def scrub_text(text: str) -> str:
+        """Scrubs sensitive API keys (Google, NVIDIA, GitHub, OpenAI) from string text."""
+        if not text:
+            return ""
+        # Match Google AIzaSy keys
+        text = re.sub(r'AIzaSy[A-Za-z0-9_\-]{33}', 'AIzaSy[REDACTED]', text)
+        # Match NVIDIA nvapi keys
+        text = re.sub(r'nvapi-[A-Za-z0-9_\-]{50,}', 'nvapi-[REDACTED]', text)
+        # Match OpenAI / Anthropic / Generic Bearer sk- tokens
+        text = re.sub(r'sk-[A-Za-z0-9_\-]{20,}', 'sk-[REDACTED]', text)
+        # Match GitHub tokens
+        text = re.sub(r'ghp_[A-Za-z0-9]{36}', 'ghp_[REDACTED]', text)
+        return text
+
+    @staticmethod
+    def is_command_safe(command: str) -> Tuple[bool, str]:
+        """Audits shell commands to block destructive or malicious operations."""
+        cmd_lower = command.lower().strip()
+        dangerous_patterns = [
+            r"rm\s+-rf\s+[/~]",
+            r"del\s+/[fs]\s+c:\\",
+            r"format-volume",
+            r"format\s+[a-z]:",
+            r"drop\s+database",
+            r":\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;",  # Fork bomb
+            r"mkfs\.",
+            r"dd\s+if=/dev/"
+        ]
+        for pattern in dangerous_patterns:
+            if re.search(pattern, cmd_lower):
+                return False, f"Blocked dangerous command pattern matching '{pattern}'"
+        return True, "Safe"

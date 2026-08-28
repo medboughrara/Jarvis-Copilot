@@ -59,18 +59,14 @@ DEFAULT_NEURAL_VOICES = {
 class TextToSpeech:
     def __init__(self, voice: str = "en-US-ChristopherNeural"):
         self.voice = DEFAULT_NEURAL_VOICES.get(voice, voice)
-        self.kokoro_engine = None
         self._stop_event = asyncio.Event()
 
-        # Check for local Kokoro-82M ONNX model fallback
-        model_path = "models/kokoro-v1.0.onnx"
-        voices_path = "models/voices-v1.0.bin"
-
-        if KOKORO_ONNX_AVAILABLE and os.path.exists(model_path) and os.path.exists(voices_path):
-            try:
-                self.kokoro_engine = Kokoro(model_path, voices_path)
-            except Exception as e:
-                self.kokoro_engine = None
+    def _get_kokoro(self):
+        try:
+            from agent.service_lifecycle import service_lifecycle
+            return service_lifecycle.get("tts_kokoro")
+        except Exception:
+            return None
 
     def stop(self):
         """Stops any active TTS playback immediately."""
@@ -116,10 +112,11 @@ class TextToSpeech:
             except Exception as e:
                 print(f"[TTS Warning] Edge-TTS error ({e}). Trying Kokoro...")
 
-        # Secondary Option: Kokoro-82M Local ONNX
-        if self.kokoro_engine and SOUNDFILE_AVAILABLE:
+        # Secondary Option: Kokoro-82M Local ONNX (Loaded On-Demand)
+        kokoro_engine = self._get_kokoro()
+        if kokoro_engine and SOUNDFILE_AVAILABLE:
             try:
-                samples, sample_rate = self.kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
+                samples, sample_rate = kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
                 sf.write(output_path, samples, sample_rate)
                 return output_path
             except Exception as e:
@@ -156,12 +153,13 @@ class TextToSpeech:
                     except Exception:
                         pass
 
-        # Fallback to local Kokoro synthesis
-        if self.kokoro_engine and SOUNDFILE_AVAILABLE:
+        # Fallback to local Kokoro synthesis (On-Demand)
+        kokoro_engine = self._get_kokoro()
+        if kokoro_engine and SOUNDFILE_AVAILABLE:
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
                 tmp_path = tmp.name
             try:
-                samples, sample_rate = self.kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
+                samples, sample_rate = kokoro_engine.create(clean_text, voice="af_bella", speed=1.05, lang="en-us")
                 sf.write(tmp_path, samples, sample_rate)
                 if os.path.exists(tmp_path):
                     with open(tmp_path, "rb") as f:

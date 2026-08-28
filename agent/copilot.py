@@ -95,6 +95,7 @@ from tools.multichannel_hub_tool import channel_send_message, channel_list_statu
 from tools.recipes_automation_tool import list_available_recipes, execute_recipe
 from tools.sandbox_runner_tool import run_sandbox_code
 from tools.desktop_control_tool import get_system_metrics, list_active_windows, manage_clipboard
+from tools.ecc_tools import ecc_plan_action, ecc_verify_python, unified_memory_store, unified_memory_query
 
 logger = config.get_logger(__name__)
 
@@ -236,7 +237,12 @@ class JarvisAgent:
             # 7. Desktop Automation & System Metrics
             get_system_metrics,
             list_active_windows,
-            manage_clipboard
+            manage_clipboard,
+            # 8. ECC (Everything Claude Code) Autonomous Instincts & Scoped Memory
+            ecc_plan_action,
+            ecc_verify_python,
+            unified_memory_store,
+            unified_memory_query
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}

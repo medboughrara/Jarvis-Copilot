@@ -6,20 +6,21 @@ A local, voice-activated "Jarvis-style" open-source AI super-assistant designed 
 
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)
 ![LangChain](https://img.shields.io/badge/Orchestration-LangChain-purple.svg?style=for-the-badge&logo=chainlink&logoColor=white)
-![OpenHuman](https://img.shields.io/badge/Harness-OpenHuman_Architecture-FF6B6B.svg?style=for-the-badge)
+![ECC](https://img.shields.io/badge/Harness-ECC_Instincts-6366F1.svg?style=for-the-badge)
+![OpenHuman](https://img.shields.io/badge/Architecture-OpenHuman-FF6B6B.svg?style=for-the-badge)
 ![TokenJuice](https://img.shields.io/badge/Compression-TokenJuice_-68%25-00F2FF.svg?style=for-the-badge)
 ![Tinyflows](https://img.shields.io/badge/Automations-Tinyflows_Engine-10B981.svg?style=for-the-badge)
 ![Obsidian](https://img.shields.io/badge/Vault-Obsidian_Graph-7C3AED.svg?style=for-the-badge&logo=obsidian&logoColor=white)
 ![MemPalace](https://img.shields.io/badge/Memory-MemPalace_Loci-00D2FF.svg?style=for-the-badge)
 ![Composio MCP](https://img.shields.io/badge/Cloud_Apps-Composio_1000+-6C5CE7.svg?style=for-the-badge)
-![FastMCP](https://img.shields.io/badge/Tools-89+_Active_Tools-FF4B4B.svg?style=for-the-badge)
+![FastMCP](https://img.shields.io/badge/Tools-95+_Active_Tools-FF4B4B.svg?style=for-the-badge)
 
 </div>
 
 ---
 
 > [!NOTE]
-> **Universal Open-Source Personal Assistant**: Jarvis AI combines hands-free voice control, interactive animated mascot reactions, hierarchical scored memory trees, goals kanban boards, trigger-driven workflows, multi-channel messaging (Telegram/Discord/WhatsApp/Slack/Gmail), desktop app automation, long-term spatial memory, interactive Obsidian knowledge graphs, procedural 3D electronic part generation, and automated KiCad PCB engineering across **89+ registered tools**.
+> **Universal Open-Source Personal Assistant & Agentic Harness**: Jarvis AI combines hands-free voice control, interactive animated mascot reactions, **ECC (Everything Claude Code) autonomous instincts & plan-before-build reflexes**, on-demand lazy model lifecycle management, hierarchical scored memory trees, goals kanban boards, trigger-driven workflows, multi-channel messaging (Telegram/Discord/WhatsApp/Slack/Gmail), desktop app automation, long-term spatial memory, interactive Obsidian knowledge graphs, procedural 3D electronic part generation, and automated KiCad PCB engineering across **95+ registered tools**.
 
 ---
 
