@@ -46,8 +46,9 @@ except ImportError:
 DEFAULT_NEURAL_VOICES = {
     "jarvis": "en-US-ChristopherNeural",       # Deep, authoritative & calm
     "guy": "en-US-GuyNeural",                  # Expressive, natural conversational
-    "brian": "en-GB-BrianNeural",              # Sophisticated British accent
+    "brian": "en-GB-RyanNeural",               # Sophisticated British accent
     "ryan": "en-GB-RyanNeural",                # Modern British tech
+    "thomas": "en-GB-ThomasNeural",            # Formal British male
     "aria": "en-US-AriaNeural",                # Clear & professional female
     "jenny": "en-US-JennyNeural",              # Warm & friendly female
     "fr_henri": "fr-FR-HenriNeural",           # French male
@@ -83,11 +84,16 @@ class TextToSpeech:
     def _normalize_voice(self, voice: str) -> str:
         if not voice or voice in ["0", "1", "2", "3", "4", "5", "default", "undefined", "null"] or (isinstance(voice, str) and voice.isdigit()):
             return "en-US-ChristopherNeural"
-        if voice in DEFAULT_NEURAL_VOICES:
-            return DEFAULT_NEURAL_VOICES[voice]
-        if "nvidia" in voice.lower() or "mia" in voice.lower():
+        voice_str = str(voice).strip()
+        if voice_str.lower() in DEFAULT_NEURAL_VOICES:
+            return DEFAULT_NEURAL_VOICES[voice_str.lower()]
+        if "brian" in voice_str.lower():
+            return "en-GB-RyanNeural"
+        if "thomas" in voice_str.lower():
+            return "en-GB-ThomasNeural"
+        if "nvidia" in voice_str.lower() or "mia" in voice_str.lower():
             return "en-US-AriaNeural"
-        return voice
+        return voice_str
 
     async def synthesize_to_file(self, text: str, output_path: str, voice: str = None) -> str:
         """
