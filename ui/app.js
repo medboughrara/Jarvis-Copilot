@@ -464,18 +464,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const clean = cleanTextForSpeech(text);
         if (!clean) return;
 
-        // Stop any previous playing audio
+        // Ensure all previous audio or synth are stopped
         if (currentAudioPlayer) {
             currentAudioPlayer.pause();
             currentAudioPlayer.currentTime = 0;
             currentAudioPlayer = null;
         }
-        if (synth) synth.cancel();
+        if (synth && synth.speaking) {
+            synth.cancel();
+        }
 
         const voiceSelect = document.getElementById('avatar-voice-select');
-        const neuralVoice = voiceSelect ? voiceSelect.value : 'en-US-ChristopherNeural';
+        const neuralVoice = (voiceSelect && voiceSelect.value) ? voiceSelect.value : 'en-US-ChristopherNeural';
 
-        // Option 1: Stream Edge-TTS High-Fidelity Microsoft Neural Audio
+        // Single High-Fidelity Studio Neural Stream
         const audioUrl = `/api/tts/synthesize?text=${encodeURIComponent(clean)}&voice=${encodeURIComponent(neuralVoice)}`;
         const player = new Audio(audioUrl);
         currentAudioPlayer = player;
@@ -492,45 +494,16 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         player.onerror = (e) => {
-            console.warn('Neural audio stream error, falling back to WebSpeech:', e);
+            console.warn('Neural audio stream error:', e);
+            mascot.setFaceMood('idle');
             currentAudioPlayer = null;
-            fallbackWebSpeech(clean, onStart, onEnd);
+            if (onEnd) onEnd();
         };
 
         player.play().catch(err => {
-            console.warn('Audio auto-play policy blocked, fallback to WebSpeech:', err);
-            fallbackWebSpeech(clean, onStart, onEnd);
+            console.warn('Playback notice (user interaction required):', err);
+            mascot.setFaceMood('idle');
         });
-    }
-
-    function fallbackWebSpeech(cleanText, onStart = null, onEnd = null) {
-        if (!synth) {
-            mascot.setFaceMood('idle');
-            if (onEnd) onEnd();
-            return;
-        }
-        try {
-            const utterance = new SpeechSynthesisUtterance(cleanText);
-            if (selectedVoice) utterance.voice = selectedVoice;
-            utterance.rate = 1.05;
-
-            utterance.onstart = () => {
-                mascot.setFaceMood('speaking');
-                if (onStart) onStart();
-            };
-            utterance.onend = () => {
-                mascot.setFaceMood('idle');
-                if (onEnd) onEnd();
-            };
-            utterance.onerror = () => {
-                mascot.setFaceMood('idle');
-                if (onEnd) onEnd();
-            };
-            synth.speak(utterance);
-        } catch (err) {
-            mascot.setFaceMood('idle');
-            if (onEnd) onEnd();
-        }
     }
 
     window.replaySpeech = function (text) {
