@@ -74,6 +74,47 @@ graph TD
 
 ---
 
+## 🖥️ Next-Gen Conversational & General-Purpose UI Showcase
+
+<div align="center">
+
+### 🎙️ 1. Conversational Avatar Mode (Real-Time Voice & Reactive Mascot)
+*Full-duplex voice conversation with an expressive animated holographic mascot, dynamic mouth viseme lip-sync, real-time waveform audio equalizers, live subtitles, and hands-free auto-listening loop.*
+
+![Conversational Avatar Mode](docs/images/conversational_avatar_mode.png)
+
+---
+
+### 💬 2. Assistant Chat with Rich GitHub Markdown & Voice Audio Replay
+*Streaming conversational interface with full Markdown formatting (headings, bold accents, bullet points, code blocks), collapsible tool execution telemetry cards, and interactive `🔊 Replay` audio synthesis.*
+
+![Assistant Chat Interface](docs/images/assistant_chat_markdown.png)
+
+---
+
+### 📡 3. Universal Multi-Channel Communications Gateway
+*Unified hub monitoring connected accounts (Gmail, Discord, Telegram, Slack, WhatsApp, Notion, Google Sheets) with quick outbound multi-channel message dispatcher.*
+
+![Multi-Channel Communications Gateway](docs/images/multichannel_communications_hub.png)
+
+---
+
+### ⚙️ 4. Automated Workflows & Routines Studio (Tinyflows Engine)
+*Trigger-driven automation graph with pre-built routines (Daily Executive Briefings, Autonomous Web Research, Sponsor Outreach pipelines) and one-click execution.*
+
+![Automated Workflows Studio](docs/images/automated_workflows_tinyflows.png)
+
+---
+
+### 🧠 5. Hierarchical Scored Memory Tree & Goals Kanban Board
+*4-Column Goals Kanban manager (`To Do`, `In Progress`, `Blocked`, `Done`) and hierarchical memory nodes with importance scoring (1–10) mirrored into Obsidian Vault.*
+
+![Hierarchical Memory Tree & Goals Kanban](docs/images/memory_tree_goals_kanban.png)
+
+</div>
+
+---
+
 ## 🧠 Obsidian Knowledge Graph & Visual Canvas
 
 Jarvis uses **Graphify-Labs** AST extraction and semantic clustering to transform all codebase symbols, schematic nets, and architectural tools into an interactive **Obsidian Knowledge Graph Vault**:
@@ -119,37 +160,43 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 
 ---
 
-## 🛠️ Complete Capabilities Matrix (74+ Active Tools)
+## 🛠️ Complete Capabilities Matrix (89+ Active Tools)
 
 | # | Capability Domain | Subsystem / Module | Key Functions & Features |
 | :--- | :--- | :--- | :--- |
-| **1** | **🎙️ Hands-Free Voice Pipeline** | `voice/` (`openWakeWord`, `Whisper`, `Kokoro`) | Voice wake word ("jarvis"), Faster-Whisper STT, and Kokoro 24kHz / NVIDIA Magpie neural speech synthesis. |
-| **2** | **🌊 WebGL Voice Visualizer** | `ui/index.html` & `ui/app.js` | Interactive GLSL Arc Reactor fragment shader with dynamic standing audio wave undulating along the circle edge during speech. |
-| **3** | **🧠 Graphify + Obsidian Vault** | `tools/obsidian_knowledge_graph_tool.py` | Extracts AST code relationships and semantic clusters into a complete Obsidian Vault (911 linked notes, `Architecture_Graph.canvas`, `Interactive_Graph.html`, Agent Wiki, and custom subsystem color filters). |
-| **4** | **🏰 MemPalace Long-Term Memory** | `tools/mempalace_tool.py` | 100% Local-first verbatim memory using the spatial Method of Loci (`Wings -> Rooms -> Halls -> Drawers`), temporal SQLite entity graph, and fast L0/L1 wake-up briefing (~800 tokens). |
-| **5** | **📐 img2obj 3D Component Modeler**| `tools/img2obj_component_3d_tool.py` | Procedurally generates Wavefront `.obj`/`.mtl` and Three.js 3D models for electronic packages (0402, 0603, 0805, SOT-223, SOIC-8, TSSOP-28, QFP-48, QFN-32, TO-220, USB-C) and links them to `.kicad_pcb` footprints. |
-| **6** | **🌐 Local MCP Web Gateway** | `gateway/` | 4-Tier escalation ladder: Tier 1 Direct HTTP $\to$ Tier 2 `curl_cffi` TLS/JA3 $\to$ Tier 3 Crawl4AI/Playwright JS $\to$ Tier 4 Autonomous Vision Browser Agent. |
-| **7** | **💬 Discord Integration** | `tools/composio_apps_tool.py` | Direct **Discord** integration: send channel messages, fetch channel message history, and create new channels (`DISCORDBOT`). |
-| **8** | **💻 Desktop & System Control** | `tools/system_control_tool.py` | Time/date & greetings, launch local apps (Notepad, Calculator, VS Code, Explorer), open URLs/websites, take screenshots, tell jokes, and log voice notes. |
-| **9** | **📬 Workspace App Automation** | `tools/composio_apps_tool.py` | Full Composio integration for **Gmail** (fetch, send, search, drafts), **Google Calendar**, **Notion**, **Google Docs**, and **Google Sheets**. |
-| **10**| **🧠 Multi-Tier LLM Brain Pool** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
-| **11**| **⚡ ECC Agent Harness Engine** | `agent/instincts.py`, `agent/security.py`, `agent/context_compressor.py` | Automatic hardware & work reflex rules, AgentShield workspace security guard, and incremental conversation history compressor. |
-| **12**| **🗂️ Preferred Parts & Circuit Templates**| `tools/preferred_parts_tool.py` & `tools/circuit_templates_tool.py` | Component library memory & parametric circuit generators (LDO regulators, buck converters, voltage dividers, BME280 sensor breakout). |
-| **13**| **🔁 Self-Correcting ERC/DRC Loop**| `agent/verify_loop.py` | Autonomous Agentic Verification Loop executing KiCad ERC/DRC, catching design violations, and auto-correcting schematic nets. |
-| **14**| **🛤️ 2-Layer Grid Autorouter** | `tools/autorouter_tool.py` | Automated multi-layer grid autorouter with 45-degree trace routing and DFM rule verification. |
-| **15**| **🏭 Turnkey Manufacturing Exporter**| `tools/manufacturing_tool.py` | Automated fabrication export: RS-274X Gerbers, Excellon NC Drills, Pick-and-Place (CPL), BOM CSV, and JLCPCB cost estimation. |
-| **16**| **👁️ OmniParser Screen Vision** | `tools/omniparser_tool.py` | Active screen capture layout parsing with `RapidOCR` ONNX engine to inspect UI elements, component dialogs, and code editors. |
-| **17**| **📚 Local PDF & Datasheet RAG** | `tools/datasheet_rag_tool.py` | Local document & datasheet RAG powered by **NVIDIA Nemotron 3 Embed 1B** and ChromaDB vector store. |
-| **18**| **🌐 Live Web Search & Compliance** | `tools/reach_tool.py` | Live web search for technical datasheets, general information, and regulatory compliance (RoHS 3 / FCC Part 15). |
-| **19**| **🎫 GitHub Issue & Repo Manager** | `tools/github_tool.py` | Log bugs, task reminders, or audit findings directly as labeled GitHub issues. |
-| **20**| **📄 Engineering & General Doc Exporter**| `tools/doc_exporter_tool.py` | Formats and exports audit reports, meeting notes, or general document summaries to `docs/` and `scratch/` as Markdown/JSON. |
-| **21**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Text-to-Image generation for diagrams, UI concepts, and visuals via `black-forest-labs/flux.1-schnell`. |
-| **22**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | Long-horizon document parsing into structured Markdown using Baidu Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
-| **23**| **📐 KiCad EDA & Circuit Parser** | `tools/kicad_tool.py` & `tools/kicad_editor.py` | Direct KiCad `.kicad_sch` & `.kicad_pcb` S-expression AST manipulation and net wiring. |
-| **24**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
-| **25**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
-| **26**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
-| **27**| **🔌 Stdio FastMCP Server (74+ Tools)** | `mcp_server.py` | Automatically exposes all 74+ Jarvis tools over stdio Model Context Protocol for direct integration into Claude Code, Cursor, Windsurf, and VS Code. |
+| **1** | **🎙️ Conversational Avatar Voice Mode**| `ui/index.html` & `voice/` | Interactive animated holographic mascot with reactive eyes, dynamic viseme mouth lip-sync, live audio visualizer, subtitles, and hands-free continuous loop. |
+| **2** | **📝 Rich Markdown & Speech Replay**| `ui/app.js` & `ui/index.html` | Full GitHub-flavored Markdown rendering (headings, tables, syntax-highlighted code blocks) with interactive `🔊 Replay` audio synthesis button on every bubble. |
+| **3** | **🌳 Hierarchical Scored Memory Tree**| `tools/memory_tree_tool.py` | Scored memory tree in SQLite (`/projects`, `/people`, `/research`, `/preferences`) with 1–10 importance weighting and instant Obsidian Vault note mirroring. |
+| **4** | **📋 Goals & Tasks Kanban Manager**| `tools/memory_tree_tool.py` | 4-column kanban board (`To Do`, `In Progress`, `Blocked`, `Done`) with progress bars, priority weights (`urgent`, `high`, `medium`), and deadlines. |
+| **5** | **🧃 TokenJuice Compression Engine**| `tools/tokenjuice_tool.py` | Semantic JSON, AST signature, and log compression reducing LLM context token usage by 40% to 80%. |
+| **6** | **⚙️ Trigger-Driven Tinyflows Engine**| `tools/workflows_engine_tool.py` | Durable trigger-driven workflow engine (cron, webhook, channel message, manual) with execution logs and approval gates. |
+| **7** | **📡 Universal Multi-Channel Gateway**| `tools/multichannel_hub_tool.py` | Unified outbound dispatcher and status monitor for Telegram, Discord, Slack, WhatsApp, and native Gmail/SMTP email. |
+| **8** | **⚡ Split-Brain Medulla Reflex Engine**| `agent/medulla_reflex.py` | Sub-5ms intent triage separating instant reflex rules, memory queries, and deep multi-step reasoning with human approval gates. |
+| **9** | **🧠 Graphify + Obsidian Vault** | `tools/obsidian_knowledge_graph_tool.py` | Extracts AST code relationships and semantic clusters into a complete Obsidian Vault (911 linked notes, `Architecture_Graph.canvas`, `Interactive_Graph.html`, Agent Wiki, and custom subsystem color filters). |
+| **10**| **🏰 MemPalace Long-Term Memory** | `tools/mempalace_tool.py` | 100% Local-first verbatim memory using the spatial Method of Loci (`Wings -> Rooms -> Halls -> Drawers`), temporal SQLite entity graph, and fast L0/L1 wake-up briefing (~800 tokens). |
+| **11**| **📐 img2obj 3D Component Modeler**| `tools/img2obj_component_3d_tool.py` | Procedurally generates Wavefront `.obj`/`.mtl` and Three.js 3D models for electronic packages (0402, 0603, 0805, SOT-223, SOIC-8, TSSOP-28, QFP-48, QFN-32, TO-220, USB-C) and links them to `.kicad_pcb` footprints. |
+| **12**| **🌐 Local MCP Web Gateway** | `gateway/` | 4-Tier escalation ladder: Tier 1 Direct HTTP $\to$ Tier 2 `curl_cffi` TLS/JA3 $\to$ Tier 3 Crawl4AI/Playwright JS $\to$ Tier 4 Autonomous Vision Browser Agent. |
+| **13**| **💬 Discord Integration** | `tools/composio_apps_tool.py` | Direct **Discord** integration: send channel messages, fetch channel message history, and create new channels (`DISCORDBOT`). |
+| **14**| **💻 Desktop & System Control** | `tools/system_control_tool.py` | Time/date & greetings, launch local apps (Notepad, Calculator, VS Code, Explorer), open URLs/websites, take screenshots, tell jokes, and log voice notes. |
+| **15**| **📬 Workspace App Automation** | `tools/composio_apps_tool.py` | Full Composio integration for **Gmail** (fetch, send, search, drafts), **Google Calendar**, **Notion**, **Google Docs**, and **Google Sheets**. |
+| **16**| **🧠 Multi-Tier LLM Brain Pool** | `agent/copilot.py` & `agent/key_manager.py` | 4-Tier Fallback: Tier 1 Gemini 2.5/3.6 Flash Pool -> Tier 2 NVIDIA NIM Cloud -> Tier 3 Ollama Cloud -> Tier 4 Local GPU `llama3:8b`. |
+| **17**| **⚡ ECC Agent Harness Engine** | `agent/instincts.py`, `agent/security.py`, `agent/context_compressor.py` | Automatic hardware & work reflex rules, AgentShield workspace security guard, and incremental conversation history compressor. |
+| **18**| **🗂️ Preferred Parts & Circuit Templates**| `tools/preferred_parts_tool.py` & `tools/circuit_templates_tool.py` | Component library memory & parametric circuit generators (LDO regulators, buck converters, voltage dividers, BME280 sensor breakout). |
+| **19**| **🔁 Self-Correcting ERC/DRC Loop**| `agent/verify_loop.py` | Autonomous Agentic Verification Loop executing KiCad ERC/DRC, catching design violations, and auto-correcting schematic nets. |
+| **20**| **🛤️ 2-Layer Grid Autorouter** | `tools/autorouter_tool.py` | Automated multi-layer grid autorouter with 45-degree trace routing and DFM rule verification. |
+| **21**| **🏭 Turnkey Manufacturing Exporter**| `tools/manufacturing_tool.py` | Automated fabrication export: RS-274X Gerbers, Excellon NC Drills, Pick-and-Place (CPL), BOM CSV, and JLCPCB cost estimation. |
+| **22**| **👁️ OmniParser Screen Vision** | `tools/omniparser_tool.py` | Active screen capture layout parsing with `RapidOCR` ONNX engine to inspect UI elements, component dialogs, and code editors. |
+| **23**| **📚 Local PDF & Datasheet RAG** | `tools/datasheet_rag_tool.py` | Local document & datasheet RAG powered by **NVIDIA Nemotron 3 Embed 1B** and ChromaDB vector store. |
+| **24**| **🌐 Live Web Search & Compliance** | `tools/reach_tool.py` | Live web search for technical datasheets, general information, and regulatory compliance (RoHS 3 / FCC Part 15). |
+| **25**| **🎫 GitHub Issue & Repo Manager** | `tools/github_tool.py` | Log bugs, task reminders, or audit findings directly as labeled GitHub issues. |
+| **26**| **📄 Engineering & General Doc Exporter**| `tools/doc_exporter_tool.py` | Formats and exports audit reports, meeting notes, or general document summaries to `docs/` and `scratch/` as Markdown/JSON. |
+| **27**| **🎨 NVIDIA FLUX.1 Image Generator** | `tools/nvidia_nim_tool.py` | Text-to-Image generation for diagrams, UI concepts, and visuals via `black-forest-labs/flux.1-schnell`. |
+| **28**| **🧩 Baidu Unlimited-OCR Long Parser** | `tools/unlimited_ocr_tool.py` | Long-horizon document parsing into structured Markdown using Baidu Reference Sliding Window Attention (`baidu/Unlimited-OCR`). |
+| **29**| **📐 KiCad EDA & Circuit Parser** | `tools/kicad_tool.py` & `tools/kicad_editor.py` | Direct KiCad `.kicad_sch` & `.kicad_pcb` S-expression AST manipulation and net wiring. |
+| **30**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
+| **31**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
+| **32**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
+| **33**| **🔌 Stdio FastMCP Server (89+ Tools)** | `mcp_server.py` | Automatically exposes all 89+ Jarvis tools over stdio Model Context Protocol for direct integration into Claude Code, Cursor, Windsurf, and VS Code. |
 
 ---
 
@@ -159,16 +206,17 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 d:/aaaassistan_pcb/
 ├── config.py                 # Pydantic Settings & logger configuration
 ├── main.py                   # Async main execution loop (Wake Word -> STT -> LLM -> TTS)
-├── mcp_server.py             # FastMCP Stdio MCP server exposing 74+ dynamic tools
+├── mcp_server.py             # FastMCP Stdio MCP server exposing 89+ dynamic tools
 ├── web_server.py             # Cyberpunk Tactical HUD REST API & static server
 ├── test_capabilities.py      # System capability verification suite
 ├── requirements.txt          # PyTorch CUDA 12.1, LangChain, MemPalace & MCP dependencies
 ├── README.md                 # Project documentation & capability matrix
 ├── DISCORD_SETUP.md          # Setup guide for Discord Composio integration
 ├── demo.gif                  # Native GitHub animated video demo
-├── ui/                       # Cyberpunk Glassmorphic Tactical HUD Web Interface
-│   ├── index.html            # Web HUD layout with Tailwind CSS & WebGL voice wave shader
-│   └── app.js                # App logic, REST API bindings, & speech audio wave hooks
+├── ui/                       # Next-Gen Glassmorphic Conversational HUD Web Interface
+│   ├── index.html            # Web HUD with Markdown rendering & Conversational Avatar Mode
+│   ├── app.js                # App logic, Web Speech synthesis, & Avatar state controller
+│   └── tiny_mascot.riv       # Rive native vector mascot asset
 ├── gateway/                  # Local MCP Web Gateway (4-Tier Escalation Architecture)
 │   ├── escalation_engine.py  # Transparent routing (Direct -> curl_cffi -> Crawl4AI -> Agent)
 │   ├── cleaner.py            # Resilient HTML-to-Markdown cleaner
@@ -179,6 +227,7 @@ d:/aaaassistan_pcb/
 │   ├── .obsidian/graph.json  # Subsystem color groupings and physics settings
 │   ├── Architecture_Graph.canvas # Obsidian Infinite Visual Whiteboard
 │   ├── Interactive_Graph.html# Standalone D3/WebGL interactive graph viewer
+│   ├── Memory_Tree/          # Mirrored Scored Memory Tree notes
 │   ├── Wiki/                 # Cross-referenced Agent Wiki articles
 │   └── ... (911 interconnected [[wikilink]] Markdown notes)
 ├── voice/
@@ -186,7 +235,8 @@ d:/aaaassistan_pcb/
 │   ├── stt.py                # Faster-Whisper STT + NVIDIA Whisper Large v3
 │   └── tts.py                # Kokoro-82M 24kHz TTS + NVIDIA Magpie TTS
 ├── agent/
-│   ├── copilot.py            # LangChain JarvisAgent with 74+ active tools & multi-tier LLM pool
+│   ├── copilot.py            # LangChain JarvisAgent with 89+ active tools & multi-tier LLM pool
+│   ├── medulla_reflex.py     # Split-Brain fast reflex triage & attention queue
 │   ├── session_context.py    # JarvisSessionContext per-session model container
 │   ├── key_manager.py        # Multi-key Gemini rotation & real-time metrics manager
 │   ├── composio_router.py    # Dynamic tool router & context optimizer
@@ -198,6 +248,10 @@ d:/aaaassistan_pcb/
 │   └── prompts.py            # System prompt persona configuration
 ├── skills/                   # AAS & Claude-style SKILL.md playbooks
 ├── tools/
+│   ├── memory_tree_tool.py   # Hierarchical memory tree, Goals Kanban, People dossiers & Obsidian mirror
+│   ├── tokenjuice_tool.py    # TokenJuice semantic JSON/AST/Log compression engine
+│   ├── workflows_engine_tool.py # Tinyflows trigger-driven multi-step automation graph
+│   ├── multichannel_hub_tool.py # 17-channel dispatcher (Telegram/Discord/Slack/WhatsApp/Gmail)
 │   ├── obsidian_knowledge_graph_tool.py # Graphify AST & Obsidian Vault / Canvas generator
 │   ├── mempalace_tool.py     # MemPalace verbatim long-term memory & wake-up context
 │   ├── img2obj_component_3d_tool.py # Procedural 3D .OBJ/Three.js electronic part builder
