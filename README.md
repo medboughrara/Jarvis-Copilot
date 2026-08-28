@@ -4,10 +4,6 @@ A local, voice-activated "Jarvis-style" open-source AI super-assistant designed 
 
 <div align="center">
 
-### 🎬 Live System Demo & Tactical HUD Walkthrough
-
-![Live System Demo & Tactical HUD Walkthrough](demo.gif)
-
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)
 ![LangChain](https://img.shields.io/badge/Orchestration-LangChain-purple.svg?style=for-the-badge&logo=chainlink&logoColor=white)
 ![OpenHuman](https://img.shields.io/badge/Harness-OpenHuman_Architecture-FF6B6B.svg?style=for-the-badge)
