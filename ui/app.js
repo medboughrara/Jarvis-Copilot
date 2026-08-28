@@ -1,14 +1,18 @@
 /**
- * JARVIS General Purpose AI Super-Assistant — Interactive UI Controller
- * Integrates Rich Markdown Parsing, Conversational Avatar Mode, Voice Speech Synthesis,
- * Memory Tree, Goals Kanban, Tinyflows, and Multi-Channel Hub.
+ * JARVIS Universal AI Super-Assistant — Interactive UI & Ghosty Mascot Controller
+ * Inspired by OpenHuman (TinyHumans AI) architecture:
+ * - Mathematical Viseme Lip-Sync & Quadratic Bezier Mouth Morpher
+ * - Real-time Cursor-Tracking Pupils & Natural Blinking Physics
+ * - Expressive Mascot Face Presets (idle, listening, thinking, speaking, happy, confused)
+ * - Multi-Palette Reactive Shaders
+ * - Marked.js Markdown Engine & Full-Duplex Voice Assistant
  */
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // -----------------------------------------------------------------------
-    // 0. Markdown Parser Setup (Marked.js + Highlight.js)
-    // -----------------------------------------------------------------------
+    // =======================================================================
+    // 0. MARKDOWN PARSER SETUP (Marked.js + Highlight.js)
+    // =======================================================================
     if (window.marked) {
         window.marked.setOptions({
             gfm: true,
@@ -32,13 +36,307 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn('Marked parse error:', e);
             }
         }
-        // Fallback simple replacement if marked is unavailable
         return rawText.replace(/\n/g, '<br/>');
     }
 
-    // -----------------------------------------------------------------------
-    // 1. Navigation View Switcher
-    // -----------------------------------------------------------------------
+    // =======================================================================
+    // 1. OPENHUMAN GHOSTY MASCOT CONTROLLER & VISEME ENGINE
+    // =======================================================================
+    
+    // Viseme Definitions (from OpenHuman math)
+    const VISEMES = {
+        REST: { openness: 0, width: 0.3 },
+        A:    { openness: 0.95, width: 0.65 },
+        E:    { openness: 0.45, width: 1.0 },
+        I:    { openness: 0.3, width: 0.85 },
+        O:    { openness: 0.8, width: 0.2 },
+        U:    { openness: 0.45, width: 0.05 },
+        M:    { openness: 0.02, width: 0.4 },
+        F:    { openness: 0.18, width: 0.55 }
+    };
+
+    const REST_SMILE_PATH = 'M460,610 Q500,655 540,610 Q500,632 460,610 Z';
+    const HAPPY_EYE_LEFT  = 'M390,525 Q420,490 450,525';
+    const HAPPY_EYE_RIGHT = 'M550,525 Q580,490 610,525';
+
+    function getVisemeSvgPath(shape) {
+        if (shape.openness < 0.06) return REST_SMILE_PATH;
+        const CX = 500;
+        const CY = 615;
+        const halfW = 20 + shape.width * 30;
+        const halfH = 4 + shape.openness * 28;
+        const left = CX - halfW;
+        const right = CX + halfW;
+        const top = CY - halfH;
+        const bot = CY + halfH;
+        return `M${left},${CY} Q${CX},${top} ${right},${CY} Q${CX},${bot} ${left},${CY} Z`;
+    }
+
+    class GhostyMascotController {
+        constructor() {
+            this.svg = document.getElementById('mascot-svg');
+            this.mouth = document.getElementById('ghosty-mouth');
+            this.eyeLeftSocket = document.getElementById('eye-left-socket');
+            this.eyeRightSocket = document.getElementById('eye-right-socket');
+            this.pupilLeft = document.getElementById('pupil-left');
+            this.pupilRight = document.getElementById('pupil-right');
+            this.brows = document.getElementById('ghosty-brows');
+            this.browLeft = document.getElementById('brow-left');
+            this.browRight = document.getElementById('brow-right');
+            this.arm = document.getElementById('ghosty-arm');
+            this.blushLeft = document.getElementById('ghosty-blush-left');
+            this.blushRight = document.getElementById('ghosty-blush-right');
+            this.gradAccentStop = document.getElementById('grad-accent-stop');
+            this.eyeGlowStop = document.getElementById('eye-glow-stop');
+
+            this.state = 'idle'; // idle, listening, thinking, speaking, happy, confused
+            this.targetViseme = VISEMES.REST;
+            this.currentViseme = { ...VISEMES.REST };
+            this.visemeAnimTimer = null;
+            this.blinkTimer = null;
+            this.isBlinking = false;
+
+            // Pupil Target Offsets
+            this.targetPupilX = 0;
+            this.targetPupilY = 0;
+            this.currentPupilX = 0;
+            this.currentPupilY = 0;
+
+            this.init();
+        }
+
+        init() {
+            // Setup Mouse Tracking for Cursor-Following Eyes
+            window.addEventListener('mousemove', (e) => {
+                if (!this.svg) return;
+                const rect = this.svg.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const dx = (e.clientX - centerX) / (window.innerWidth / 2);
+                const dy = (e.clientY - centerY) / (window.innerHeight / 2);
+                
+                // Max pupil radius offset in SVG units
+                this.targetPupilX = Math.max(-14, Math.min(14, dx * 14));
+                this.targetPupilY = Math.max(-16, Math.min(16, dy * 16));
+            });
+
+            // Start Natural Blinking Loop
+            this.scheduleNextBlink();
+
+            // Start Continuous Animation Loop (RAF)
+            this.renderLoop();
+
+            // Setup Poke/Tickle Interaction
+            const mascotBox = document.getElementById('mascot-stage-wrapper');
+            if (mascotBox) {
+                mascotBox.addEventListener('click', () => this.pokeMascot());
+            }
+
+            // Setup Color Palette Buttons
+            document.querySelectorAll('.mascot-palette-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const color = btn.getAttribute('data-color');
+                    this.setPalette(color);
+                });
+            });
+        }
+
+        setPalette(hex) {
+            if (this.gradAccentStop) this.gradAccentStop.setAttribute('stop-color', hex);
+            if (this.eyeGlowStop) this.eyeGlowStop.setAttribute('stop-color', hex);
+            const statusPill = document.getElementById('avatar-status-pill');
+            if (statusPill) statusPill.style.borderColor = hex;
+        }
+
+        scheduleNextBlink() {
+            const delay = 3000 + Math.random() * 3500;
+            this.blinkTimer = setTimeout(() => {
+                this.triggerBlink();
+                this.scheduleNextBlink();
+            }, delay);
+        }
+
+        triggerBlink() {
+            if (this.state === 'happy') return;
+            this.isBlinking = true;
+            if (this.eyeLeftSocket && this.eyeRightSocket) {
+                this.eyeLeftSocket.setAttribute('ry', '3');
+                this.eyeRightSocket.setAttribute('ry', '3');
+                if (this.pupilLeft) this.pupilLeft.style.opacity = '0';
+                if (this.pupilRight) this.pupilRight.style.opacity = '0';
+            }
+
+            setTimeout(() => {
+                this.isBlinking = false;
+                this.updateEyeGeometry();
+                if (this.pupilLeft) this.pupilLeft.style.opacity = '1';
+                if (this.pupilRight) this.pupilRight.style.opacity = '1';
+            }, 160);
+        }
+
+        pokeMascot() {
+            this.setFaceMood('happy');
+            if (this.arm) this.arm.classList.add('mascot-waving-arm');
+            this.playChirpSound(620, 880);
+
+            const pill = document.getElementById('avatar-status-text');
+            if (pill) pill.innerText = "HEHE! JARVIS IS HAPPY TO SERVE YOU ✨";
+
+            setTimeout(() => {
+                if (this.arm) this.arm.classList.remove('mascot-waving-arm');
+                this.setFaceMood(this.state);
+            }, 2500);
+        }
+
+        playChirpSound(freq1, freq2) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq1, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(freq2, ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.2);
+            } catch (e) {
+                // Audio context may be blocked before gesture
+            }
+        }
+
+        setFaceMood(mood) {
+            this.state = mood;
+            const statusPill = document.getElementById('avatar-status-pill');
+            const statusText = document.getElementById('avatar-status-text');
+            const statusDot = document.getElementById('status-dot');
+            const speakIcon = document.getElementById('avatar-speak-icon');
+
+            if (mood === 'idle') {
+                this.stopSpeakingVisemes();
+                this.targetViseme = VISEMES.REST;
+                if (this.brows) this.brows.style.opacity = '0';
+                if (this.blushLeft) this.blushLeft.style.opacity = '0.4';
+                if (this.blushRight) this.blushRight.style.opacity = '0.4';
+                if (statusText) statusText.innerText = 'JARVIS READY // CLICK MIC OR SPACEBAR TO TALK';
+                if (statusPill) statusPill.className = 'px-5 py-2 rounded-full bg-surface-card border border-primary/40 font-mono text-xs font-bold text-primary flex items-center gap-2.5 shadow-[0_0_20px_rgba(0,242,255,0.25)]';
+                if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-primary animate-ping';
+                if (speakIcon) speakIcon.innerText = 'mic';
+            } else if (mood === 'listening') {
+                this.stopSpeakingVisemes();
+                this.targetViseme = VISEMES.REST;
+                if (this.brows) this.brows.style.opacity = '1';
+                if (this.browLeft) this.browLeft.setAttribute('transform', 'translate(0, -12) rotate(-8 415 450)');
+                if (this.browRight) this.browRight.setAttribute('transform', 'translate(0, -12) rotate(8 585 450)');
+                if (this.blushLeft) this.blushLeft.style.opacity = '0.8';
+                if (this.blushRight) this.blushRight.style.opacity = '0.8';
+                if (statusText) statusText.innerText = 'LISTENING... SPEAK CLEARLY';
+                if (statusPill) statusPill.className = 'px-5 py-2 rounded-full bg-success/20 border border-success font-mono text-xs font-bold text-success flex items-center gap-2.5 shadow-[0_0_30px_rgba(16,185,129,0.5)]';
+                if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-success animate-ping';
+                if (speakIcon) speakIcon.innerText = 'graphic_eq';
+            } else if (mood === 'thinking') {
+                this.stopSpeakingVisemes();
+                this.targetViseme = VISEMES.U;
+                if (this.brows) this.brows.style.opacity = '1';
+                if (this.browLeft) this.browLeft.setAttribute('transform', 'translate(0, -5) rotate(12 415 450)');
+                if (this.browRight) this.browRight.setAttribute('transform', 'translate(0, -5) rotate(-12 585 450)');
+                if (statusText) statusText.innerText = 'THINKING & REASONING (MEDULLA CORE)...';
+                if (statusPill) statusPill.className = 'px-5 py-2 rounded-full bg-purple-accent/20 border border-purple-accent font-mono text-xs font-bold text-purple-accent flex items-center gap-2.5 shadow-[0_0_30px_rgba(168,85,247,0.6)]';
+                if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-purple-accent animate-ping';
+                if (speakIcon) speakIcon.innerText = 'psychology';
+            } else if (mood === 'speaking') {
+                this.startSpeakingVisemes();
+                if (this.brows) this.brows.style.opacity = '0.6';
+                if (this.browLeft) this.browLeft.setAttribute('transform', 'translate(0, -8) rotate(-4 415 450)');
+                if (this.browRight) this.browRight.setAttribute('transform', 'translate(0, -8) rotate(4 585 450)');
+                if (this.blushLeft) this.blushLeft.style.opacity = '0.7';
+                if (this.blushRight) this.blushRight.style.opacity = '0.7';
+                if (statusText) statusText.innerText = 'SPEAKING OUT LOUD (VOICE SYNTHESIS)...';
+                if (statusPill) statusPill.className = 'px-5 py-2 rounded-full bg-primary/20 border border-primary font-mono text-xs font-bold text-primary flex items-center gap-2.5 shadow-[0_0_35px_rgba(0,242,255,0.7)]';
+                if (statusDot) statusDot.className = 'w-2.5 h-2.5 rounded-full bg-primary animate-ping';
+                if (speakIcon) speakIcon.innerText = 'volume_up';
+            } else if (mood === 'happy') {
+                this.stopSpeakingVisemes();
+                this.targetViseme = VISEMES.E;
+                if (this.blushLeft) this.blushLeft.style.opacity = '1';
+                if (this.blushRight) this.blushRight.style.opacity = '1';
+            }
+
+            this.updateEyeGeometry();
+        }
+
+        updateEyeGeometry() {
+            if (this.isBlinking) return;
+            if (!this.eyeLeftSocket || !this.eyeRightSocket) return;
+
+            if (this.state === 'listening') {
+                this.eyeLeftSocket.setAttribute('rx', '34');
+                this.eyeLeftSocket.setAttribute('ry', '58');
+                this.eyeRightSocket.setAttribute('rx', '34');
+                this.eyeRightSocket.setAttribute('ry', '58');
+            } else if (this.state === 'thinking') {
+                this.eyeLeftSocket.setAttribute('rx', '26');
+                this.eyeLeftSocket.setAttribute('ry', '38');
+                this.eyeRightSocket.setAttribute('rx', '30');
+                this.eyeRightSocket.setAttribute('ry', '48');
+            } else {
+                this.eyeLeftSocket.setAttribute('rx', '30');
+                this.eyeLeftSocket.setAttribute('ry', '52');
+                this.eyeRightSocket.setAttribute('rx', '30');
+                this.eyeRightSocket.setAttribute('ry', '52');
+            }
+        }
+
+        startSpeakingVisemes() {
+            this.stopSpeakingVisemes();
+            const visemeKeys = ['A', 'E', 'O', 'I', 'U', 'M', 'F'];
+            let idx = 0;
+            this.visemeAnimTimer = setInterval(() => {
+                const key = visemeKeys[idx % visemeKeys.length];
+                this.targetViseme = VISEMES[key];
+                idx++;
+            }, 120);
+        }
+
+        stopSpeakingVisemes() {
+            if (this.visemeAnimTimer) {
+                clearInterval(this.visemeAnimTimer);
+                this.visemeAnimTimer = null;
+            }
+        }
+
+        renderLoop() {
+            // Smooth Pupil Damping (Lerp)
+            this.currentPupilX += (this.targetPupilX - this.currentPupilX) * 0.12;
+            this.currentPupilY += (this.targetPupilY - this.currentPupilY) * 0.12;
+
+            if (this.pupilLeft) this.pupilLeft.setAttribute('cx', this.currentPupilX.toFixed(2));
+            if (this.pupilLeft) this.pupilLeft.setAttribute('cy', this.currentPupilY.toFixed(2));
+            if (this.pupilRight) this.pupilRight.setAttribute('cx', this.currentPupilX.toFixed(2));
+            if (this.pupilRight) this.pupilRight.setAttribute('cy', this.currentPupilY.toFixed(2));
+
+            // Smooth Viseme Mouth Path Interpolation (Lerp)
+            this.currentViseme.openness += (this.targetViseme.openness - this.currentViseme.openness) * 0.25;
+            this.currentViseme.width += (this.targetViseme.width - this.currentViseme.width) * 0.25;
+
+            if (this.mouth) {
+                const d = getVisemeSvgPath(this.currentViseme);
+                this.mouth.setAttribute('d', d);
+            }
+
+            requestAnimationFrame(() => this.renderLoop());
+        }
+    }
+
+    const mascot = new GhostyMascotController();
+
+    // =======================================================================
+    // 2. NAVIGATION VIEW SWITCHER
+    // =======================================================================
     const navButtons = document.querySelectorAll('.nav-tab-btn');
     const viewPanes = document.querySelectorAll('.view-pane');
 
@@ -61,12 +359,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Trigger view-specific data refresh
+        // View Refresh Hooks
         if (viewName === 'intelligence') loadMemoryAndGoals();
         if (viewName === 'workflows') loadWorkflows();
         if (viewName === 'channels') loadChannels();
         if (viewName === 'avatar') {
-            setAvatarState('idle');
+            mascot.setFaceMood('idle');
             updateAvatarSubtitles('Jarvis is online. Press the mic or hold Spacebar to talk.');
         }
     }
@@ -83,9 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btnQuickVoice.addEventListener('click', () => switchView('avatar'));
     }
 
-    const mascotBadge = document.getElementById('mascot-badge');
-    if (mascotBadge) {
-        mascotBadge.addEventListener('click', () => switchView('avatar'));
+    const headerMiniMascot = document.getElementById('header-mini-mascot');
+    if (headerMiniMascot) {
+        headerMiniMascot.addEventListener('click', () => switchView('avatar'));
     }
 
     const btnExitAvatar = document.getElementById('btn-exit-avatar');
@@ -93,9 +391,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btnExitAvatar.addEventListener('click', () => switchView('chat'));
     }
 
-    // -----------------------------------------------------------------------
-    // 2. High-Fidelity Voice Speech Synthesis (Client & Server)
-    // -----------------------------------------------------------------------
+    // =======================================================================
+    // 3. VOICE SPEECH SYNTHESIS & REPLAY ENGINE
+    // =======================================================================
     let autoVoiceEnabled = true;
     let selectedVoice = null;
     let synth = window.speechSynthesis;
@@ -121,7 +419,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Populate Natural Browser Voices
     function loadVoices() {
         if (!synth) return;
         const voices = synth.getVoices();
@@ -138,7 +435,6 @@ document.addEventListener('DOMContentLoaded', () => {
             opt.className = 'bg-surface-card text-on-surface';
             voiceSelect.appendChild(opt);
 
-            // Prefer natural English voices
             if (!preferredVoice && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('US') || v.lang.startsWith('en'))) {
                 preferredVoice = v;
                 opt.selected = true;
@@ -178,7 +474,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lastSpokenText = text;
 
         if (!synth) {
-            // Server-side TTS fallback
             fetch('/api/tts/speak', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -188,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            synth.cancel(); // Cancel any previous speech
+            synth.cancel();
             const clean = cleanTextForSpeech(text);
             const utterance = new SpeechSynthesisUtterance(clean);
             
@@ -197,36 +492,35 @@ document.addEventListener('DOMContentLoaded', () => {
             utterance.pitch = 1.0;
 
             utterance.onstart = () => {
-                setAvatarState('speaking');
+                mascot.setFaceMood('speaking');
                 if (onStart) onStart();
             };
 
             utterance.onend = () => {
-                setAvatarState('idle');
+                mascot.setFaceMood('idle');
                 if (onEnd) onEnd();
             };
 
             utterance.onerror = (e) => {
                 console.warn('SpeechSynthesis error:', e);
-                setAvatarState('idle');
+                mascot.setFaceMood('idle');
                 if (onEnd) onEnd();
             };
 
             synth.speak(utterance);
         } catch (e) {
             console.error('Speech playback failed:', e);
-            setAvatarState('idle');
+            mascot.setFaceMood('idle');
         }
     }
 
-    // Expose speak globally for button clicks
     window.replaySpeech = function (text) {
         speakSpeech(text);
     };
 
-    // -----------------------------------------------------------------------
-    // 3. Chat Stream & Message Handling with Markdown & Speaker Buttons
-    // -----------------------------------------------------------------------
+    // =======================================================================
+    // 4. CHAT STREAM & COMPOSER (With Markdown & Speaker Buttons)
+    // =======================================================================
     const chatStream = document.getElementById('chat-stream');
     const chatInput = document.getElementById('chat-input');
     const btnSend = document.getElementById('btn-send-message');
@@ -287,7 +581,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatStream.appendChild(msgDiv);
         chatStream.scrollTop = chatStream.scrollHeight;
 
-        // Automatically speak out the response if enabled
         if (!isUser && autoVoiceEnabled) {
             speakSpeech(text);
         }
@@ -299,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         appendMessage('user', text);
         if (!inputOverride) chatInput.value = '';
-        setAvatarState('thinking');
+        mascot.setFaceMood('thinking');
 
         try {
             const resp = await fetch('/api/agent/command', {
@@ -317,7 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             updateAvatarSubtitles(summary);
         } catch (e) {
-            setAvatarState('idle');
+            mascot.setFaceMood('idle');
             appendMessage('assistant', `⚠️ Execution Error: ${e.message}`);
             updateAvatarSubtitles(`Execution error: ${e.message}`);
         }
@@ -339,16 +632,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // -----------------------------------------------------------------------
-    // 4. Conversational Avatar Mode Controller
-    // -----------------------------------------------------------------------
-    const avatarStageOrb = document.getElementById('avatar-stage-orb');
-    const avatarMouth = document.getElementById('avatar-mouth');
-    const avatarStatusPill = document.getElementById('avatar-status-pill');
-    const avatarStatusText = document.getElementById('avatar-status-text');
+    // =======================================================================
+    // 5. CONVERSATIONAL AVATAR VOICE CONTROLLER & AUTO-LOOP
+    // =======================================================================
     const avatarLiveTranscript = document.getElementById('avatar-live-transcript');
     const btnAvatarSpeak = document.getElementById('btn-avatar-speak');
-    const avatarSpeakIcon = document.getElementById('avatar-speak-icon');
     const btnAvatarReplay = document.getElementById('btn-avatar-replay');
     const btnAvatarAutoLoop = document.getElementById('btn-avatar-auto-loop');
     const iconAutoLoop = document.getElementById('icon-auto-loop');
@@ -356,42 +644,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let continuousAutoLoop = false;
     let isAvatarRecording = false;
 
-    function setAvatarState(state) {
-        if (!avatarStageOrb) return;
-        avatarStageOrb.classList.remove('glow-avatar-idle', 'glow-avatar-speaking', 'glow-avatar-listening', 'glow-avatar-thinking');
-        avatarMouth.classList.remove('avatar-mouth-speaking');
-
-        if (state === 'idle') {
-            avatarStageOrb.classList.add('glow-avatar-idle');
-            avatarStatusText.innerText = 'JARVIS READY // CLICK MIC TO SPEAK';
-            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-surface-card border border-primary/40 font-mono text-xs font-bold text-primary flex items-center gap-2 shadow-lg';
-            avatarSpeakIcon.innerText = 'mic';
-        } else if (state === 'listening') {
-            avatarStageOrb.classList.add('glow-avatar-listening');
-            avatarStatusText.innerText = 'LISTENING... SPEAK CLEARLY';
-            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-success/20 border border-success font-mono text-xs font-bold text-success flex items-center gap-2 shadow-lg';
-            avatarSpeakIcon.innerText = 'graphic_eq';
-        } else if (state === 'thinking') {
-            avatarStageOrb.classList.add('glow-avatar-thinking');
-            avatarStatusText.innerText = 'THINKING & REASONING...';
-            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-purple-accent/20 border border-purple-accent font-mono text-xs font-bold text-purple-accent flex items-center gap-2 shadow-lg';
-            avatarSpeakIcon.innerText = 'psychology';
-        } else if (state === 'speaking') {
-            avatarStageOrb.classList.add('glow-avatar-speaking');
-            avatarMouth.classList.add('avatar-mouth-speaking');
-            avatarStatusText.innerText = 'SPEAKING OUT LOUD...';
-            avatarStatusPill.className = 'px-4 py-1.5 rounded-full bg-primary/20 border border-primary font-mono text-xs font-bold text-primary flex items-center gap-2 shadow-lg';
-            avatarSpeakIcon.innerText = 'volume_up';
-        }
-    }
-
     function updateAvatarSubtitles(text) {
         if (avatarLiveTranscript) {
             avatarLiveTranscript.innerText = `"${cleanTextForSpeech(text).substring(0, 240)}..."`;
         }
     }
 
-    // Push-to-Talk SpeechRecognition
     let recognition = null;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -402,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recognition.onstart = () => {
             isAvatarRecording = true;
-            setAvatarState('listening');
+            mascot.setFaceMood('listening');
             updateAvatarSubtitles('Listening to your voice...');
         };
 
@@ -417,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         recognition.onerror = (e) => {
             console.warn('SpeechRecognition error:', e);
-            setAvatarState('idle');
+            mascot.setFaceMood('idle');
             isAvatarRecording = false;
         };
 
@@ -446,11 +704,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleAvatarVoiceTurn(userSpeech) {
         if (!userSpeech || !userSpeech.trim()) {
-            setAvatarState('idle');
+            mascot.setFaceMood('idle');
             return;
         }
 
-        setAvatarState('thinking');
+        mascot.setFaceMood('thinking');
         updateAvatarSubtitles(`You: "${userSpeech}"`);
 
         try {
@@ -469,17 +727,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 summary: data.data?.details || data.summary
             });
 
-            // Speak out and loop if continuous mode is enabled
             speakSpeech(reply, () => {
-                setAvatarState('speaking');
+                mascot.setFaceMood('speaking');
             }, () => {
-                setAvatarState('idle');
+                mascot.setFaceMood('idle');
                 if (continuousAutoLoop) {
                     setTimeout(() => toggleAvatarListening(), 600);
                 }
             });
         } catch (e) {
-            setAvatarState('idle');
+            mascot.setFaceMood('idle');
             updateAvatarSubtitles(`Error: ${e.message}`);
         }
     }
@@ -507,7 +764,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (continuousAutoLoop) {
                 btnAvatarAutoLoop.classList.add('bg-primary/20', 'border-primary', 'text-primary');
                 iconAutoLoop.innerText = 'sync';
-                alert('Continuous Conversational Voice Mode: ON');
             } else {
                 btnAvatarAutoLoop.classList.remove('bg-primary/20', 'border-primary', 'text-primary');
                 iconAutoLoop.innerText = 'all_inclusive';
@@ -515,7 +771,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Spacebar PTT shortcut in Avatar Mode
     window.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && document.getElementById('view-avatar') && !document.getElementById('view-avatar').classList.contains('hidden')) {
             if (document.activeElement !== chatInput && !isAvatarRecording) {
@@ -525,12 +780,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // -----------------------------------------------------------------------
-    // 5. Memory Tree & Goals Kanban Data Fetcher
-    // -----------------------------------------------------------------------
+    // =======================================================================
+    // 6. MEMORY TREE & GOALS KANBAN LOADER
+    // =======================================================================
     async function loadMemoryAndGoals() {
         try {
-            // Load Goals
             const goalsResp = await fetch('/api/goals');
             const goalsData = await goalsResp.json();
             const cols = goalsData.data?.columns || {};
@@ -558,7 +812,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Load Memory Nodes
             const memResp = await fetch('/api/memory_tree');
             const memData = await memResp.json();
             const nodes = memData.data?.nodes || [];
@@ -580,9 +833,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // -----------------------------------------------------------------------
-    // 6. Workflows Data Fetcher (Tinyflows)
-    // -----------------------------------------------------------------------
+    // =======================================================================
+    // 7. WORKFLOWS ENGINE (TINYFLOWS) LOADER
+    // =======================================================================
     async function loadWorkflows() {
         try {
             const resp = await fetch('/api/workflows');
@@ -629,9 +882,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // -----------------------------------------------------------------------
-    // 7. Multi-Channel Hub Data Fetcher
-    // -----------------------------------------------------------------------
+    // =======================================================================
+    // 8. MULTI-CHANNEL HUB LOADER
+    // =======================================================================
     async function loadChannels() {
         try {
             const resp = await fetch('/api/channels');
@@ -680,6 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initial default view
+    // Default start view
     switchView('chat');
 });

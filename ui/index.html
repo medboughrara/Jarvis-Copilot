@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>JARVIS — General Purpose AI Super-Assistant & Conversational Avatar</title>
+    <title>JARVIS — Universal AI Super-Assistant & Conversational Avatar</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -25,11 +25,10 @@
                     colors: {
                         "primary": "#00f2ff",
                         "primary-dim": "#00dbe7",
-                        "primary-container": "#00f2ff",
                         "secondary": "#7b8cde",
-                        "surface": "#070a12",
-                        "surface-card": "#0f1626",
-                        "surface-hover": "#17223b",
+                        "surface": "#050811",
+                        "surface-card": "#0d1424",
+                        "surface-hover": "#141e34",
                         "surface-border": "rgba(0, 242, 255, 0.18)",
                         "on-surface": "#e2e8f0",
                         "on-surface-variant": "#94a3b8",
@@ -49,10 +48,10 @@
     </script>
     <style>
         body {
-            background-color: #050811;
+            background-color: #04070e;
             background-image: 
-                radial-gradient(circle at 20% 20%, rgba(0, 242, 255, 0.05) 0%, transparent 45%),
-                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 45%),
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 255, 0.06) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.06) 0%, transparent 45%),
                 linear-gradient(0deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
@@ -60,15 +59,15 @@
         }
 
         .glass-panel {
-            background: rgba(15, 22, 38, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(0, 242, 255, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            background: rgba(13, 20, 36, 0.78);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(0, 242, 255, 0.16);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
         }
 
         .glass-panel-subtle {
-            background: rgba(17, 24, 39, 0.6);
+            background: rgba(15, 22, 38, 0.6);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
@@ -77,51 +76,31 @@
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.35);
         }
 
-        .glow-avatar-idle {
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.25), inset 0 0 30px rgba(0, 242, 255, 0.15);
+        /* Mascot Floating Keyframe */
+        @keyframes mascot-idle-bob {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(0.8deg); }
         }
 
-        .glow-avatar-speaking {
-            animation: avatar-speak-pulse 1.2s infinite ease-in-out alternate;
+        @keyframes mascot-shadow-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.4; }
+            50% { transform: scale(0.85); opacity: 0.2; }
         }
 
-        @keyframes avatar-speak-pulse {
-            0% { box-shadow: 0 0 30px rgba(0, 242, 255, 0.3), inset 0 0 20px rgba(0, 242, 255, 0.2); }
-            100% { box-shadow: 0 0 60px rgba(0, 242, 255, 0.8), inset 0 0 40px rgba(168, 85, 247, 0.5); }
+        @keyframes mascot-wave-arm {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-25deg); }
+            75% { transform: rotate(15deg); }
         }
 
-        .glow-avatar-listening {
-            animation: avatar-listen-pulse 1s infinite alternate;
+        @keyframes particle-orbit {
+            0% { transform: rotate(0deg) translateX(140px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(140px) rotate(-360deg); }
         }
 
-        @keyframes avatar-listen-pulse {
-            0% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.3); border-color: rgba(16, 185, 129, 0.5); }
-            100% { box-shadow: 0 0 55px rgba(16, 185, 129, 0.8); border-color: rgba(16, 185, 129, 1); }
-        }
-
-        .glow-avatar-thinking {
-            animation: avatar-think-pulse 1.4s infinite ease-in-out;
-        }
-
-        @keyframes avatar-think-pulse {
-            0% { transform: scale(1) rotate(0deg); box-shadow: 0 0 35px rgba(168, 85, 247, 0.4); }
-            50% { transform: scale(1.03) rotate(2deg); box-shadow: 0 0 65px rgba(168, 85, 247, 0.8); }
-            100% { transform: scale(1) rotate(0deg); box-shadow: 0 0 35px rgba(168, 85, 247, 0.4); }
-        }
-
-        /* Avatar Mascot Face Animations */
-        @keyframes eye-blink { 0%, 90%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.08); } }
-        @keyframes float-gentle { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
-        @keyframes mouth-speak {
-            0%, 100% { height: 6px; width: 24px; border-radius: 4px; }
-            30% { height: 18px; width: 32px; border-radius: 12px; }
-            60% { height: 12px; width: 20px; border-radius: 8px; }
-            80% { height: 22px; width: 28px; border-radius: 14px; }
-        }
-
-        .avatar-eye { animation: eye-blink 3.8s infinite; transform-origin: center; }
-        .avatar-float { animation: float-gentle 4s infinite ease-in-out; }
-        .avatar-mouth-speaking { animation: mouth-speak 0.35s infinite ease-in-out; }
+        .mascot-container-bob { animation: mascot-idle-bob 4.5s ease-in-out infinite; }
+        .mascot-shadow-anim { animation: mascot-shadow-pulse 4.5s ease-in-out infinite; }
+        .mascot-waving-arm { animation: mascot-wave-arm 1.2s ease-in-out infinite; transform-origin: 800px 600px; }
 
         /* Custom Scrollbars */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -132,12 +111,10 @@
         .nav-tab-btn.active {
             color: #00f2ff;
             border-bottom: 2px solid #00f2ff;
-            background: rgba(0, 242, 255, 0.06);
+            background: rgba(0, 242, 255, 0.08);
         }
 
-        /* ========================================================= */
-        /* RICH MARKDOWN FORMATTING STYLES */
-        /* ========================================================= */
+        /* Markdown Styles */
         .markdown-body {
             color: #e2e8f0;
             line-height: 1.65;
@@ -147,7 +124,7 @@
             color: #00f2ff;
             font-family: 'Sora', sans-serif;
             font-weight: 700;
-            margin-top: 0.75rem;
+            margin-top: 0.85rem;
             margin-bottom: 0.4rem;
         }
         .markdown-body h1 { font-size: 1.35rem; border-bottom: 1px solid rgba(0, 242, 255, 0.2); padding-bottom: 0.3rem; }
@@ -155,11 +132,10 @@
         .markdown-body h3 { font-size: 1.02rem; }
         .markdown-body p { margin-bottom: 0.6rem; }
         .markdown-body strong { color: #00f2ff; font-weight: 600; }
-        .markdown-body em { color: #bec6e0; font-style: italic; }
+        .markdown-body em { color: #c4b5fd; font-style: italic; }
         .markdown-body ul { list-style-type: disc; padding-left: 1.3rem; margin-bottom: 0.6rem; }
         .markdown-body ol { list-style-type: decimal; padding-left: 1.3rem; margin-bottom: 0.6rem; }
         .markdown-body li { margin-bottom: 0.3rem; }
-        .markdown-body li > strong:first-child { color: #00f2ff; }
         
         .markdown-body code:not(pre code) {
             font-family: 'JetBrains Mono', monospace;
@@ -172,7 +148,7 @@
         }
 
         .markdown-body pre {
-            background: #090d18 !important;
+            background: #080c16 !important;
             border: 1px solid rgba(0, 242, 255, 0.25);
             border-radius: 0.75rem;
             padding: 0.85rem;
@@ -205,10 +181,10 @@
         .markdown-body td {
             padding: 0.45rem 0.75rem;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(15, 22, 38, 0.4);
+            background: rgba(13, 20, 36, 0.5);
         }
         .markdown-body tr:hover td {
-            background: rgba(0, 242, 255, 0.06);
+            background: rgba(0, 242, 255, 0.07);
         }
         .markdown-body blockquote {
             border-left: 3px solid #00f2ff;
@@ -218,11 +194,6 @@
             border-radius: 0 0.5rem 0.5rem 0;
             color: #94a3b8;
             font-style: italic;
-        }
-        .markdown-body hr {
-            border: none;
-            border-top: 1px solid rgba(0, 242, 255, 0.2);
-            margin: 0.85rem 0;
         }
     </style>
 </head>
@@ -234,12 +205,24 @@
 <header class="h-16 w-full glass-panel border-b border-primary/20 flex items-center justify-between px-5 z-50 flex-shrink-0">
     <!-- Brand / Mascot Left -->
     <div class="flex items-center gap-3">
-        <!-- Interactive Mascot Mini Avatar -->
-        <div id="mascot-badge" class="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-primary/30 to-purple-accent/30 border border-primary/40 flex items-center justify-center cursor-pointer glow-cyan" title="Launch Conversational Avatar Mode">
-            <div class="flex items-center gap-1.5">
-                <div class="w-1.5 h-3 bg-primary rounded-full avatar-eye"></div>
-                <div class="w-1.5 h-3 bg-primary rounded-full avatar-eye"></div>
-            </div>
+        <!-- Interactive Mini Mascot Avatar -->
+        <div id="header-mini-mascot" class="relative w-10 h-10 rounded-xl bg-surface-card border border-primary/40 flex items-center justify-center cursor-pointer glow-cyan hover:scale-105 transition-transform" title="Talk with Jarvis Mascot Avatar">
+            <svg viewBox="0 0 1000 1000" class="w-8 h-8 pointer-events-none">
+                <!-- Mini Ghosty Body -->
+                <path d="M500,240 C700,240 855,420 860,625 C863,770 810,860 700,895 Q500,930 300,895 C190,860 137,770 140,625 C145,420 300,240 500,240 Z" fill="url(#mini-body-grad)" filter="drop-shadow(0 0 8px rgba(0,242,255,0.6))"/>
+                <!-- Mini Eyes -->
+                <ellipse cx="420" cy="520" rx="25" ry="45" fill="#00f2ff" class="mini-mascot-eye"/>
+                <ellipse cx="580" cy="520" rx="25" ry="45" fill="#00f2ff" class="mini-mascot-eye"/>
+                <!-- Mini Mouth -->
+                <path d="M460,610 Q500,650 540,610 Z" fill="#00f2ff"/>
+                <defs>
+                    <radialGradient id="mini-body-grad" cx="0.35" cy="0.3" r="0.95">
+                        <stop offset="0%" stop-color="#45454a"/>
+                        <stop offset="45%" stop-color="#141e34"/>
+                        <stop offset="100%" stop-color="#04070e"/>
+                    </radialGradient>
+                </defs>
+            </svg>
             <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-success rounded-full ring-2 ring-surface animate-pulse"></span>
         </div>
 
@@ -249,7 +232,7 @@
                 <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary uppercase font-semibold">SUPER-AI v5.0</span>
             </div>
             <div class="text-[11px] font-mono text-on-surface-variant flex items-center gap-2">
-                <span id="header-uptime">MEDULLA: REFLEX + DEEP CORE ONLINE</span>
+                <span id="header-uptime">MEDULLA: REFLEX + DEEP REASONING READY</span>
             </div>
         </div>
     </div>
@@ -260,8 +243,8 @@
             <span class="material-symbols-outlined text-base">forum</span>
             ASSISTANT CHAT
         </button>
-        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-primary hover:text-primary transition-all flex items-center gap-1.5 bg-primary/10 rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(0,242,255,0.2)]" data-view="avatar">
-            <span class="material-symbols-outlined text-base">account_circle</span>
+        <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-primary hover:text-primary transition-all flex items-center gap-1.5 bg-primary/10 rounded-lg border border-primary/30 shadow-[0_0_12px_rgba(0,242,255,0.25)]" data-view="avatar">
+            <span class="material-symbols-outlined text-base animate-pulse">account_circle</span>
             🎙️ CONVERSATIONAL AVATAR
         </button>
         <button class="nav-tab-btn px-3.5 py-2 font-mono text-xs font-medium text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-view="intelligence">
@@ -282,12 +265,12 @@
         </button>
     </nav>
 
-    <!-- Right Utility & Voice Mode Toggle -->
+    <!-- Right Controls -->
     <div class="flex items-center gap-3">
-        <!-- Voice Readout Toggle Switch -->
-        <div class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-card border border-primary/20 font-mono text-xs cursor-pointer select-none" id="toggle-voice-auto-speak" title="Toggle automatic voice speech replay for all answers">
+        <!-- Voice Readout Toggle -->
+        <div class="flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-card border border-primary/20 font-mono text-xs cursor-pointer select-none" id="toggle-voice-auto-speak" title="Toggle automatic voice speech replay">
             <span class="material-symbols-outlined text-xs text-primary" id="icon-voice-toggle">volume_up</span>
-            <span class="text-[11px] text-on-surface-variant">Voice Output:</span>
+            <span class="text-[11px] text-on-surface-variant">Voice:</span>
             <strong class="text-success" id="label-voice-toggle">ON</strong>
         </div>
 
@@ -299,9 +282,9 @@
         </div>
 
         <!-- Launch Voice Avatar Quick Button -->
-        <button id="btn-quick-voice-mode" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary/20 to-purple-accent/20 border border-primary/50 text-primary hover:bg-primary hover:text-surface transition-all font-mono text-xs font-bold shadow-[0_0_12px_rgba(0,242,255,0.3)]">
+        <button id="btn-quick-voice-mode" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary/20 to-purple-accent/20 border border-primary/50 text-primary hover:bg-primary hover:text-surface transition-all font-mono text-xs font-bold shadow-[0_0_14px_rgba(0,242,255,0.35)]">
             <span class="material-symbols-outlined text-base animate-pulse">record_voice_over</span>
-            <span>SPEAK</span>
+            <span>TALK TO JARVIS</span>
         </button>
     </div>
 </header>
@@ -327,11 +310,11 @@
                     </div>
                     <div>
                         <h2 class="font-headline font-bold text-base text-primary">Jarvis AI General Purpose Super-Assistant</h2>
-                        <p class="text-xs font-mono text-on-surface-variant">Conversational Avatar • Memory Tree • Workflows • 17 Channels • Markdown Rendering</p>
+                        <p class="text-xs font-mono text-on-surface-variant">Conversational Ghosty Mascot • Memory Tree • Workflows • 17 Channels • Markdown Rendering</p>
                     </div>
                 </div>
                 <p class="text-sm text-on-surface leading-relaxed">
-                    Welcome! All responses are rendered in rich GitHub-flavored Markdown with automated voice speech replay. You can type below or switch to the <strong>🎙️ Conversational Avatar Mode</strong> for interactive voice conversations!
+                    Ready to execute autonomous engineering, deep research, workflows, or voice conversations. Click <strong>🎙️ CONVERSATIONAL AVATAR</strong> above to talk with the interactive speaking mascot!
                 </p>
                 <!-- Quick Starter Chips -->
                 <div class="flex flex-wrap gap-2 pt-1 font-mono text-xs">
@@ -350,7 +333,7 @@
                 </div>
             </div>
 
-            <!-- Messages appended here dynamically -->
+            <!-- Pre-loaded turns appended dynamically -->
         </div>
 
         <!-- Chat Input Composer Box -->
@@ -375,7 +358,7 @@
                 <textarea id="chat-input" rows="1" class="flex-1 bg-transparent border-0 text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0 resize-none font-sans outline-none" placeholder="Ask Jarvis anything, execute workflows, or speak..."></textarea>
                 
                 <div class="flex items-center gap-2 font-mono">
-                    <!-- Mic Button -->
+                    <!-- Chat Mic Button -->
                     <button id="chat-mic-btn" class="w-9 h-9 rounded-xl bg-surface-card border border-primary/30 text-primary flex items-center justify-center hover:bg-primary/20 transition-all" title="Push-to-Talk Voice Input">
                         <span class="material-symbols-outlined text-lg" id="chat-mic-icon">mic</span>
                     </button>
@@ -394,29 +377,44 @@
 
 
     <!-- ===================================================================== -->
-    <!-- VIEW 2: 🎙️ CONVERSATIONAL AVATAR (OpenHuman-Style Avatar Voice Mode) -->
+    <!-- VIEW 2: 🎙️ CONVERSATIONAL AVATAR (OpenHuman-Style Organic Mascot) -->
     <!-- ===================================================================== -->
-    <section id="view-avatar" class="view-pane hidden flex-1 flex flex-col items-center justify-between p-8 overflow-y-auto relative">
+    <section id="view-avatar" class="view-pane hidden flex-1 flex flex-col items-center justify-between p-6 md:p-8 overflow-y-auto relative">
         
-        <!-- Background Ambient Glow Rings -->
-        <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30 overflow-hidden">
-            <div class="w-[500px] h-[500px] rounded-full border border-primary/20 animate-[spin_40s_linear_infinite]"></div>
-            <div class="absolute w-[360px] h-[360px] rounded-full border border-dashed border-purple-accent/30 animate-[spin_25s_linear_infinite_reverse]"></div>
+        <!-- Ambient Atmospheric Background Rays & Particle Orbits -->
+        <div class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-35 overflow-hidden">
+            <div class="w-[600px] h-[600px] rounded-full border border-primary/20 animate-[spin_50s_linear_infinite]"></div>
+            <div class="absolute w-[440px] h-[440px] rounded-full border border-dashed border-purple-accent/30 animate-[spin_30s_linear_infinite_reverse]"></div>
+            <div class="absolute w-[280px] h-[280px] rounded-full border border-primary/30"></div>
         </div>
 
-        <!-- Top Header of Avatar Mode -->
-        <div class="w-full max-w-2xl flex justify-between items-center z-10 font-mono text-xs">
+        <!-- Top Avatar Header Bar -->
+        <div class="w-full max-w-3xl flex justify-between items-center z-10 font-mono text-xs">
             <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-success animate-pulse"></span>
-                <span class="text-primary font-bold tracking-widest">CONVERSATIONAL AVATAR MODE</span>
+                <span class="text-primary font-bold tracking-widest uppercase">JARVIS CONVERSATIONAL AVATAR</span>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary">FULL DUPLEX</span>
             </div>
+            
+            <!-- Settings & Palette Selection -->
             <div class="flex items-center gap-3">
+                <!-- Color Palette Switcher -->
+                <div class="flex items-center gap-1.5 bg-surface-card px-2 py-1 rounded-full border border-surface-border">
+                    <button class="w-4 h-4 rounded-full bg-[#00f2ff] border border-white/40 mascot-palette-btn" data-color="#00f2ff" title="Cyber Cyan"></button>
+                    <button class="w-4 h-4 rounded-full bg-[#a855f7] border border-white/20 mascot-palette-btn" data-color="#a855f7" title="Neon Purple"></button>
+                    <button class="w-4 h-4 rounded-full bg-[#10b981] border border-white/20 mascot-palette-btn" data-color="#10b981" title="Matrix Emerald"></button>
+                    <button class="w-4 h-4 rounded-full bg-[#f59e0b] border border-white/20 mascot-palette-btn" data-color="#f59e0b" title="Solar Amber"></button>
+                    <button class="w-4 h-4 rounded-full bg-[#ec4899] border border-white/20 mascot-palette-btn" data-color="#ec4899" title="Rose Quartz"></button>
+                </div>
+
+                <!-- Voice Persona Dropdown -->
                 <div class="px-3 py-1 rounded-full bg-surface-card border border-primary/30 text-on-surface flex items-center gap-2">
                     <span class="text-on-surface-variant">Voice:</span>
                     <select id="avatar-voice-select" class="bg-transparent border-0 text-primary text-xs font-mono outline-none cursor-pointer">
-                        <option value="default" class="bg-surface-card text-on-surface">Natural English Neural (Jarvis)</option>
+                        <option value="default" class="bg-surface-card text-on-surface">Natural English (Jarvis)</option>
                     </select>
                 </div>
+
                 <button id="btn-exit-avatar" class="px-3 py-1 rounded-lg bg-surface-card hover:bg-error/20 border border-surface-border text-on-surface-variant hover:text-error transition-all flex items-center gap-1">
                     <span class="material-symbols-outlined text-sm">close</span>
                     EXIT
@@ -424,71 +422,128 @@
             </div>
         </div>
 
-        <!-- Center: Interactive Avatar Stage -->
-        <div class="my-auto flex flex-col items-center justify-center space-y-6 z-10">
+        <!-- Center: Interactive OpenHuman Ghosty Mascot Stage -->
+        <div class="my-auto flex flex-col items-center justify-center space-y-6 z-10 select-none">
             
-            <!-- Animated 3D/Hologram Avatar Mascot -->
-            <div id="avatar-stage-orb" class="relative w-64 h-64 md:w-72 md:h-72 rounded-full glass-panel border-2 border-primary/40 flex flex-col items-center justify-center glow-avatar-idle transition-all duration-500 avatar-float">
+            <!-- 3D Mascot Stage Orb with Volumetric Glow & Floating Animation -->
+            <div id="mascot-stage-wrapper" class="relative flex flex-col items-center justify-center cursor-pointer">
                 
-                <!-- Holographic Orbit Particle Dots -->
-                <div class="absolute inset-2 rounded-full border border-primary/20 pointer-events-none"></div>
-                <div class="absolute -top-2 w-4 h-4 rounded-full bg-primary/60 blur-xs animate-ping"></div>
-
-                <!-- Avatar Face (Eyes & Mouth) -->
-                <div class="flex flex-col items-center justify-center space-y-5 z-20">
-                    <!-- Eyes Container -->
-                    <div class="flex items-center gap-8" id="avatar-eyes">
-                        <div class="w-6 h-10 rounded-full bg-gradient-to-b from-primary to-primary-dim shadow-[0_0_15px_rgba(0,242,255,0.8)] avatar-eye"></div>
-                        <div class="w-6 h-10 rounded-full bg-gradient-to-b from-primary to-primary-dim shadow-[0_0_15px_rgba(0,242,255,0.8)] avatar-eye"></div>
-                    </div>
+                <!-- Mascot Bobbing Container -->
+                <div id="mascot-art-box" class="w-72 h-72 md:w-80 md:h-80 mascot-container-bob relative flex items-center justify-center">
                     
-                    <!-- Dynamic Mouth (Morphs during speech) -->
-                    <div id="avatar-mouth" class="w-8 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(0,242,255,0.6)] transition-all duration-75"></div>
+                    <!-- SVG Full-Size Organic Ghosty Mascot (From OpenHuman Architecture) -->
+                    <svg id="mascot-svg" viewBox="0 0 1000 1000" class="w-full h-full filter drop-shadow-[0_15px_35px_rgba(0,242,255,0.4)]">
+                        <defs>
+                            <!-- Shaded 3D Body Gradient (Dark Moody with Neon Accent Core) -->
+                            <radialGradient id="ghosty-body-grad" cx="0.35" cy="0.28" r="1.05">
+                                <stop offset="0%" stop-color="#4a4d5a"/>
+                                <stop offset="20%" stop-color="#343847"/>
+                                <stop offset="42%" stop-color="#18233c" id="grad-accent-stop"/>
+                                <stop offset="65%" stop-color="#0f1628"/>
+                                <stop offset="85%" stop-color="#080c16"/>
+                                <stop offset="100%" stop-color="#03050a"/>
+                            </radialGradient>
+
+                            <!-- Glowing Aura Eye Gradient -->
+                            <radialGradient id="ghosty-eye-glow" cx="0.5" cy="0.5" r="0.5">
+                                <stop offset="0%" stop-color="#ffffff"/>
+                                <stop offset="60%" stop-color="#00f2ff" id="eye-glow-stop"/>
+                                <stop offset="100%" stop-color="#00b4d8"/>
+                            </radialGradient>
+
+                            <!-- Soft Cheek Blush Gradient -->
+                            <radialGradient id="ghosty-blush" cx="0.5" cy="0.5" r="0.5">
+                                <stop offset="0%" stop-color="#ff70a6" stop-opacity="0.6"/>
+                                <stop offset="100%" stop-color="#ff70a6" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+
+                        <!-- Mascot Organic Legs / Feet -->
+                        <path id="ghosty-left-leg" d="M310,880 C220,895 150,940 175,985 C200,1020 290,1020 360,990 C420,965 430,915 400,890 Z" fill="url(#ghosty-body-grad)" opacity="0.95"/>
+                        <path id="ghosty-right-leg" d="M690,880 C780,895 850,940 825,985 C800,1020 710,1020 640,990 C580,965 570,915 600,890 Z" fill="url(#ghosty-body-grad)" opacity="0.95"/>
+
+                        <!-- Mascot Waving / Resting Arm -->
+                        <path id="ghosty-arm" d="M800,560 C870,485 955,500 955,575 C955,635 880,650 800,615 Z" fill="url(#ghosty-body-grad)"/>
+
+                        <!-- Mascot Smooth 3D Torso Body -->
+                        <path id="ghosty-body" d="M500,240 C700,240 855,420 860,625 C863,770 810,860 700,895 Q500,930 300,895 C190,860 137,770 140,625 C145,420 300,240 500,240 Z" fill="url(#ghosty-body-grad)" stroke="rgba(0,242,255,0.3)" stroke-width="6"/>
+
+                        <!-- Left & Right Blush Cheeks -->
+                        <ellipse cx="340" cy="590" rx="35" ry="20" fill="url(#ghosty-blush)" id="ghosty-blush-left"/>
+                        <ellipse cx="660" cy="590" rx="35" ry="20" fill="url(#ghosty-blush)" id="ghosty-blush-right"/>
+
+                        <!-- Interactive Eyebrows -->
+                        <g id="ghosty-brows" opacity="0">
+                            <line id="brow-left" x1="380" y1="450" x2="450" y2="450" stroke="#00f2ff" stroke-width="8" stroke-linecap="round"/>
+                            <line id="brow-right" x1="550" y1="450" x2="620" y2="450" stroke="#00f2ff" stroke-width="8" stroke-linecap="round"/>
+                        </g>
+
+                        <!-- Interactive Organic Eyes with Cursor-Tracking Pupils -->
+                        <g id="ghosty-eyes-group">
+                            <!-- Left Eye Outer -->
+                            <g id="eye-left-container" transform="translate(420, 520)">
+                                <ellipse id="eye-left-socket" cx="0" cy="0" rx="30" ry="52" fill="url(#ghosty-eye-glow)"/>
+                                <circle id="pupil-left" cx="0" cy="0" r="14" fill="#ffffff" filter="drop-shadow(0 0 6px #ffffff)"/>
+                            </g>
+                            <!-- Right Eye Outer -->
+                            <g id="eye-right-container" transform="translate(580, 520)">
+                                <ellipse id="eye-right-socket" cx="0" cy="0" rx="30" ry="52" fill="url(#ghosty-eye-glow)"/>
+                                <circle id="pupil-right" cx="0" cy="0" r="14" fill="#ffffff" filter="drop-shadow(0 0 6px #ffffff)"/>
+                            </g>
+                        </g>
+
+                        <!-- Dynamic Viseme Mouth Shape (Smooth Interpolation) -->
+                        <path id="ghosty-mouth" d="M460,610 Q500,655 540,610 Q500,632 460,610 Z" fill="#00f2ff" filter="drop-shadow(0 0 8px rgba(0,242,255,0.8))"/>
+                    </svg>
+
                 </div>
 
-                <!-- Audio Equalizer Bars Inside Avatar -->
-                <div class="absolute bottom-6 flex items-center gap-1.5 opacity-60" id="avatar-audio-bars">
-                    <div class="w-1 bg-primary h-2 rounded-full transition-all duration-75"></div>
-                    <div class="w-1 bg-primary h-4 rounded-full transition-all duration-75"></div>
-                    <div class="w-1 bg-primary h-3 rounded-full transition-all duration-75"></div>
-                    <div class="w-1 bg-primary h-5 rounded-full transition-all duration-75"></div>
-                    <div class="w-1 bg-primary h-2 rounded-full transition-all duration-75"></div>
+                <!-- Ground Ambient Drop Shadow -->
+                <div class="w-48 h-6 bg-primary/20 rounded-full blur-md mascot-shadow-anim -mt-4"></div>
+
+            </div>
+
+            <!-- Avatar Mood / State Status Pill -->
+            <div id="avatar-status-pill" class="px-5 py-2 rounded-full bg-surface-card border border-primary/40 font-mono text-xs font-bold text-primary flex items-center gap-2.5 shadow-[0_0_20px_rgba(0,242,255,0.25)] transition-all">
+                <span class="w-2.5 h-2.5 rounded-full bg-primary animate-ping" id="status-dot"></span>
+                <span id="avatar-status-text">JARVIS READY // CLICK MIC OR SPACEBAR TO TALK</span>
+            </div>
+
+            <!-- Live Streaming Subtitles Box -->
+            <div class="max-w-2xl w-full text-center px-4">
+                <div class="glass-panel p-3.5 rounded-xl border border-surface-border shadow-inner">
+                    <p id="avatar-live-transcript" class="text-sm md:text-base text-on-surface font-sans leading-relaxed italic opacity-95 min-h-[3rem] flex items-center justify-center">
+                        "Hello! I am Jarvis. Press the mic or hold Spacebar to talk with me."
+                    </p>
                 </div>
             </div>
 
-            <!-- Avatar State Indicator Pill -->
-            <div id="avatar-status-pill" class="px-4 py-1.5 rounded-full bg-surface-card border border-primary/40 font-mono text-xs font-bold text-primary flex items-center gap-2 shadow-lg">
-                <span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
-                <span id="avatar-status-text">JARVIS READY // CLICK MIC TO SPEAK</span>
-            </div>
-
-            <!-- Streaming Subtitles Transcript -->
-            <div class="max-w-xl w-full text-center px-4">
-                <p id="avatar-live-transcript" class="text-sm text-on-surface font-sans leading-relaxed italic opacity-90 min-h-[3rem]">
-                    "Press the microphone or spacebar to speak directly with Jarvis..."
-                </p>
-            </div>
         </div>
 
-        <!-- Bottom Controls Bar -->
+        <!-- Bottom Conversational Controls -->
         <div class="w-full max-w-xl flex flex-col items-center gap-3 z-10">
-            <!-- Big Push-to-Talk / Continuous Conversation Button -->
-            <div class="flex items-center gap-4">
-                <button id="btn-avatar-replay" class="p-3 rounded-full bg-surface-card border border-surface-border text-on-surface hover:text-primary transition-all" title="Replay Last Answer">
-                    <span class="material-symbols-outlined text-xl">replay</span>
+            <!-- Big Push-To-Talk Button & Loop Toggle -->
+            <div class="flex items-center gap-5">
+                <!-- Replay Button -->
+                <button id="btn-avatar-replay" class="p-3.5 rounded-full bg-surface-card border border-surface-border text-on-surface hover:text-primary hover:border-primary transition-all hover:scale-105" title="Replay Last Spoken Response">
+                    <span class="material-symbols-outlined text-2xl">replay</span>
                 </button>
 
-                <button id="btn-avatar-speak" class="w-20 h-20 rounded-full bg-gradient-to-tr from-primary to-purple-accent text-surface flex items-center justify-center shadow-[0_0_25px_rgba(0,242,255,0.6)] hover:scale-105 active:scale-95 transition-all cursor-pointer">
+                <!-- Big Center Voice Trigger Mic -->
+                <button id="btn-avatar-speak" class="w-20 h-20 rounded-full bg-gradient-to-tr from-primary via-primary-dim to-purple-accent text-surface flex items-center justify-center shadow-[0_0_35px_rgba(0,242,255,0.7)] hover:scale-110 active:scale-95 transition-all cursor-pointer">
                     <span class="material-symbols-outlined text-3xl font-bold" id="avatar-speak-icon">mic</span>
                 </button>
 
-                <button id="btn-avatar-auto-loop" class="p-3 rounded-full bg-surface-card border border-surface-border text-on-surface-variant hover:text-primary transition-all" title="Continuous Hands-Free Mode">
-                    <span class="material-symbols-outlined text-xl" id="icon-auto-loop">all_inclusive</span>
+                <!-- Continuous Hands-Free Auto-Listening Mode -->
+                <button id="btn-avatar-auto-loop" class="p-3.5 rounded-full bg-surface-card border border-surface-border text-on-surface-variant hover:text-primary hover:border-primary transition-all hover:scale-105" title="Toggle Continuous Hands-Free Voice Mode">
+                    <span class="material-symbols-outlined text-2xl" id="icon-auto-loop">all_inclusive</span>
                 </button>
             </div>
 
-            <div class="text-[11px] font-mono text-on-surface-variant">
-                <span>Hold <strong>Spacebar</strong> or click <strong>Mic</strong> to speak</span>
+            <div class="text-[11px] font-mono text-on-surface-variant flex items-center gap-4">
+                <span>Hold <strong>Spacebar</strong> to speak</span>
+                <span>•</span>
+                <span>Click mascot to poke</span>
             </div>
         </div>
     </section>
