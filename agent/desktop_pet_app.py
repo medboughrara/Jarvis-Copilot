@@ -138,7 +138,6 @@ def launch_desktop_pet(port: int = 8000, blocking: bool = True) -> DesktopPetCon
                 frameless=True,
                 on_top=True,
                 transparent=True,
-                background_color='#00000000',
                 easy_drag=True
             )
             controller.window = window
