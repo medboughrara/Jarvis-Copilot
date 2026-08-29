@@ -1,7 +1,8 @@
 """
 Desktop Pet Application & 100% True Transparent Floating Companion for Jarvis Copilot.
-Runs a lightweight, native, hardware-composited transparent mascot that roams across monitors,
-points to on-screen elements, follows the user's cursor with its eyes, and supports global hotkeys:
+Runs a lightweight, native, hardware-composited transparent OpenHuman Ghosty mascot
+that roams across monitors, points to on-screen elements, follows the user's cursor with its eyes,
+and supports global hotkeys:
 - [Right Shift + Enter]: Toggle cursor-following floating flight mode.
 - [Right Shift + Backspace]: Trigger voice listening mode & speech briefing.
 
@@ -56,7 +57,7 @@ class POINT(ctypes.Structure):
 
 
 class DesktopPetController:
-    """Manages 100% transparent native canvas rendering, cursor following, hotkeys, and WebSocket sync."""
+    """Manages 100% transparent OpenHuman Ghosty canvas rendering, cursor following, hotkeys, and WebSocket sync."""
 
     TRANSPARENT_COLOR = "#010101"
 
@@ -66,10 +67,11 @@ class DesktopPetController:
         self.y = 250.0
         self.target_x = 300.0
         self.target_y = 250.0
-        self.width = 240
-        self.height = 280
+        self.width = 260
+        self.height = 290
         self.state = "idle"
         self.is_running = False
+        # Default: Fixed in one place, movable manually
         self.follow_cursor = False
         self.is_pointing = False
         self.is_speaking = False
@@ -82,7 +84,6 @@ class DesktopPetController:
         self.canvas: Optional[tk.Canvas] = None
         self.heartbeat_thread: Optional[threading.Thread] = None
         self.hotkey_thread: Optional[threading.Thread] = None
-        self.ws_thread: Optional[threading.Thread] = None
         
         self.last_cursor_x = 0
         self.last_cursor_y = 0
@@ -90,6 +91,7 @@ class DesktopPetController:
         self.blink_state = False
         self.last_blink_time = time.time()
         self.mouth_step = 0
+        self.shutter_flash_until = 0.0
 
     def start_heartbeat_loop(self) -> None:
         """Emits periodic heartbeats to the screen annotator overlay every 1.5s."""
@@ -152,8 +154,9 @@ class DesktopPetController:
         self.speak_text("Listening to your command, sir...")
 
     def trigger_shutter_flash(self) -> None:
-        """Flashes antenna indicator to signify active screen grounding or listening."""
-        logger.info("[Desktop Pet] 📸 Shutter Flash Active.")
+        """Flashes indicator to signify active screen grounding or listening."""
+        logger.info("[Desktop Pet] [SHUTTER] Visible Screen Indicator Flash Active.")
+        self.shutter_flash_until = time.time() + 1.8
 
     def speak_text(self, text: str, duration: float = 3.5) -> None:
         """Displays holographic speech bubble over the pet."""
@@ -209,7 +212,7 @@ class DesktopPetController:
         self.canvas.bind("<ButtonRelease-1>", self._on_drag_end)
 
         # Mascot Click Interaction
-        self.canvas.bind("<Double-Button-1>", lambda e: self.speak_text("Jarvis Copilot online, sir!"))
+        self.canvas.bind("<Double-Button-1>", lambda e: self.speak_text("Jarvis online! Ready for your commands."))
 
         # Start 60 FPS Rendering Loop
         self.root.after(20, self._render_frame)
@@ -231,7 +234,7 @@ class DesktopPetController:
         pass
 
     def _render_frame(self) -> None:
-        """60 FPS Vector rendering frame: draws robot, pupil tracking, and speech bubble."""
+        """60 FPS Vector rendering frame: draws OpenHuman Ghosty avatar, pupil tracking, and speech bubble."""
         if not self.is_running or not self.canvas:
             return
 
@@ -271,98 +274,128 @@ class DesktopPetController:
         # Clear Canvas
         self.canvas.delete("all")
 
-        # 1. Speech Bubble (if active)
         now = time.time()
+
+        # 1. Speech Bubble (if active)
         if self.is_speaking:
             if now > self.speech_clear_time:
                 self.is_speaking = False
                 self.speech_text = ""
             else:
                 # Draw Speech Bubble pill
-                self.canvas.create_rectangle(15, 6, 225, 48, fill="#040812", outline="#00f2ff", width=1.5)
+                self.canvas.create_rectangle(20, 6, 240, 48, fill="#040812", outline="#00f2ff", width=1.5)
                 self.canvas.create_text(
-                    120, 27,
-                    text=self.speech_text[:50] + ("..." if len(self.speech_text) > 50 else ""),
+                    130, 27,
+                    text=self.speech_text[:55] + ("..." if len(self.speech_text) > 55 else ""),
                     fill="#cffafe",
                     font=("Segoe UI", 8, "bold"),
-                    width=200
+                    width=210
                 )
 
-        # Center Coordinates for Robot Mascot
-        cx = 120
-        cy = 150
+        # Center Coordinates for Ghosty Avatar
+        cx = 130
+        cy = 155
 
-        # 2. Ambient Glowing Orbit Ring
-        ring_pulse = math.sin(time.time() * 3.0) * 2
-        self.canvas.create_oval(cx - 75 - ring_pulse, cy - 75 - ring_pulse, cx + 75 + ring_pulse, cy + 75 + ring_pulse, outline="#00f2ff", width=1)
+        # 2. Ambient Glowing Orbit Ring & Shutter Flash Halo
+        ring_pulse = math.sin(time.time() * 2.5) * 3
+        halo_color = "#f59e0b" if (now < self.shutter_flash_until) else "#00f2ff"
+        self.canvas.create_oval(cx - 82 - ring_pulse, cy - 82 - ring_pulse, cx + 82 + ring_pulse, cy + 82 + ring_pulse, outline=halo_color, width=1)
 
-        # 3. Antenna & Beacon
-        self.canvas.create_line(cx, cy - 45, cx, cy - 70, fill="#00f2ff", width=3)
-        beacon_color = "#f59e0b" if (self.is_speaking or self.is_pointing) else "#00f2ff"
-        self.canvas.create_oval(cx - 6, cy - 76, cx + 6, cy - 64, fill=beacon_color, outline="#ffffff", width=1)
+        # 3. Feet Lobes (OpenHuman Ghosty Feet)
+        self.canvas.create_oval(cx - 52, cy + 48, cx - 12, cy + 78, fill="#18233c", outline="#00f2ff", width=2)
+        self.canvas.create_oval(cx + 12, cy + 48, cx + 52, cy + 78, fill="#18233c", outline="#00f2ff", width=2)
 
-        # 4. Robotic Arms (Pointing support)
+        # 4. Main Organic 3D Torso (Smooth Curved Dome Body from Platform)
+        body_points = [
+            cx, cy - 72,           # Top Head Dome
+            cx + 48, cy - 58,
+            cx + 68, cy - 12,      # Right upper torso
+            cx + 64, cy + 38,      # Right lower body
+            cx + 36, cy + 66,      # Right foot join
+            cx, cy + 70,           # Bottom center
+            cx - 36, cy + 66,      # Left foot join
+            cx - 64, cy + 38,      # Left lower body
+            cx - 68, cy - 12,      # Left upper torso
+            cx - 48, cy - 58       # Left head dome
+        ]
+        self.canvas.create_polygon(body_points, fill="#0f172a", outline="#00f2ff", width=2.5, smooth=True)
+
+        # Inner 3D Highlight Depth Layer
+        inner_points = [
+            cx, cy - 62,
+            cx + 38, cy - 48,
+            cx + 52, cy - 10,
+            cx + 48, cy + 28,
+            cx, cy + 54,
+            cx - 48, cy + 28,
+            cx - 52, cy - 10,
+            cx - 38, cy - 48
+        ]
+        self.canvas.create_polygon(inner_points, fill="#1e293b", outline="", smooth=True)
+
+        # 5. Cute Waving/Pointing Robotic Arms
         if self.is_pointing:
-            # Point left arm
-            self.canvas.create_line(cx - 50, cy + 10, cx - 85, cy - 25, fill="#00f2ff", width=5, capstyle=tk.ROUND)
-            self.canvas.create_oval(cx - 90, cy - 30, cx - 80, cy - 20, fill="#38bdf8", outline="")
-            # Right arm normal
-            self.canvas.create_line(cx + 50, cy + 10, cx + 75, cy + 35, fill="#00f2ff", width=5, capstyle=tk.ROUND)
-            self.canvas.create_oval(cx + 70, cy + 30, cx + 80, cy + 40, fill="#38bdf8", outline="")
+            # Point left arm outward/upward
+            point_arm = [cx - 55, cy + 5, cx - 88, cy - 25, cx - 80, cy - 35, cx - 48, cy - 5]
+            self.canvas.create_polygon(point_arm, fill="#1e293b", outline="#00f2ff", width=2, smooth=True)
+            self.canvas.create_oval(cx - 92, cy - 38, cx - 78, cy - 24, fill="#38bdf8", outline="")
+            # Right arm relaxed
+            right_arm = [cx + 55, cy + 5, cx + 75, cy + 22, cx + 68, cy + 34, cx + 50, cy + 20]
+            self.canvas.create_polygon(right_arm, fill="#1e293b", outline="#00f2ff", width=2, smooth=True)
         else:
-            # Relaxed curved arms
-            self.canvas.create_line(cx - 50, cy + 10, cx - 75, cy + 35, fill="#00f2ff", width=5, capstyle=tk.ROUND)
-            self.canvas.create_oval(cx - 80, cy + 30, cx - 70, cy + 40, fill="#38bdf8", outline="")
-            self.canvas.create_line(cx + 50, cy + 10, cx + 75, cy + 35, fill="#00f2ff", width=5, capstyle=tk.ROUND)
-            self.canvas.create_oval(cx + 70, cy + 30, cx + 80, cy + 40, fill="#38bdf8", outline="")
+            # Right arm cute wave
+            wave_y = math.sin(time.time() * 4.0) * 4
+            right_arm = [cx + 55, cy + 5, cx + 80, cy - 12 + wave_y, cx + 90, cy - 2 + wave_y, cx + 62, cy + 24]
+            self.canvas.create_polygon(right_arm, fill="#1e293b", outline="#00f2ff", width=2, smooth=True)
+            # Left arm resting
+            left_arm = [cx - 55, cy + 5, cx - 75, cy + 20, cx - 68, cy + 32, cx - 50, cy + 18]
+            self.canvas.create_polygon(left_arm, fill="#1e293b", outline="#00f2ff", width=2, smooth=True)
 
-        # 5. Head / Chassis Body (Dark Cyberpunk Blue)
-        self.canvas.create_rectangle(cx - 52, cy - 45, cx + 52, cy + 45, fill="#0b1329", outline="#00f2ff", width=3)
-        # Visor Display Screen
-        self.canvas.create_rectangle(cx - 42, cy - 34, cx + 42, cy + 30, fill="#020617", outline="#00f2ff", width=1.5)
+        # 6. Soft Pink Blush Cheeks (Exact OpenHuman Platform Style)
+        self.canvas.create_oval(cx - 50, cy + 2, cx - 28, cy + 16, fill="#ec4899", outline="")
+        self.canvas.create_oval(cx + 28, cy + 2, cx + 50, cy + 16, fill="#ec4899", outline="")
 
-        # 6. Eye Blinking Logic
-        if now - self.last_blink_time > 3.8:
+        # 7. Eye Blinking Logic
+        if now - self.last_blink_time > 3.6:
             self.blink_state = True
-            if now - self.last_blink_time > 4.0:
+            if now - self.last_blink_time > 3.8:
                 self.blink_state = False
                 self.last_blink_time = now
 
-        # 7. Intelligent Pupil Tracking (Trigonometric Vector to Mouse Cursor)
+        # 8. Intelligent Pupil Vector Tracking Mouse Position
         pet_screen_x = self.x + cx
         pet_screen_y = self.y + cy
         angle = math.atan2(cur_y - pet_screen_y, cur_x - pet_screen_x)
         dist = math.hypot(cur_x - pet_screen_x, cur_y - pet_screen_y)
-        max_r = 5.0
-        pupil_r = min(max_r, dist / 40.0)
+        max_r = 5.5
+        pupil_r = min(max_r, dist / 35.0)
         p_dx = math.cos(angle) * pupil_r
         p_dy = math.sin(angle) * pupil_r
 
-        # Left Eye (cx - 20) & Right Eye (cx + 20)
+        # Glowing Vertical Oval Eyes (Exact Platform Geometry)
         if not self.blink_state:
-            # Eye Sockets (Glowing Cyan)
-            self.canvas.create_oval(cx - 30, cy - 18, cx - 10, cy + 8, fill="#00f2ff", outline="")
-            self.canvas.create_oval(cx + 10, cy - 18, cx + 30, cy + 8, fill="#00f2ff", outline="")
-            # White Inner Pupils tracking mouse
-            self.canvas.create_oval(cx - 23 + p_dx, cy - 8 + p_dy, cx - 17 + p_dx, cy - 2 + p_dy, fill="#ffffff", outline="")
-            self.canvas.create_oval(cx + 17 + p_dx, cy - 8 + p_dy, cx + 23 + p_dx, cy - 2 + p_dy, fill="#ffffff", outline="")
+            # Left Eye Socket
+            self.canvas.create_oval(cx - 32, cy - 28, cx - 8, cy + 8, fill="#00f2ff", outline="")
+            # Left Pupil (White Shiny Highlight)
+            self.canvas.create_oval(cx - 24 + p_dx, cy - 18 + p_dy, cx - 16 + p_dx, cy - 6 + p_dy, fill="#ffffff", outline="")
+            
+            # Right Eye Socket
+            self.canvas.create_oval(cx + 8, cy - 28, cx + 32, cy + 8, fill="#00f2ff", outline="")
+            # Right Pupil (White Shiny Highlight)
+            self.canvas.create_oval(cx + 16 + p_dx, cy - 18 + p_dy, cx + 24 + p_dx, cy - 6 + p_dy, fill="#ffffff", outline="")
         else:
-            # Blinking closed line
-            self.canvas.create_line(cx - 30, cy - 5, cx - 10, cy - 5, fill="#00f2ff", width=3)
-            self.canvas.create_line(cx + 10, cy - 5, cx + 30, cy - 5, fill="#00f2ff", width=3)
+            # Blinking closed curve
+            self.canvas.create_line(cx - 32, cy - 10, cx - 8, cy - 10, fill="#00f2ff", width=3)
+            self.canvas.create_line(cx + 8, cy - 10, cx + 32, cy - 10, fill="#00f2ff", width=3)
 
-        # 8. Viseme Mouth (Animated when speaking)
+        # 9. Viseme Mouth (Animated Speaking vs Cute Smile)
         if self.is_speaking:
             self.mouth_step += 1
             mouth_open = int((self.mouth_step % 6) * 1.5)
-            self.canvas.create_oval(cx - 10, cy + 12 - mouth_open, cx + 10, cy + 16 + mouth_open, fill="#00f2ff", outline="")
+            self.canvas.create_oval(cx - 12, cy + 12 - mouth_open, cx + 12, cy + 18 + mouth_open, fill="#00f2ff", outline="")
         else:
-            # Cute smile
-            self.canvas.create_line(cx - 12, cy + 16, cx + 12, cy + 16, fill="#00f2ff", width=2)
-
-        # 9. Quick Mic Icon Badge (bottom right)
-        self.canvas.create_oval(cx + 50, cy + 50, cx + 80, cy + 80, fill="#040812", outline="#00f2ff", width=1.5)
-        self.canvas.create_text(cx + 65, cy + 65, text="🎤", font=("Segoe UI Emoji", 10))
+            # Platform Cyan Smile
+            self.canvas.create_line(cx - 12, cy + 16, cx, cy + 22, cx + 12, cy + 16, fill="#00f2ff", width=3, smooth=True)
 
         # Schedule Next Frame (~60 FPS)
         self.root.after(16, self._render_frame)
