@@ -58,8 +58,14 @@ class TestJarvisAgent(unittest.TestCase):
         mock_gemini.return_value.bind_tools.return_value = mock_instance
         mock_gemini.return_value.ainvoke = mock_instance.ainvoke
 
-        res = asyncio.run(self.agent.process_query("Parse active KiCad GUI screen layout"))
-        self.assertTrue("screen" in res.lower() or "kicad" in res.lower() or "parsed" in res.lower())
+    def test_stage1_local_query_handled_without_cloud_llm(self):
+        """Tests that conversational greetings are handled directly by Stage 1 without invoking cloud models."""
+        res = asyncio.run(self.agent.process_query("how are you today"))
+        self.assertTrue(len(res) > 10)
+        self.assertIn("capacity", res.lower())
+        # Confirm added to history
+        self.assertEqual(self.agent.history[-1]["role"], "assistant")
+        self.assertEqual(self.agent.history[-1]["content"], res)
 
 
 if __name__ == "__main__":

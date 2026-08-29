@@ -97,13 +97,17 @@ async def handle_agent_command(payload: Dict[str, Any] = Body(...)):
     if not command:
         raise HTTPException(status_code=400, detail="Command string is required")
 
+    start_t = time.time()
     logger.info(f"[FastAPI Server] Agent command received: '{command}'")
     agent = get_agent()
     response_text = await agent.process_query(command)
+    latency_ms = round((time.time() - start_t) * 1000, 1)
 
     return {
         "status": "success",
         "response": response_text,
+        "summary": response_text,
+        "latency_ms": latency_ms,
         "history_count": len(agent.history),
         "timestamp": time.time()
     }

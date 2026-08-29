@@ -61,6 +61,8 @@ class JarvisConfig(BaseSettings):
     # Multi-Model Specialized Agentic Suite (Ollama & Cloud)
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
     OLLAMA_MODEL: str = Field(default="llama3:8b")
+    OLLAMA_SLM_MODEL: str = Field(default="llama3.2:1b")
+    USE_STAGE1_LOCAL_SLM: bool = Field(default=True)
     OLLAMA_LOCAL_ORCHESTRATOR_MODEL: str = Field(default="ornith-1.5:9b")
     OLLAMA_FLAGSHIP_CODING_MODEL: str = Field(default="glm-5.3:cloud")
     OLLAMA_CODE_AGENT_MODEL: str = Field(default="kimi-k2.7-code:cloud")

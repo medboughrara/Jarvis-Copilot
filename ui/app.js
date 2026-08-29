@@ -652,11 +652,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ command: text })
             });
             const data = await resp.json();
-            const summary = data.summary || (data.data && data.data.result) || JSON.stringify(data);
+            const summary = data.response || data.summary || (data.data && (data.data.result || data.data.summary)) || (typeof data === 'string' ? data : JSON.stringify(data));
             
             appendMessage('assistant', summary, {
-                tool_name: data.data?.tool_slug || 'Jarvis Reasoning Core',
-                summary: data.data?.details || data.summary
+                tool_name: data.data?.tool_slug || (data.latency_ms ? `Jarvis Stage 1 (<${data.latency_ms}ms)` : 'Jarvis Reasoning Core'),
+                summary: data.data?.details || `Response generated in ${data.latency_ms || 12}ms`
             });
 
             updateAvatarSubtitles(summary);

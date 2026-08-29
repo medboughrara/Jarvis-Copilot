@@ -280,14 +280,20 @@ class JarvisAgent:
 
     async def process_query(self, user_query: str) -> str:
         """
-        Processes query through local orchestrator triage, specialized model routing, and fallback pipeline.
+        Processes query through Stage 1 Local SLM / Reflex (<10ms), and dispatches to Stage 2 specialized agent pipeline if actionable tasks exist.
         """
         self.last_tool_context = ""
         
-        # Step 1: Fast Local Intent Evaluation (<10ms)
-        orchestrator_plan = local_orchestrator.evaluate_intent(user_query)
+        # Step 1: Stage 1 Fast Local SLM & Reflex Evaluation (<10ms)
+        is_local, local_resp, orchestrator_plan = await local_orchestrator.evaluate_and_respond_async(user_query, self.history)
+        if is_local and local_resp:
+            logger.info(f"[Agent Orchestrator] Handled immediately via Stage 1 Local SLM/Reflex: '{local_resp[:60]}...'")
+            self.history.append({"role": "user", "content": user_query})
+            self.history.append({"role": "assistant", "content": local_resp})
+            return local_resp
+
         logger.info(
-            f"[Agent Orchestrator] Plan: Domain='{orchestrator_plan.domain}', "
+            f"[Agent Orchestrator] Stage 2 Task Dispatched: Domain='{orchestrator_plan.domain}', "
             f"Strategy='{orchestrator_plan.execution_strategy}', PrimaryModel='{orchestrator_plan.primary_model_id}'"
         )
         

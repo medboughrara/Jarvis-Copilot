@@ -59,6 +59,47 @@ class TestIntentRoutingAndOrchestrator(unittest.TestCase):
         self.assertEqual(plan.domain, "simple_chat")
         self.assertEqual(plan.execution_strategy, "DIRECT_LOCAL")
         self.assertEqual(plan.triage_source, "rule_match")
+        self.assertFalse(plan.is_actionable_task)
+
+    def test_stage1_local_reflex_how_are_you(self):
+        import asyncio
+        is_local, resp, plan = asyncio.run(local_orchestrator.evaluate_and_respond_async("how are you today"))
+        self.assertTrue(is_local, "Expected 'how are you today' to be handled by Stage 1 Local Reflex")
+        self.assertIsNotNone(resp)
+        self.assertIn("capacity", resp.lower())
+        self.assertFalse(plan.is_actionable_task)
+
+    def test_stage1_local_reflex_time_and_identity(self):
+        import asyncio
+        # Time test
+        is_local, resp, _ = asyncio.run(local_orchestrator.evaluate_and_respond_async("what time is it"))
+        self.assertTrue(is_local)
+        self.assertIn("current time is", resp.lower())
+
+        # Identity test
+        is_local, resp, _ = asyncio.run(local_orchestrator.evaluate_and_respond_async("who are you"))
+        self.assertTrue(is_local)
+        self.assertIn("jarvis", resp.lower())
+
+        # Capabilities test
+        is_local, resp, _ = asyncio.run(local_orchestrator.evaluate_and_respond_async("what can you do"))
+        self.assertTrue(is_local)
+        self.assertIn("hardware", resp.lower())
+
+    def test_stage1_actionable_task_proceeds_to_stage2(self):
+        import asyncio
+        # Code task
+        is_local, resp, plan = asyncio.run(local_orchestrator.evaluate_and_respond_async("Write a python script to calculate primes"))
+        self.assertFalse(is_local, "Actionable code task must not be intercepted as simple chat")
+        self.assertIsNone(resp)
+        self.assertTrue(plan.is_actionable_task)
+        self.assertEqual(plan.domain, "coding")
+
+        # Search task
+        is_local, resp, plan = asyncio.run(local_orchestrator.evaluate_and_respond_async("Search for the latest STM32 datasheet"))
+        self.assertFalse(is_local)
+        self.assertTrue(plan.is_actionable_task)
+        self.assertEqual(plan.domain, "search")
 
 
 if __name__ == "__main__":
