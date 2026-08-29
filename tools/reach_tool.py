@@ -149,13 +149,71 @@ class AgentReachTool:
 # ---------------------------------------------------------------------------
 
 @tool
+def search_web_explicit(query: str, force: bool = True) -> dict:
+    """
+    Explicit Web Search Tool: Performs live internet search and returns results with inline source citations.
+    Sanitizes untrusted web content to eliminate prompt injection risks.
+    """
+    from agent.security import agentshield
+    try:
+        clean_q = AgentReachTool._clean_and_correct_query(query)
+        logger.info(f"[Explicit Web Search] Query='{clean_q}' (force={force})")
+        
+        citations = []
+        snippets = []
+
+        try:
+            with DDGS() as ddgs:
+                results = list(ddgs.text(clean_q, max_results=4))
+                for r in results:
+                    title = r.get("title", "")
+                    href = r.get("href", "")
+                    body = r.get("body", "")
+                    if href:
+                        citations.append(href)
+                    sanitized_body = agentshield.sanitize_untrusted_content(body[:250])
+                    snippets.append(f"- **{title}**\n  {sanitized_body}\n  [Source: {href}]")
+        except Exception as se:
+            logger.warning(f"[Explicit Web Search Notice]: {se}")
+
+        if not snippets:
+            # Fallback direct answer
+            findings = AgentReachTool.search_datasheet(clean_q)
+            findings = agentshield.sanitize_untrusted_content(findings)
+            snippets.append(findings)
+
+        summary_content = "\n\n".join(snippets)
+        summary_str = f"### 🌐 Web Search Results for '{clean_q}'\n\n{summary_content}"
+
+        return {
+            "status": "success",
+            "summary": summary_str,
+            "data": {
+                "query": clean_q,
+                "citations": citations,
+                "results_count": len(snippets),
+                "content": summary_content
+            }
+        }
+    except Exception as e:
+        logger.error(f"[search_web_explicit Error] {e}")
+        return {
+            "status": "error",
+            "summary": f"Web search error: {e}",
+            "data": {"error": str(e)}
+        }
+
+
+@tool
 def search_component_datasheet(query: str) -> dict:
     """
     Searches live internet for electronic component datasheets, NEMA stepper motor specs, servomotor specs, operating voltages, and pinouts.
     """
+    from agent.security import agentshield
     try:
         clean_part = AgentReachTool._clean_and_correct_query(query)
         findings = AgentReachTool.search_datasheet(query)
+        findings = agentshield.sanitize_untrusted_content(findings)
         summary_str = f"Datasheet Search for '{clean_part}': Completed search with results retrieved."
         return {
             "status": "success",

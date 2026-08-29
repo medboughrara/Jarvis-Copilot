@@ -119,11 +119,13 @@ class DatasheetRAG:
         if not results:
             return f"No relevant information found in local datasheets for '{query}'."
 
+        from agent.security import agentshield
         summary = [f"[Local Datasheet Search Results for '{query}']:"]
         for i, res in enumerate(results):
             source = os.path.basename(res.metadata.get('source', 'Unknown'))
             page = res.metadata.get('page', '?')
-            summary.append(f"• Source: {source} (Page {page})\n  Excerpt: {res.page_content[:250]}...")
+            clean_content = agentshield.sanitize_untrusted_content(res.page_content[:250])
+            summary.append(f"• Source: {source} (Page {page})\n  Excerpt: {clean_content}...")
             
         return "\n\n".join(summary)
 

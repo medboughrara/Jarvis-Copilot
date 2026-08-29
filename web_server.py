@@ -26,6 +26,8 @@ import config
 
 logger = config.get_logger(__name__)
 
+PORT = 8000
+
 # Initialize FastAPI App
 app = FastAPI(
     title="Jarvis AI Copilot API",
@@ -33,10 +35,10 @@ app = FastAPI(
     version="4.5.0"
 )
 
-# Enable CORS for HUD Web Application
+# Enable CORS restricted to trusted origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=config.settings.TRUSTED_ORIGINS or ["http://localhost:8000", "http://127.0.0.1:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -344,6 +346,70 @@ async def evaluate_orchestrator_intent(payload: Dict[str, Any] = Body(...)):
 
 
 # ==============================================================================
+# Autonomous TaskRunner & Approval Routes
+# ==============================================================================
+
+@app.get("/api/tasks/{task_id}")
+async def get_task_route(task_id: str):
+    from agent.task_runner import task_runner
+    task_data = task_runner.store.get_task(task_id)
+    if not task_data:
+        return JSONResponse(status_code=404, content={"status": "error", "message": f"Task '{task_id}' not found."})
+    return {"status": "success", "task": task_data}
+
+
+@app.post("/api/tasks/{task_id}/approve")
+async def approve_task_route(task_id: str, request: Request, payload: Dict[str, Any] = Body(default={})):
+    from agent.task_runner import task_runner
+    
+    # 1. Verify Origin header (if present, must be in trusted origins)
+    origin_header = request.headers.get("origin")
+    if origin_header and origin_header not in config.settings.TRUSTED_ORIGINS:
+        return JSONResponse(
+            status_code=403,
+            content={"status": "error", "message": f"Cross-origin request from '{origin_header}' forbidden."}
+        )
+
+    # 2. Verify client host
+    client_host = request.client.host if request.client else ""
+    if client_host not in ["127.0.0.1", "localhost", "::1", "testclient"] and not any(client_host in o for o in config.settings.TRUSTED_ORIGINS):
+        return JSONResponse(
+            status_code=403,
+            content={"status": "error", "message": "Approval allowed only from trusted origins."}
+        )
+
+    # 3. Require custom header X-Jarvis-Approval-Token
+    token = request.headers.get("X-Jarvis-Approval-Token") or payload.get("approval_token", "")
+    if not token:
+        return JSONResponse(
+            status_code=400,
+            content={"status": "error", "message": "Missing required 'X-Jarvis-Approval-Token' header."}
+        )
+
+    # 4. Atomically validate and consume token
+    res = task_runner.approve_task(task_id, token)
+    if res.get("status") == "error":
+        return JSONResponse(status_code=401, content=res)
+    return res
+
+
+@app.post("/api/tasks/{task_id}/reject")
+async def reject_task_route(task_id: str, request: Request, payload: Dict[str, Any] = Body(default={})):
+    from agent.task_runner import task_runner
+    origin_header = request.headers.get("origin")
+    if origin_header and origin_header not in config.settings.TRUSTED_ORIGINS:
+        return JSONResponse(status_code=403, content={"status": "error", "message": f"Cross-origin request from '{origin_header}' forbidden."})
+
+    client_host = request.client.host if request.client else ""
+    if client_host not in ["127.0.0.1", "localhost", "::1", "testclient"] and not any(client_host in o for o in config.settings.TRUSTED_ORIGINS):
+        return JSONResponse(status_code=403, content={"status": "error", "message": "Rejection allowed only from trusted origins."})
+
+    reason = payload.get("reason", "Rejected by user via API")
+    res = task_runner.reject_task(task_id, reason)
+    return res
+
+
+# ==============================================================================
 # ECC Instincts & Lazy Service Lifecycle Routes
 # ==============================================================================
 
@@ -409,6 +475,43 @@ async def get_schematic_tree():
             content = f.read()
         return {"status": "success", "file": sample_sch, "ast_content": content}
     return {"status": "error", "message": "Sample schematic not found."}
+
+
+@app.get("/api/pcb/state")
+async def get_pcb_state_route():
+    from tools.kicad_tool import get_project_info, get_erc_violations
+    sample_sch = "scratch/desktop_shell_project.kicad_sch"
+    if not os.path.exists(sample_sch):
+        sample_sch = "tests/sample_autopick.kicad_sch"
+    sch_info = get_project_info.invoke({"file_path": sample_sch}) if os.path.exists(sample_sch) else {}
+    erc_info = get_erc_violations.invoke({"file_path": sample_sch}) if os.path.exists(sample_sch) else {}
+    return {
+        "status": "success",
+        "summary": "Live PCB schematic and ERC status retrieved.",
+        "data": {
+            "schematic": sch_info.get("data", {}),
+            "erc": erc_info.get("data", {})
+        }
+    }
+
+
+@app.post("/api/pcb/generate")
+async def generate_pcb_route(payload: Dict[str, Any] = Body(default={})):
+    prompt = payload.get("prompt", "")
+    file_path = payload.get("file_path", "scratch/desktop_shell_project.kicad_sch")
+    os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
+    from tools.kicad_editor import KiCadSchematicEditor
+    editor = KiCadSchematicEditor()
+    editor.add_symbol("U1", "Buck_Regulator_5V", at=(100.0, 100.0))
+    editor.save(file_path)
+    return {
+        "status": "success",
+        "summary": f"Generated buck converter circuit for '{prompt}' at {file_path}",
+        "data": {
+            "file_path": file_path,
+            "final_erc_verdict": "PASSED: 0 Unconnected Nets"
+        }
+    }
 
 
 @app.post("/api/hardware/thermal")

@@ -240,7 +240,28 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 | **30**| **🔥 IPC-2221 Thermal Trace Solver** | `tools/thermal_tool.py` | Calculates trace widths, copper $I^2R$ power loss, and junction temperature rise for voltage regulators ($T_j = T_a + P_d \cdot R_{\theta JA}$). |
 | **31**| **⚡ Signal Integrity Bounds Solver** | `tools/signal_integrity_tool.py` | Calculates I2C pullup bounds ($R_{\min} / R_{\max}$), UART series damping resistors, and CAN bus split termination ($120\Omega$). |
 | **32**| **📦 Supply Chain & Risk Tracker** | `tools/supply_chain_tool.py` | Evaluates component lifecycle (Active/NRND/EOL), distributor stock availability, and JLCPCB basic/extended part risk. |
-| **33**| **🔌 Stdio FastMCP Server (89+ Tools)** | `mcp_server.py` | Automatically exposes all 89+ Jarvis tools over stdio Model Context Protocol for direct integration into Claude Code, Cursor, Windsurf, and VS Code. |
+| **33**| **🛠️ Autonomous Code Pipeline** | `agent/code_pipeline.py` | Autonomous software code generation, static AST syntax check, sandboxed test execution, multi-iteration self-correction, and atomic rollback to pre-edit disk snapshot on failure. |
+| **34**| **🛡️ AgentShield v2 Security Guard** | `agent/security.py` | Canonical realpath workspace jail, Win32 Job Object memory capping (256MB), `sitecustomize.py` network isolation, Shannon entropy secret scanning, prompt-injection sanitization, and tokenized approval nonces. |
+| **35**| **📊 Universal DAG TaskRunner** | `agent/task_runner.py` | Asynchronous DAG scheduler, pure-Python Kahn cycle validation, durable SQLite task persistence (`data/task_runner.db`), side-effect aware crash recovery, and split cloud (5) / local GPU (1) concurrency limits. |
+| **36**| **🌐 Explicit Search with Citations**| `tools/reach_tool.py` | Explicit `search_web_explicit(force=True)` with inline source citations (`[Source: <url>]`) and 4-tier gateway escalation. |
+| **37**| **🔌 Stdio FastMCP Server (95+ Tools)** | `mcp_server.py` | Automatically exposes all 95+ Jarvis tools over stdio Model Context Protocol for direct integration into Claude Code, Cursor, Windsurf, and VS Code. |
+
+---
+
+## 🛡️ Security Model & Sandboxing Boundary Disclosures
+
+Jarvis AI implements defense-in-depth security mechanisms through **AgentShield v2**:
+
+1. **Canonical Workspace Jail**:
+   - Uses `os.path.realpath()` to resolve symlinks and reject all path traversal attempts (`..`) that resolve outside the active workspace directory.
+2. **Process Sandboxing & Memory Limits**:
+   - Windows Job Objects enforce hard virtual memory caps (`CODE_SANDBOX_MAX_MEMORY_MB`, default 256MB) and watchdog timeouts.
+   - **Network Isolation Boundary Disclosure:** Outbound network restriction is enforced at the Python interpreter level via `sitecustomize.py` in `PYTHONPATH` (disabling `socket.socket`, `socket.create_connection`, `urllib`, and `http.client`). On Windows, this provides best-effort defense-in-depth against accidental networking in generated code, but does not construct a kernel-level hypervisor boundary against arbitrary compiled C-extension syscalls. For multi-tenant or untrusted code execution, containerized execution (`docker run --network=none`) is recommended.
+3. **Approval Gates & Token Authorization**:
+   - Single-use cryptographic nonce tokens (`secrets.token_urlsafe(24)`) stored in `data/task_runner.db`.
+   - Approval API endpoints (`POST /api/tasks/{task_id}/approve`) require the custom header `X-Jarvis-Approval-Token`, constant-time digest verification (`secrets.compare_digest`), and origin verification against `config.settings.TRUSTED_ORIGINS`.
+4. **Side-Effect Aware Crash Recovery**:
+   - If the server restarts during DAG execution, `TaskRunner.recover_inflight_tasks()` marks in-flight tasks as `INTERRUPTED_FAILED`, restores pre-edit disk snapshots from `data/snapshots/`, and logs which side-effects were already completed to avoid duplicate external actions.
 
 ---
 

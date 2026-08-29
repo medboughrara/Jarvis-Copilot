@@ -104,10 +104,21 @@
 
 ---
 
-## Web Gateway — Phase 8: Hardening, Caching & Politeness (Completed ✅)
+## Autonomous Execution, Intent Routing, Parallel DAG & Hardened Security (Completed ✅)
 
-- **Completed:** 2026-08-22
-- **Objective:** Per-domain rate limiting, TTL caching, and latency telemetry.
-- **Implemented:**
-  - Created [`gateway/cache_and_politeness.py`](file:///d:/aaaassistan_pcb/gateway/cache_and_politeness.py): 1-hour configurable TTL cache and 500ms domain politeness throttle.
+- **Completed:** 2026-08-29
+- **Objective:** End-to-end upgrade implementing:
+  1. **Deterministic Intent Routing:** Sub-10ms rules-first fast-path triage (`CODE_TASK` vs `SEARCH_TASK` vs `GENERAL`) in [`agent/local_orchestrator.py`](file:///d:/aaaassistan_pcb/agent/local_orchestrator.py).
+  2. **Autonomous Code-Writing Pipeline:** Complete Plan $\to$ Disk Snapshot $\to$ Generate $\to$ Apply $\to$ Verify $\to$ Auto-Correct $\to$ Rollback $\to$ Report loop in [`agent/code_pipeline.py`](file:///d:/aaaassistan_pcb/agent/code_pipeline.py).
+  3. **Explicit Search Mode:** Dedicated `search_web_explicit` with `force=True`, inline source citations, and politeness throttling in [`tools/reach_tool.py`](file:///d:/aaaassistan_pcb/tools/reach_tool.py).
+  4. **AgentShield v2 Security Hardening:** Canonical realpath workspace jail, Windows Job Object memory sandbox + subprocess network restriction, multi-pattern + Shannon entropy secret redaction, untrusted prompt-injection sanitization, tokenized approval gates, and SQLite audit logging in [`agent/security.py`](file:///d:/aaaassistan_pcb/agent/security.py).
+  5. **Durable TaskRunner & Parallel DAG Execution:** Single & multi-step DAG scheduler, SQLite task persistence (`data/task_runner.db`), side-effect aware crash recovery, and bounded worker pools (`MAX_PARALLEL_CLOUD_CALLS: 5` vs `MAX_PARALLEL_LOCAL_GPU_CALLS: 1`) in [`agent/task_runner.py`](file:///d:/aaaassistan_pcb/agent/task_runner.py).
+  6. **Knowledge Graph & CI Automation:** `Autonomous Execution & Security` cluster (`#8B5CF6`), typed-edge taxonomy in [`obsidian_vault/Wiki/Edge_Taxonomy.md`](file:///d:/aaaassistan_pcb/obsidian_vault/Wiki/Edge_Taxonomy.md), 4 hub notes, `Runs/` task mirroring, CI script [`scripts/verify_graph_consistency.py`](file:///d:/aaaassistan_pcb/scripts/verify_graph_consistency.py), and GitHub Actions workflow [`.github/workflows/graph_consistency.yml`](file:///d:/aaaassistan_pcb/.github/workflows/graph_consistency.yml).
+- **Verification Evidence:**
+  - `tests/test_intent_routing_and_orchestrator.py`: 100% passed (20 prompt acceptance test).
+  - `tests/test_security_agentshield_v2.py`: 100% passed (jail traversal, sandbox limits, red-team blocking, secret scrubbing).
+  - `tests/test_code_pipeline_and_task_runner.py`: 100% passed (7 tests including crash recovery, atomic rollback, Kahn DAG cycle detection, parallel timing).
+  - `tests/test_web_server_approval_api.py`: 100% passed (6 tests for single-use token replay rejection, constant-time compare, missing header, and cross-origin CSRF rejection).
+  - `scripts/verify_graph_consistency.py`: 100% passed (7 clusters, 4 hubs, 9 typed relationship verbs in `Edge_Taxonomy.md`).
+  - **Full Unittest Discovery Suite:** `python -m unittest discover tests -v` — **109/109 tests PASSED (100% OK)** in 91.1s.
 - **Definition of Done Status:** **PASSED**

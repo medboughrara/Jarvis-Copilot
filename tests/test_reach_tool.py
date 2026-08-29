@@ -20,7 +20,13 @@ class TestReachTool(unittest.TestCase):
         self.assertIn("MG996R", res)
         self.assertIn("Torque", res)
 
-    def test_compliance_verification(self):
+    @patch('tools.reach_tool.DDGS')
+    def test_compliance_verification(self, mock_ddgs):
+        mock_ddgs_instance = MagicMock()
+        mock_ddgs.return_value.__enter__.return_value = mock_ddgs_instance
+        mock_ddgs_instance.text.return_value = [
+            {"title": "PCA9685 Datasheet", "body": "RoHS Compliant Lead-Free"}
+        ]
         report = AgentReachTool.verify_compliance("PCA9685 PWM Driver")
         self.assertEqual(report["status"], "success")
         self.assertIn("verdict", report["data"])

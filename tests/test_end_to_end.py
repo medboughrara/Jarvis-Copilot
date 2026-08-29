@@ -16,14 +16,30 @@ class TestEndToEndPipeline(unittest.TestCase):
         self.agent = JarvisAgent()
         self.tts = TextToSpeech()
 
-    def test_full_copilot_flow_power_tree(self):
+    @patch("agent.copilot.ChatGoogleGenerativeAI")
+    def test_full_copilot_flow_power_tree(self, mock_gemini):
+        from unittest.mock import AsyncMock
+        from langchain_core.messages import AIMessage
+        mock_instance = AsyncMock()
+        mock_instance.ainvoke.return_value = AIMessage(content="Generated Power Tree for AutoPick PCB")
+        mock_gemini.return_value.bind_tools.return_value = mock_instance
+        mock_gemini.return_value.ainvoke = mock_instance.ainvoke
+
         transcribed_user_command = "Jarvis, generate the power tree for the AutoPick PCB schematic"
         agent_response = asyncio.run(self.agent.process_query(transcribed_user_command))
         self.assertTrue(len(agent_response) > 0)
         asyncio.run(self.tts.speak("Power tree generated successfully."))
 
     @patch('tools.reach_tool.DDGS')
-    def test_full_copilot_flow_datasheet_and_compliance(self, mock_ddgs):
+    @patch("agent.copilot.ChatGoogleGenerativeAI")
+    def test_full_copilot_flow_datasheet_and_compliance(self, mock_gemini, mock_ddgs):
+        from unittest.mock import AsyncMock
+        from langchain_core.messages import AIMessage
+        mock_instance = AsyncMock()
+        mock_instance.ainvoke.return_value = AIMessage(content="Regulatory compliance report ready.")
+        mock_gemini.return_value.bind_tools.return_value = mock_instance
+        mock_gemini.return_value.ainvoke = mock_instance.ainvoke
+
         mock_ddgs_instance = MagicMock()
         mock_ddgs.return_value.__enter__.return_value = mock_ddgs_instance
         mock_ddgs_instance.text.return_value = [

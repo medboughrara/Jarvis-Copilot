@@ -96,6 +96,7 @@ def _build_obsidian_vault(
         "nodeSizeMultiplier": 1.35,
         "lineSizeMultiplier": 1.4,
         "colorGroups": [
+            {"query": "path:agent/security OR path:agent/code_pipeline OR path:agent/task_runner", "color": {"a": 1, "rgb": 9133302}}, # Purple (Autonomous Execution & Security)
             {"query": "path:tools/kicad OR file:KiCad", "color": {"a": 1, "rgb": 3978495}},       # Emerald Green
             {"query": "path:agent OR file:copilot", "color": {"a": 1, "rgb": 54271}},             # Cyber Blue
             {"query": "path:gateway OR file:gateway", "color": {"a": 1, "rgb": 65535}},           # Neon Cyan
@@ -107,6 +108,9 @@ def _build_obsidian_vault(
     with open(os.path.join(obsidian_config_dir, "graph.json"), "w", encoding="utf-8") as f:
         json.dump(graph_config, f, indent=2)
 
+    # 6. Generate Architectural Hub Notes
+    _generate_subsystem_hub_notes(output_vault_dir)
+
     return {
         "nodes_count": G.number_of_nodes(),
         "edges_count": G.number_of_edges(),
@@ -117,6 +121,92 @@ def _build_obsidian_vault(
         "html_visualization": html_path,
         "vault_path": output_vault_dir
     }
+
+
+def _generate_subsystem_hub_notes(vault_dir: str):
+    """Generates first-class subsystem hub notes in the Obsidian Vault."""
+    wiki_dir = os.path.join(vault_dir, "Wiki")
+    os.makedirs(wiki_dir, exist_ok=True)
+
+    hubs = {
+        "Hub_Autonomous_Coding.md": (
+            "# 🛠️ Hub: Autonomous Code Pipeline\n\n"
+            "**Purpose:** End-to-end software code generation, AST syntax verification, and sandboxed test execution.\n\n"
+            "## Key Modules & Typed Relationships\n"
+            "- [[code_pipeline]] --generates--> [[write_and_verify_code]]\n"
+            "- [[write_and_verify_code]] --verified-by--> [[AgenticCodeVerifyLoop]]\n"
+            "- [[code_pipeline]] --gates--> [[AgentShieldGuard]]\n"
+            "- [[TaskRunner]] --plans--> [[code_pipeline]]\n"
+        ),
+        "Hub_Security.md": (
+            "# 🛡️ Hub: AgentShield Security v2\n\n"
+            "**Purpose:** Hardened path jail, Job Object sandboxing, secret scrubbing, and prompt-injection filtering.\n\n"
+            "## Key Modules & Typed Relationships\n"
+            "- [[security]] --gates--> [[TaskRunner]]\n"
+            "- [[security]] --gates--> [[code_pipeline]]\n"
+            "- [[security]] --reports-to--> [[audit_log]]\n"
+            "- [[ApprovalGate]] --blocks--> [[TaskNode]]\n"
+        ),
+        "Hub_Task_Runner.md": (
+            "# 📊 Hub: Universal DAG TaskRunner\n\n"
+            "**Purpose:** Asynchronous DAG scheduler, durable SQLite task persistence, and crash recovery.\n\n"
+            "## Key Modules & Typed Relationships\n"
+            "- [[task_runner]] --depends-on--> [[DurableTaskStore]]\n"
+            "- [[task_runner]] --reports-to--> [[GoalsKanban]]\n"
+            "- [[task_runner]] --mirrors--> [[Runs]]\n"
+            "- [[LocalOrchestrator]] --plans--> [[TaskRunner]]\n"
+        ),
+        "Hub_Search_Routing.md": (
+            "# 🌐 Hub: Explicit Search & Web Gateway\n\n"
+            "**Purpose:** High-accuracy web search routing with source citations and 4-tier anti-bot escalation.\n\n"
+            "## Key Modules & Typed Relationships\n"
+            "- [[reach_tool]] --routes-through--> [[search_web_explicit]]\n"
+            "- [[search_web_explicit]] --escalates-via--> [[EscalationEngine]]\n"
+            "- [[LocalOrchestrator]] --routes-through--> [[reach_tool]]\n"
+        ),
+        "Edge_Taxonomy.md": (
+            "# 🏷️ Typed Edge Taxonomy for Jarvis Knowledge Graph\n\n"
+            "This taxonomy defines the formal set of typed relationship verbs used in the Jarvis Obsidian Knowledge Graph.\n\n"
+            "| Verb | Semantics | Example Source -> Target |\n"
+            "| :--- | :--- | :--- |\n"
+            "| **`plans`** | Upstream orchestrator breaks down a prompt into DAG steps. | `LocalOrchestrator` --plans--> `TaskRunner` |\n"
+            "| **`generates`** | Component generates code, artifacts, or responses. | `code_pipeline` --generates--> `write_and_verify_code` |\n"
+            "| **`verifies`** | Verification loop executes tests/AST checks on code. | `AgenticCodeVerifyLoop` --verifies--> `code_pipeline` |\n"
+            "| **`gates`** | Security layer enforces checks before execution. | `AgentShieldGuard` --gates--> `TaskRunner` |\n"
+            "| **`routes-through`** | Intent triage routes user queries to specific tools. | `LocalOrchestrator` --routes-through--> `reach_tool` |\n"
+            "| **`depends-on`** | DAG node requires completion of a parent node. | `TaskNode_step2` --depends-on--> `TaskNode_step1` |\n"
+            "| **`blocks`** | Human approval gate pauses DAG execution pending token. | `ApprovalGate` --blocks--> `TaskNode` |\n"
+            "| **`reports-to`** | Execution engine synchronizes status with telemetry/Kanban. | `TaskRunner` --reports-to--> `GoalsKanban` |\n"
+            "| **`mirrors`** | Task execution record is mirrored to Obsidian vault. | `TaskRunner` --mirrors--> `Runs/` |\n"
+        )
+    }
+
+    for filename, content in hubs.items():
+        hub_path = os.path.join(wiki_dir, filename)
+        with open(hub_path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+
+def mirror_task_run_to_vault(task_id: str, prompt: str, steps_data: List[Dict[str, Any]], vault_dir: str = "obsidian_vault"):
+    """Mirrors a completed TaskRunner execution to obsidian_vault/Runs/."""
+    runs_dir = os.path.join(vault_dir, "Runs")
+    os.makedirs(runs_dir, exist_ok=True)
+    date_str = time.strftime("%Y-%m-%d")
+    run_file = os.path.join(runs_dir, f"{date_str}_{task_id}.md")
+    
+    lines = [
+        f"# 🏃 Task Run: {task_id}\n",
+        f"**Date:** {time.strftime('%Y-%m-%d %H:%M:%S')}  ",
+        f"**Prompt:** {prompt}\n",
+        f"## Executed Steps & Typed Traceability",
+    ]
+    for s in steps_data:
+        s_name = s.get("name", "Step")
+        s_role = s.get("role", "executor")
+        lines.append(f"- [[{task_id}]] --executed--> [[{s_name}]] (`{s_role}`)")
+    
+    with open(run_file, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
 
 
 @tool

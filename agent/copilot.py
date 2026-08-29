@@ -96,6 +96,8 @@ from tools.recipes_automation_tool import list_available_recipes, execute_recipe
 from tools.sandbox_runner_tool import run_sandbox_code
 from tools.desktop_control_tool import get_system_metrics, list_active_windows, manage_clipboard
 from tools.ecc_tools import ecc_plan_action, ecc_verify_python, unified_memory_store, unified_memory_query
+from agent.code_pipeline import write_and_verify_code
+from tools.reach_tool import search_web_explicit
 from agent.model_registry import model_registry
 from agent.local_orchestrator import local_orchestrator
 
@@ -244,7 +246,10 @@ class JarvisAgent:
             ecc_plan_action,
             ecc_verify_python,
             unified_memory_store,
-            unified_memory_query
+            unified_memory_query,
+            # 9. Autonomous Code Pipeline & Explicit Web Search
+            write_and_verify_code,
+            search_web_explicit
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}

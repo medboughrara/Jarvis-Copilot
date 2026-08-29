@@ -102,6 +102,21 @@ class JarvisConfig(BaseSettings):
     COMPOSIO_API_KEY: str = Field(default="", validation_alias="COMPOSIO_API_KEY")
     COMPOSIO_MCP_URL: str = Field(default="https://connect.composio.dev/mcp")
 
+    # Autonomous TaskRunner & Parallel Execution
+    SEARCH_ONLY_ON_EXPLICIT_REQUEST: bool = Field(default=True)
+    MAX_PARALLEL_TASKS: int = Field(default=4)
+    MAX_PARALLEL_CLOUD_CALLS: int = Field(default=5)
+    MAX_PARALLEL_LOCAL_GPU_CALLS: int = Field(default=1)  # Strict serialization for 6GB RTX 3050 VRAM
+    CODE_SANDBOX_TIMEOUT_SECONDS: int = Field(default=15)
+    CODE_SANDBOX_MAX_MEMORY_MB: int = Field(default=256)
+    CODE_PIPELINE_MAX_RETRIES: int = Field(default=2)
+    TASK_RUNNER_DB_PATH: str = Field(default="data/task_runner.db")
+    AUDIT_LOG_DB_PATH: str = Field(default="data/audit_log.db")
+    TRUSTED_ORIGINS_RAW: str = Field(
+        default="http://localhost:8000,http://127.0.0.1:8000",
+        validation_alias="TRUSTED_ORIGINS"
+    )
+
     class Config:
         extra = "ignore"
         env_file = ".env"
@@ -119,6 +134,10 @@ class JarvisConfig(BaseSettings):
     @property
     def OLLAMA_CLOUD_MODELS(self) -> List[str]:
         return [m.strip() for m in self.OLLAMA_CLOUD_MODELS_RAW.split(",") if m.strip()]
+
+    @property
+    def TRUSTED_ORIGINS(self) -> List[str]:
+        return [o.strip() for o in self.TRUSTED_ORIGINS_RAW.split(",") if o.strip()]
 
     def validate_configuration(self):
         """Ensures at least 1 LLM tier is properly configured."""
