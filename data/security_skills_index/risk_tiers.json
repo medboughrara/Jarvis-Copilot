@@ -1,6 +1,10 @@
 {
   "version": "1.0.0",
   "commit_sha": "1b3f6b2286981381a5cc0566551ef3bb6bc38383",
+  "review_status": "PROVISIONAL_HEURISTIC_TRIAGE",
+  "human_signoff_completed": false,
+  "human_reviewer": null,
+  "human_signoff_notes": "Initial 103/715 partitioning generated via heuristic rule-based ATT&CK tactic analysis. Individual dual_use vs informational classifications are provisional pending formal human security engineer sign-off. Fail-closed default (dual_use) is strictly enforced for all unreviewed or uncertain skills.",
   "total_skills": 818,
   "dual_use_count": 103,
   "informational_count": 715,

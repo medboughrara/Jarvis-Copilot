@@ -1,13 +1,14 @@
 """
-Integration and Safety Unit Tests for Anthropic Cybersecurity Skills Library in Jarvis-Copilot.
+Integration, Safety, and Concurrency Unit Tests for Anthropic Cybersecurity Skills in Jarvis-Copilot.
 Validates:
 1. Two-stage progressive disclosure retrieval (find_security_skills -> load_security_skill).
 2. Scope-bound dual-use safety gating and atomic token verification (Task 1).
-3. Fail-closed default for unclassified skills (Task 3).
-4. Explicit declared network exceptions and default sandbox network cutoff (Task 4).
-5. Audit logging with submodule commit SHA and script file SHA-256 (Task 5).
-6. Submodule provenance validation in update utility (Task 2).
-7. ATT&CK coverage reporting tool.
+3. Concurrency / TOCTOU race condition prevention during token consumption (Task 1).
+4. Fail-closed default for unclassified skills (Task 3).
+5. Explicit declared network exceptions and default sandbox network cutoff (Task 4).
+6. Audit logging with submodule commit SHA and script file SHA-256 (Task 5).
+7. Submodule provenance validation, diffing, and unreviewed-skill warnings in update utility (Task 2 & 3).
+8. ATT&CK coverage reporting tool (Task 7).
 """
 
 import os
@@ -17,6 +18,7 @@ import time
 import hashlib
 import sqlite3
 import unittest
+import concurrent.futures
 from unittest.mock import patch, MagicMock
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -46,7 +48,7 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
     def tearDownClass(cls):
         """Clean up temporary test skills from submodule directory."""
         import shutil
-        for mock_dir in ["test-dual-use-skill", "test-isolated-skill", "test-prov-skill"]:
+        for mock_dir in ["test-dual-use-skill", "test-isolated-skill", "test-prov-skill", "test-race-skill"]:
             p = os.path.join(ROOT_DIR, "data", "security_skills", "skills", mock_dir)
             if os.path.exists(p):
                 try:
@@ -91,12 +93,13 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
 
     def test_execute_security_skill_script_scope_binding(self):
         """
-        Task 1: Scope-bound execution testing:
-        - Correct-scope execution succeeds with valid token.
-        - Scope mismatch (approved for lab.internal, executed on 8.8.8.8) fails and is audit-logged.
-        - Empty target is rejected and gated.
-        - Args injection is inert (shell=False).
-        - Replay rejection prevents token reuse.
+        Task 1: Detailed Assertion-by-Assertion Scope-Bound Execution Testing:
+        - Case A: Empty target rejected.
+        - Case B: Gating triggered when token is missing.
+        - Case C: Scope mismatch (approved for lab.internal, executed on 8.8.8.8) rejected and audit-logged.
+        - Case D: Correct-scope execution succeeds with valid token.
+        - Case E: Token replay rejection prevents token reuse.
+        - Case F: Args shell injection is inert (shell=False).
         """
         # Create a mock skill script for testing
         test_skill_dir = os.path.join(ROOT_DIR, "data", "security_skills", "skills", "test-dual-use-skill", "scripts")
@@ -105,16 +108,16 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
         with open(test_script_path, "w", encoding="utf-8") as f:
             f.write("import sys\nprint(f'EXECUTED TARGET: {sys.argv[1] if len(sys.argv) > 1 else None}')\n")
 
-        # 1. Empty target rejected
+        # --- Case A: Empty target rejected ---
         empty_target_res = self.engine.execute_script(
             skill_name="test-dual-use-skill",
             script_name="test_agent.py",
             target=""
         )
-        self.assertEqual(empty_target_res["status"], "error")
-        self.assertIn("Scope Error", empty_target_res["error"])
+        self.assertEqual(empty_target_res["status"], "error", "Empty target should fail")
+        self.assertIn("Scope Error", empty_target_res["error"], "Error message must indicate scope rejection")
 
-        # 2. Dual-use skill without token returns BLOCKED_APPROVAL_REQUIRED
+        # --- Case B: Missing token requests approval ---
         task_id = f"test_sec_{hashlib.md5(b'test_scope').hexdigest()[:8]}"
         gate_res = self.engine.execute_script(
             skill_name="test-dual-use-skill",
@@ -122,11 +125,11 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
             target="lab.internal",
             task_id=task_id
         )
-        self.assertEqual(gate_res["status"], "BLOCKED_APPROVAL_REQUIRED")
+        self.assertEqual(gate_res["status"], "BLOCKED_APPROVAL_REQUIRED", "Dual-use without token must block")
         token = gate_res["token"]
-        self.assertTrue(bool(token))
+        self.assertTrue(bool(token), "Approval token must be generated")
 
-        # 3. Scope mismatch: Try using valid token with wrong target '8.8.8.8'
+        # --- Case C: Scope mismatch rejection & audit logging ---
         mismatch_res = self.engine.execute_script(
             skill_name="test-dual-use-skill",
             script_name="test_agent.py",
@@ -134,19 +137,18 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
             approval_token=token,
             task_id=task_id
         )
-        self.assertEqual(mismatch_res["status"], "error")
-        self.assertIn("Scope mismatch", mismatch_res["error"])
+        self.assertEqual(mismatch_res["status"], "error", "Scope mismatch must be rejected")
+        self.assertIn("Scope mismatch", mismatch_res["error"], "Error message must explain scope mismatch")
 
-        # Verify audit log recorded the scope mismatch
+        # Verify audit log recorded the SCOPE_MISMATCH_REJECTED event
         with sqlite3.connect(self.shield.audit_db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT status, error_msg FROM audit_log WHERE status = 'SCOPE_MISMATCH_REJECTED' ORDER BY timestamp DESC LIMIT 1")
             row = cursor.fetchone()
-            self.assertIsNotNone(row, "Expected SCOPE_MISMATCH_REJECTED entry in audit log")
+            self.assertIsNotNone(row, "Audit log must contain SCOPE_MISMATCH_REJECTED record")
             self.assertIn("Scope mismatch", row[1])
 
-        # 4. Correct scope execution succeeds
-        # Generate fresh token for lab.internal
+        # --- Case D: Correct scope execution succeeds ---
         task_id_2 = f"test_sec_{hashlib.md5(b'test_scope_2').hexdigest()[:8]}"
         token_2 = self.shield.create_approval_request(
             task_id=task_id_2,
@@ -166,10 +168,10 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
             approval_token=token_2,
             task_id=task_id_2
         )
-        self.assertEqual(valid_res["status"], "success")
+        self.assertEqual(valid_res["status"], "success", "Correct scope execution must succeed")
         self.assertIn("EXECUTED TARGET: lab.internal", valid_res["stdout"])
 
-        # 5. Token replay rejection: using token_2 again fails
+        # --- Case E: Single-use token replay rejection ---
         replay_res = self.engine.execute_script(
             skill_name="test-dual-use-skill",
             script_name="test_agent.py",
@@ -177,10 +179,10 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
             approval_token=token_2,
             task_id=task_id_2
         )
-        self.assertEqual(replay_res["status"], "error")
-        self.assertIn("Token is not PENDING", replay_res["error"])
+        self.assertEqual(replay_res["status"], "error", "Replay attempt must be rejected")
+        self.assertIn("Token is not PENDING", replay_res["error"], "Consumed token must not be reusable")
 
-        # 6. Args shell injection safety (shell=False)
+        # --- Case F: Shell metacharacter injection safety (shell=False) ---
         task_id_3 = f"test_sec_{hashlib.md5(b'test_scope_3').hexdigest()[:8]}"
         token_3 = self.shield.create_approval_request(
             task_id=task_id_3,
@@ -197,7 +199,46 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
             task_id=task_id_3
         )
         self.assertEqual(inject_res["status"], "success")
+        # In shell=False, the full injection string is received as a literal argument, not executed by a shell
         self.assertIn(f"EXECUTED TARGET: {injection_arg}", inject_res["stdout"])
+
+    def test_approval_token_atomic_concurrency_race(self):
+        """
+        Task 1 Concurrency: Tests that concurrent race attempts to consume a single pending
+        approval token result in EXACTLY 1 success and N-1 rejections (TOCTOU race prevention).
+        """
+        task_id = f"race_test_{hashlib.md5(b'race_token').hexdigest()[:8]}"
+        token = self.shield.create_approval_request(
+            task_id=task_id,
+            action_type="execute_security_skill",
+            details={
+                "skill_name": "test-race-skill",
+                "script_name": "race.py",
+                "target": "lab.internal",
+                "risk_tier": "dual_use"
+            }
+        )
+
+        results = []
+        def attempt_consume():
+            return self.shield.verify_and_consume_security_skill_token(
+                task_id=task_id,
+                token=token,
+                expected_target="lab.internal",
+                expected_skill="test-race-skill"
+            )
+
+        num_threads = 10
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+            futures = [executor.submit(attempt_consume) for _ in range(num_threads)]
+            for f in concurrent.futures.as_completed(futures):
+                results.append(f.result())
+
+        successes = [r for r in results if r[0] is True]
+        failures = [r for r in results if r[0] is False]
+
+        self.assertEqual(len(successes), 1, "Exactly 1 thread must successfully consume the token")
+        self.assertEqual(len(failures), num_threads - 1, f"Remaining {num_threads - 1} threads must fail due to atomic lock")
 
     def test_network_exceptions_enforcement(self):
         """Task 4: Non-allowlisted scripts run with network disabled; allowlisted scripts run with network enabled."""
@@ -269,13 +310,21 @@ class TestSecuritySkillsIntegration(unittest.TestCase):
 
     def test_submodule_update_script_validation(self):
         """Task 2 & Task 3: Update script verifies submodule boundary, diffs commits, and warns on unreviewed skills."""
+        # 1. Submodule boundary validation
         current_sha = update_script.validate_submodule_boundary()
-        self.assertTrue(bool(current_sha))
-        self.assertEqual(len(current_sha), 40)
+        self.assertTrue(bool(current_sha), "Submodule boundary must resolve a valid commit SHA")
+        self.assertEqual(len(current_sha), 40, "Commit SHA must be 40 characters")
 
-        # Analyze diff against self (should be zero diff)
+        # 2. Diff analysis
         diff_res = update_script.analyze_diff(current_sha, current_sha)
-        self.assertEqual(len(diff_res.get("added_skills", [])), 0)
+        self.assertEqual(len(diff_res.get("added_skills", [])), 0, "Self diff must have 0 added skills")
+        self.assertEqual(len(diff_res.get("modified_skills", [])), 0, "Self diff must have 0 modified skills")
+
+        # 3. Unreviewed skills warning test
+        risk_tiers = update_script.load_risk_tiers().get("skills", {})
+        hypothetical_added = ["hypothetical-new-exploit-skill", "analyzing-security-logs-with-splunk"]
+        unreviewed = [s for s in hypothetical_added if s not in risk_tiers]
+        self.assertEqual(unreviewed, ["hypothetical-new-exploit-skill"], "Update script must isolate unreviewed skills")
 
     def test_attack_coverage_report(self):
         """Task 7: attack_coverage_report tool returns tactic distribution."""
