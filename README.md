@@ -150,21 +150,38 @@ Jarvis uses **Graphify-Labs** AST extraction and semantic clustering to transfor
 
 ---
 
+## ⚡ Multi-Model Agentic Environment & Local Lightweight Orchestrator
+
+Jarvis implements an intelligent multi-model agentic environment with **sub-100ms local intent orchestration**, domain-specialized routing, and collaborative multi-model pipelines:
+
+| Foundation Model | Provider & Context | Parameters & Modalities | Architecture Specialization | Role in Jarvis Agentic System |
+| :--- | :--- | :--- | :--- | :--- |
+| **`ornith-1.5:9b`** | Local Ollama (256K) | 9B (6.6GB) · Text + Vision | Local Foundation Model | **Local Lightweight Orchestrator & Fast Reflex Evaluator (<100ms)** |
+| **`glm-5.3:cloud`** | Ollama Cloud (1M) | 753B · Tools + Thinking | Open-Weights Coding Flagship | **Long-Horizon Agentic Coding & Deep Architecture Planner** |
+| **`kimi-k2.7-code:cloud`** | Ollama Cloud (256K) | 1.04T · Vision + Code | -30% Thinking Token MoE | **Real-World Complex Code Implementer & Bug Resolver** |
+| **`glm-5.3-flash:cloud`** | Ollama Cloud (1M) | 321B (18B Active MoE) · Multimodal | Natively Multimodal MoE | **Real-Time Multimodal Agent & Instant Tool Caller** |
+| **`qwen3.8`** | Ollama Cloud / Local (128K) | 27B / 8B · Vision + Thinking | Dense Reasoning | **Deep Research, Literature Synthesis & Mathematical Reasoning** |
+| **`gemini-2.5-flash`** | Google Cloud (1M) | Proprietary Multimodal | 5-Key Auto-Rotating Pool | **General High-Throughput Cloud Engine & EDA Tools** |
+| **`llama3:8b`** | Local GPU RTX 3050 (8K) | 8B Local GGUF/INT4 | Pure Local Inference | **Zero-Downtime Offline Fallback** |
+
+---
+
 ## ⚡ Hardware Constraints & Local/Cloud Resource Distribution
 
 Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5 CPU**, **24GB RAM**, and an **NVIDIA RTX 3050 GPU (6GB VRAM)**:
 
 | Subsystem | Target Processor | Model / Framework | Optimization |
 | :--- | :--- | :--- | :--- |
+| **Local Orchestrator** | CPU / Local GPU | `ornith-1.5:9b` / `llama3:8b` | Sub-100ms Local Intent Evaluation & Triage |
 | **Wake Word Engine** | CPU | `openWakeWord` ("jarvis") | ONNX Runtime (CPU) |
 | **Speech-to-Text (STT)** | CPU / Cloud | `Faster-Whisper` (`base.en`) / `NVIDIA Whisper v3` | `INT8` Quantization + Cloud API Fallback |
-| **Text-to-Speech (TTS)** | CPU / Cloud | `Kokoro-82M` (24kHz) / `NVIDIA Magpie TTS` | ONNX Runtime + Cloud Neural Voice |
+| **Text-to-Speech (TTS)** | CPU / Cloud | `Kokoro-82M` (24kHz) / `Edge-TTS Neural` | ONNX Runtime + Cloud Neural Voices |
 | **WebGL Voice Visualizer**| Web Browser | Custom GLSL Fragment Shader | Dynamic Standing Audio Wave on Arc Reactor Edge |
 | **Orchestration & Harness** | CPU | LangChain + ECC Agent Harness | Reflex Rules + AgentShield + Context Compression |
-| **LLM Tier 1 (Cloud Pool)** | Cloud Pool | `Google Gemini 3.6 Flash` (5 API Keys) | Round-Robin Rotation + 429 Rate Limit Cooling |
-| **LLM Tier 2 (Cloud Pool)** | Cloud Pool | `Moonshot Kimi 2.6` & `NVIDIA Nemotron 3` | Deep Hardware & Logical Reasoning via NVIDIA NIM |
-| **LLM Tier 3 (Cloud Pool)** | Cloud Pool | `Ollama Cloud` (`glm-5.2:cloud`, `kimi-k3:cloud`) | Secondary Cloud Fallback |
-| **LLM Tier 4 (Local GPU)** | GPU RTX 3050 | `Llama 3 8B` (`ChatOllama`) | Zero-Downtime Offline Fallback |
+| **Agentic Coding Tier** | Cloud Pool | `glm-5.3:cloud` (753B) & `kimi-k2.7-code:cloud` (1.04T) | Collaborative Multi-Model Planning & Generation |
+| **Fast Multimodal Tier** | Cloud Pool | `glm-5.3-flash:cloud` (18B active) & `gemini-2.5-flash` | Real-Time Screen & KiCad Visual Inspection |
+| **Research & Reasoning Tier**| Cloud Pool | `qwen3.8` (27B) | Deep Synthesis, Paper Analysis & Mathematical Computation |
+| **Local Offline Fallback** | GPU RTX 3050 | `Llama 3 8B` (`ChatOllama`) | Zero-Downtime Offline Fallback |
 | **Long-Term Memory Engine** | CPU / Local | `MemPalace` (`all-MiniLM-L6-v2` ONNX) | Zero-Loss Verbatim Loci Hierarchy & Temporal Graph |
 | **Knowledge Graph Engine** | CPU / Local | `Graphify` + AST Parsers | Obsidian Vault with Canvas, Wiki & Hub Labels |
 | **3D Modeling Engine** | CPU / Browser | `img2obj` Procedural Builder + Three.js | Wavefront .OBJ/.MTL & WebGL Parametric Shaders |

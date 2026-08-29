@@ -307,6 +307,43 @@ async def run_sandbox_route(payload: Dict[str, Any] = Body(...)):
 
 
 # ==============================================================================
+# Multi-Model Orchestrator & Model Registry Routes
+# ==============================================================================
+
+@app.get("/api/orchestrator/models")
+async def get_orchestrator_models():
+    from agent.model_registry import model_registry
+    models = model_registry.list_all_models()
+    return {"status": "success", "models": models, "count": len(models)}
+
+
+@app.post("/api/orchestrator/evaluate")
+async def evaluate_orchestrator_intent(payload: Dict[str, Any] = Body(...)):
+    from agent.local_orchestrator import local_orchestrator
+    prompt = payload.get("prompt", "")
+    plan = local_orchestrator.evaluate_intent(prompt)
+    return {
+        "status": "success",
+        "domain": plan.domain,
+        "complexity_score": plan.complexity_score,
+        "execution_strategy": plan.execution_strategy,
+        "primary_model_id": plan.primary_model_id,
+        "pipeline_steps": [
+            {
+                "step_number": s.step_number,
+                "role": s.role,
+                "model_id": s.model_id,
+                "description": s.description
+            }
+            for s in plan.pipeline_steps
+        ],
+        "estimated_context_tokens": plan.estimated_context_tokens,
+        "reasoning_summary": plan.reasoning_summary,
+        "evaluation_latency_ms": plan.evaluation_latency_ms
+    }
+
+
+# ==============================================================================
 # ECC Instincts & Lazy Service Lifecycle Routes
 # ==============================================================================
 

@@ -96,6 +96,8 @@ from tools.recipes_automation_tool import list_available_recipes, execute_recipe
 from tools.sandbox_runner_tool import run_sandbox_code
 from tools.desktop_control_tool import get_system_metrics, list_active_windows, manage_clipboard
 from tools.ecc_tools import ecc_plan_action, ecc_verify_python, unified_memory_store, unified_memory_query
+from agent.model_registry import model_registry
+from agent.local_orchestrator import local_orchestrator
 
 logger = config.get_logger(__name__)
 
@@ -262,9 +264,16 @@ class JarvisAgent:
 
     async def process_query(self, user_query: str) -> str:
         """
-        Processes query through pure LLM function-calling tool execution and multi-tier fallback pipeline.
+        Processes query through local orchestrator triage, specialized model routing, and fallback pipeline.
         """
         self.last_tool_context = ""
+        
+        # Step 1: Fast Local Intent Evaluation (<10ms)
+        orchestrator_plan = local_orchestrator.evaluate_intent(user_query)
+        logger.info(
+            f"[Agent Orchestrator] Plan: Domain='{orchestrator_plan.domain}', "
+            f"Strategy='{orchestrator_plan.execution_strategy}', PrimaryModel='{orchestrator_plan.primary_model_id}'"
+        )
         
         # Evaluate Automatic Hardware Reflex Instincts
         instincts = self.instincts_engine.evaluate_query_instincts(user_query)
@@ -298,8 +307,20 @@ class JarvisAgent:
 
         response = None
 
+        # Step 2: Try Primary Orchestrator-Selected Model (e.g. GLM-5.3, Kimi K2.7 Code, GLM-5.3 Flash, Qwen 3.8)
+        primary_id = orchestrator_plan.primary_model_id
+        if primary_id and primary_id not in ["gemini-2.5-flash"] and LANGCHAIN_OLLAMA_AVAILABLE:
+            try:
+                logger.info(f"[Agent Orchestrator] Invoking specialized model: '{primary_id}'...")
+                client = model_registry.get_client(primary_id, scoped_tools=scoped_tools)
+                response = await client.ainvoke(messages)
+                if response:
+                    logger.info(f"[Agent Orchestrator] Successfully executed with '{primary_id}'.")
+            except Exception as pe:
+                logger.warning(f"[Agent Orchestrator] Primary model '{primary_id}' failed ({pe}). Falling back to multi-key pool...")
+
         # Tier 1: Multi-Key Google Gemini Pool
-        if getattr(config, 'USE_GEMINI', False) and LANGCHAIN_GEMINI_AVAILABLE and self.key_manager.api_keys:
+        if not response and getattr(config, 'USE_GEMINI', False) and LANGCHAIN_GEMINI_AVAILABLE and self.key_manager.api_keys:
             max_attempts = len(self.key_manager.api_keys)
             for attempt in range(max_attempts):
                 working_key = self.key_manager.get_working_key()

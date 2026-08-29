@@ -58,10 +58,18 @@ class JarvisConfig(BaseSettings):
     TTS_VOICE: str = "af_bella"
     TTS_SPEED: float = 1.0
 
-    # Core LLM Options
+    # Multi-Model Specialized Agentic Suite (Ollama & Cloud)
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
     OLLAMA_MODEL: str = Field(default="llama3:8b")
-    OLLAMA_CLOUD_MODELS_RAW: str = Field(default="glm-5.2:cloud,kimi-k3:cloud", validation_alias="OLLAMA_CLOUD_MODELS")
+    OLLAMA_LOCAL_ORCHESTRATOR_MODEL: str = Field(default="ornith-1.5:9b")
+    OLLAMA_FLAGSHIP_CODING_MODEL: str = Field(default="glm-5.3:cloud")
+    OLLAMA_CODE_AGENT_MODEL: str = Field(default="kimi-k2.7-code:cloud")
+    OLLAMA_MULTIMODAL_FLASH_MODEL: str = Field(default="glm-5.3-flash:cloud")
+    OLLAMA_RESEARCH_MODEL: str = Field(default="qwen3.8")
+    OLLAMA_CLOUD_MODELS_RAW: str = Field(
+        default="glm-5.3:cloud,kimi-k2.7-code:cloud,glm-5.3-flash:cloud,qwen3.8,ornith-1.5:9b",
+        validation_alias="OLLAMA_CLOUD_MODELS"
+    )
     
     GEMINI_API_KEYS_RAW: str = Field(default="", validation_alias="GEMINI_API_KEYS")
     GEMINI_API_KEY_RAW: str = Field(default="", validation_alias="GEMINI_API_KEY")
