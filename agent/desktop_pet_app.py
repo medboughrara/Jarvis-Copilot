@@ -1,7 +1,9 @@
 """
 Desktop Pet Application & Transparent Floating Window Controller for Jarvis Copilot.
 Runs a lightweight, transparent, always-on-top desktop mascot that roams across monitors,
-points to on-screen elements, follows the user's cursor with its eyes, and floats behind it.
+points to on-screen elements, follows the user's cursor with its eyes, and supports hotkeys:
+- [Right Shift + Enter]: Toggle cursor-following floating flight mode.
+- [Right Shift + Backspace]: Trigger voice listening mode & shutter flash.
 
 Hardened Features:
 - Task 3: DPI-awareness is set as the very first executable call and verified via readback.
@@ -62,7 +64,7 @@ class POINT(ctypes.Structure):
 
 
 class DesktopPetController:
-    """Manages window state, coordinate animations, cursor following, and bridge events."""
+    """Manages window state, coordinate animations, cursor following, hotkeys, and bridge events."""
 
     def __init__(self, port: int = 8000):
         self.port = port
@@ -74,11 +76,13 @@ class DesktopPetController:
         self.height = 280
         self.state = "idle"
         self.is_running = False
-        self.follow_cursor = True
+        # Default: Fixed in one place, movable manually
+        self.follow_cursor = False
         self.is_pointing = False
         self.window = None
         self.heartbeat_thread: Optional[threading.Thread] = None
         self.motion_thread: Optional[threading.Thread] = None
+        self.hotkey_thread: Optional[threading.Thread] = None
         self.last_cursor_x = 0
         self.last_cursor_y = 0
         self.last_cursor_move_time = time.time()
@@ -91,7 +95,7 @@ class DesktopPetController:
             time.sleep(1.5)
 
     def start_motion_loop(self) -> None:
-        """Runs the smooth cursor follow & autonomous floating motion loop (~40 FPS)."""
+        """Runs the smooth cursor follow & eye tracking motion loop (~40 FPS)."""
         pt = POINT()
         t = 0.0
         while self.is_running:
@@ -107,6 +111,7 @@ class DesktopPetController:
 
                     idle_duration = time.time() - self.last_cursor_move_time
 
+                    # Only move window position if follow_cursor is enabled
                     if self.follow_cursor and not self.is_pointing:
                         if idle_duration < 2.0:
                             # Active cursor motion: follow behind cursor at a gentle distance
@@ -137,8 +142,9 @@ class DesktopPetController:
                             if self.window and hasattr(self.window, 'move'):
                                 self.window.move(int(self.x), int(self.y))
 
-                    # Update eye pupil tracking in the webview
+                    # Eye pupil tracking stays active ALWAYS (eyes follow cursor across the screen)
                     if self.window:
+                        # Compute relative cursor vector to pet face
                         rel_x = (cur_x - self.x) * (200.0 / self.width)
                         rel_y = (cur_y - self.y) * (200.0 / self.height)
                         try:
@@ -149,6 +155,74 @@ class DesktopPetController:
             except Exception:
                 pass
             time.sleep(0.025)
+
+    def start_hotkey_listener(self) -> None:
+        """
+        Monitors global system hotkeys in background:
+        - Right Shift + Enter: Toggle Follow Cursor mode
+        - Right Shift + Backspace: Trigger Voice Listening mode
+        """
+        GetAsyncKeyState = ctypes.windll.user32.GetAsyncKeyState
+        last_enter_state = False
+        last_back_state = False
+
+        while self.is_running:
+            try:
+                # Right Shift (0xA1) or General Shift (0x10)
+                is_shift_down = bool(GetAsyncKeyState(0xA1) & 0x8000 or GetAsyncKeyState(0x10) & 0x8000)
+                is_enter_down = bool(GetAsyncKeyState(0x0D) & 0x8000)
+                is_back_down = bool(GetAsyncKeyState(0x08) & 0x8000)
+
+                # Right Shift + Enter -> Toggle Follow Cursor
+                if is_shift_down and is_enter_down:
+                    if not last_enter_state:
+                        self.toggle_follow_cursor()
+                        last_enter_state = True
+                else:
+                    last_enter_state = False
+
+                # Right Shift + Backspace -> Trigger Listen Mode
+                if is_shift_down and is_back_down:
+                    if not last_back_state:
+                        self.trigger_listen_mode()
+                        last_back_state = True
+                else:
+                    last_back_state = False
+
+            except Exception:
+                pass
+            time.sleep(0.04)
+
+    def toggle_follow_cursor(self) -> None:
+        """Toggles between fixed-in-place mode and follow-cursor mode."""
+        self.follow_cursor = not self.follow_cursor
+        if self.follow_cursor:
+            logger.info("[Desktop Pet Hotkey] Follow Cursor Mode: ENABLED (Following cursor)")
+            if self.window:
+                try:
+                    self.window.evaluate_js("if (window.speakText) window.speakText('Following your cursor, sir!');")
+                except Exception:
+                    pass
+        else:
+            logger.info("[Desktop Pet Hotkey] Follow Cursor Mode: DISABLED (Fixed in place)")
+            if self.window:
+                try:
+                    self.window.evaluate_js("if (window.speakText) window.speakText('Fixed in place.');")
+                except Exception:
+                    pass
+
+    def trigger_listen_mode(self) -> None:
+        """Triggers interactive listening state with visible camera shutter flash & subtitle."""
+        logger.info("[Desktop Pet Hotkey] Voice Listen Mode: TRIGGERED")
+        self.trigger_shutter_flash()
+        if self.window:
+            try:
+                self.window.evaluate_js(
+                    "if (window.triggerShutterFlash) window.triggerShutterFlash(); "
+                    "if (window.speakText) window.speakText('Listening to your command, sir...');"
+                )
+            except Exception:
+                pass
 
     def move_to(self, target_x: int, target_y: int, duration_ms: int = 600) -> None:
         """Smoothly animates the desktop pet window to target coordinates."""
@@ -270,14 +344,18 @@ def launch_desktop_pet(port: int = 8000, blocking: bool = True) -> DesktopPetCon
     controller = DesktopPetController(port=port)
     controller.is_running = True
 
-    # 3. Start heartbeat thread & cursor motion thread
+    # 3. Start background threads
     controller.heartbeat_thread = threading.Thread(target=controller.start_heartbeat_loop, daemon=True)
     controller.heartbeat_thread.start()
 
     controller.motion_thread = threading.Thread(target=controller.start_motion_loop, daemon=True)
     controller.motion_thread.start()
 
+    controller.hotkey_thread = threading.Thread(target=controller.start_hotkey_listener, daemon=True)
+    controller.hotkey_thread.start()
+
     logger.info(f"[Desktop Pet] Initialized at ({controller.x}, {controller.y}). Connecting to web server on port {port}...")
+    logger.info("[Desktop Pet Hotkeys] Press [Right Shift + Enter] to toggle cursor follow | Press [Right Shift + Backspace] to listen.")
 
     if blocking:
         try:
