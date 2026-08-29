@@ -226,6 +226,39 @@ def ensure_web_server_running(port: int = 8000) -> bool:
             return False
 
 
+class MARGINS(ctypes.Structure):
+    _fields_ = [
+        ("cxLeftWidth", ctypes.c_int),
+        ("cxRightWidth", ctypes.c_int),
+        ("cyTopHeight", ctypes.c_int),
+        ("cyBottomHeight", ctypes.c_int),
+    ]
+
+
+def apply_full_transparency(window) -> None:
+    """Enforces 100% per-pixel DWM alpha compositing and transparent WinForms backcolor."""
+    def on_shown():
+        try:
+            form = getattr(window, 'native', None)
+            if form:
+                hwnd = int(form.Handle.ToInt64())
+                # DwmExtendFrameIntoClientArea with -1 makes entire client area transparent glass
+                m = MARGINS(-1, -1, -1, -1)
+                ctypes.windll.dwmapi.DwmExtendFrameIntoClientArea(hwnd, ctypes.byref(m))
+
+                import clr
+                clr.AddReference('System.Drawing')
+                from System.Drawing import Color
+                form.BackColor = Color.Black
+
+                if hasattr(form, 'browser') and hasattr(form.browser, 'webview'):
+                    form.browser.webview.DefaultBackgroundColor = Color.Transparent
+        except Exception as e:
+            logger.debug(f"[Desktop Pet] Transparency hook notice: {e}")
+
+    window.events.shown += on_shown
+
+
 def launch_desktop_pet(port: int = 8000, blocking: bool = True) -> DesktopPetController:
     """Entry point for launching the Desktop Pet application."""
     # 1. First line: Set and verify DPI awareness
@@ -262,6 +295,7 @@ def launch_desktop_pet(port: int = 8000, blocking: bool = True) -> DesktopPetCon
                 transparent=True,
                 easy_drag=True
             )
+            apply_full_transparency(window)
             controller.window = window
             webview.start(debug=False)
         except Exception as e:
