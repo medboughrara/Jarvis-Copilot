@@ -130,6 +130,9 @@ class JarvisConfig(BaseSettings):
 _config_instance = JarvisConfig()
 _config_instance.validate_configuration()
 
+# Primary typed access point
+settings = _config_instance
+
 # Export backward-compatible module-level globals
 PROJECT_NAME = _config_instance.PROJECT_NAME
 COMPANY_NAME = _config_instance.COMPANY_NAME

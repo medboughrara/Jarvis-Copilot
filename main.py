@@ -11,17 +11,20 @@ Pipeline Flow:
 import os
 import sys
 import asyncio
+import config
 from voice.wakeword import WakeWordDetector
 from voice.stt import Transcriber
 from voice.tts import TextToSpeech
 from agent.copilot import JarvisAgent
 
+logger = config.get_logger(__name__)
+
 
 async def main_loop():
-    print("=" * 65)
-    print("      JARVIS AI - UNIVERSAL PERSONAL ASSISTANT")
-    print("=" * 65)
-    print("[System] Initializing voice pipeline & agent engine...")
+    logger.info("=" * 65)
+    logger.info("      JARVIS AI - UNIVERSAL PERSONAL ASSISTANT")
+    logger.info("=" * 65)
+    logger.info("[System] Initializing voice pipeline & agent engine...")
 
     # Initialize subsystems
     wakeword_engine = WakeWordDetector()
@@ -29,21 +32,21 @@ async def main_loop():
     tts_engine = TextToSpeech()
     agent_engine = JarvisAgent()
 
-    print("\n[System] Initialization complete. Performing startup briefing...\n")
+    logger.info("[System] Initialization complete. Performing startup briefing...")
     try:
         from tools.system_control_tool import get_startup_briefing
         briefing_res = get_startup_briefing.invoke({})
         briefing_text = briefing_res.get("summary", "System online and ready.")
-        print(f"[Jarvis Startup Briefing] > {briefing_text}\n")
+        logger.info(f"[Jarvis Startup Briefing] > {briefing_text}")
         await tts_engine.speak(briefing_text)
     except Exception as be:
-        print(f"[System] Could not run initial briefing: {be}")
+        logger.warning(f"[System] Could not run initial briefing: {be}")
 
-    print("\n[System] Jarvis is online and listening for wake word 'Jarvis'...\n")
+    logger.info("[System] Jarvis is online and listening for wake word 'Jarvis'...")
 
-    try:
-        tts_task = None
-        while True:
+    tts_task = None
+    while True:
+        try:
             # Step 1: Continuous background wake word detection
             triggered = await wakeword_engine.wait_for_wakeword()
             
@@ -52,11 +55,11 @@ async def main_loop():
                 if tts_task and not tts_task.done():
                     tts_engine.stop()
                     tts_task.cancel()
-                    print("\n[Barge-in] Interrupted ongoing audio playback.")
+                    logger.info("[Barge-in] Interrupted ongoing audio playback.")
                     await asyncio.sleep(0.1)
 
                 # Speak brief acknowledgement audio on wake word
-                print("[Jarvis] Wake word recognized! Listening for input...")
+                logger.info("[Jarvis] Wake word recognized! Listening for input...")
                 tts_task = asyncio.create_task(tts_engine.speak("Yes? I am listening."))
                 
                 # Step 2: Record & Transcribe user speech using Faster-Whisper with domain prompt
@@ -79,13 +82,18 @@ async def main_loop():
                 # Step 4: Convert agent text response to Kokoro TTS audio playback
                 tts_task = asyncio.create_task(tts_engine.speak(agent_response))
 
-                print("\n[Jarvis] Ready for next command...\n")
+                logger.info("[Jarvis] Ready for next command...")
 
-    except KeyboardInterrupt:
-        print("\n[System] Jarvis shutting down gracefully. Goodbye!")
-    except Exception as e:
-        print(f"\n[System Error] Unexpected exception in main execution loop: {e}")
-        sys.exit(1)
+        except asyncio.CancelledError:
+            break
+        except Exception as turn_err:
+            # Per-turn error recovery — logs the error and keeps the voice assistant listening
+            logger.exception(f"[Voice Loop Error on Turn]: {turn_err}")
+            try:
+                tts_task = asyncio.create_task(tts_engine.speak("I apologize, but I encountered an error processing that request. Standing by."))
+            except Exception:
+                pass
+            await asyncio.sleep(0.5)
 
 
 if __name__ == "__main__":

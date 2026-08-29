@@ -326,6 +326,17 @@ d:/aaaassistan_pcb/
 
 ---
 
+## 🗺️ Architectural Roadmap
+
+The following planned extensions are under active design and scheduled for subsequent minor releases:
+
+* [ ] **Direct Native SDK Bindings**: Native Slack Bolt / python-telegram-bot / Discord.py streaming listeners (currently routed through Composio MCP / Multi-Channel Webhooks).
+* [ ] **Local Voice Activity Detection (VAD)**: Dynamic silence cutoff via `silero-vad` to eliminate fixed recording windows.
+* [ ] **Headless Chromium Cluster**: Multi-worker Playwright cluster for enterprise-scale bulk crawling.
+* [ ] **KiCad 9 Native IPC Socket**: Direct Unix domain socket / named pipe connection to active KiCad PCB editor instances.
+
+---
+
 ## 📜 License & Open-Source Ownership
 
 This project is open-source under the **MIT License**. Created as a personal AI assistant for general work, productivity, automation, and hardware engineering.

@@ -262,122 +262,15 @@ class JarvisAgent:
 
     async def process_query(self, user_query: str) -> str:
         """
-        Processes query through tool router, multi-tier LLM fallback pipeline, and updates memory.
+        Processes query through pure LLM function-calling tool execution and multi-tier fallback pipeline.
         """
-        lower_q = user_query.lower()
-        tool_executed = False
-        tool_result = ""
-
-        # Direct Keyword Intent Dispatcher
-        if "analyze" in lower_q or "schematic" in lower_q or "kicad file" in lower_q:
-            tool_result = analyze_kicad_file.invoke({"file_path": ""})
-            tool_executed = True
-        elif "power tree" in lower_q or "power map" in lower_q or "voltage rails" in lower_q:
-            tool_result = get_power_tree.invoke({"file_path": ""})
-            tool_executed = True
-        elif "check errors" in lower_q or "erc" in lower_q or "drc" in lower_q or "rules check" in lower_q or "floating" in lower_q:
-            tool_result = check_pcb_errors.invoke({"file_path": ""})
-            tool_executed = True
-        elif "bom" in lower_q or "bill of materials" in lower_q or "parts list" in lower_q:
-            tool_result = generate_bom_report.invoke({"file_path": ""})
-            tool_executed = True
-        elif "thermal" in lower_q or "trace width" in lower_q or "heat" in lower_q or "ipc-2221" in lower_q:
-            tool_result = calculate_thermal_loss.invoke({})
-            tool_executed = True
-        elif "signal integrity" in lower_q or "i2c pullup" in lower_q or "pull-up" in lower_q or "impedance" in lower_q:
-            tool_result = check_signal_integrity.invoke({"bus_type": "i2c"})
-            tool_executed = True
-        elif "supply chain" in lower_q or "lifecycle" in lower_q or "stock" in lower_q or "obsolescence" in lower_q:
-            tool_result = check_supply_chain_status.invoke({"part_number": "STM32F405RGT6"})
-            tool_executed = True
-        elif "rohs" in lower_q or "fcc" in lower_q or "compliance" in lower_q:
-            tool_result = check_compliance_status.invoke({"component_name": "PCA9685"})
-            tool_executed = True
-        elif "datasheet" in lower_q or "specs" in lower_q:
-            tool_result = search_component_datasheet.invoke({"query": user_query})
-            tool_executed = True
-        elif "screen" in lower_q or "capture" in lower_q or "gui" in lower_q or "omniparser" in lower_q:
-            tool_result = parse_screen_gui.invoke({"action_context": user_query})
-            tool_executed = True
-        elif "rag" in lower_q or "local datasheet" in lower_q or "pdf search" in lower_q:
-            tool_result = query_local_datasheets.invoke({"query": user_query})
-            tool_executed = True
-        elif "issue" in lower_q or "github" in lower_q or "log bug" in lower_q:
-            tool_result = manage_github_issue.invoke({"title": "PCB Audit Finding", "body": user_query})
-            tool_executed = True
-        elif "export" in lower_q or "document" in lower_q or "doc" in lower_q:
-            tool_result = export_engineering_doc.invoke({"title": "Engineering Review", "content": user_query})
-            tool_executed = True
-        elif "generate image" in lower_q or "flux" in lower_q or "artwork" in lower_q or "diagram" in lower_q:
-            tool_result = generate_nvidia_image.invoke({"prompt": user_query})
-            tool_executed = True
-        elif "nvidia speech" in lower_q or "magpie" in lower_q or "tts" in lower_q:
-            tool_result = synthesize_nvidia_speech.invoke({"text": user_query})
-            tool_executed = True
-        elif "reasoning" in lower_q or "kimi" in lower_q or "nemotron reasoning" in lower_q:
-            tool_result = run_nvidia_reasoning.invoke({"query": user_query})
-            tool_executed = True
-        elif "nemotron ocr" in lower_q or "visual ocr" in lower_q:
-            tool_result = parse_nemotron_ocr.invoke({"image_path": ""})
-            tool_executed = True
-        elif "preferred part" in lower_q or "preferred library" in lower_q or "component memory" in lower_q or "preferred component" in lower_q:
-            tool_result = manage_preferred_parts.invoke({"action": "list"})
-            tool_executed = True
-        elif any(kw in lower_q for kw in ["briefing", "startup", "agenda", "schedule today", "tasks today", "what is scheduled", "my day"]):
-            tool_result = get_startup_briefing.invoke({})
-            tool_executed = True
-        elif "time" in lower_q or "date" in lower_q or "greeting" in lower_q or "what time" in lower_q:
-            tool_result = get_system_time_and_greeting.invoke({})
-            tool_executed = True
-        elif "launch" in lower_q or "open app" in lower_q or "open notepad" in lower_q or "open calc" in lower_q:
-            tool_result = launch_desktop_app.invoke({"app_name": user_query})
-            tool_executed = True
-        elif "open website" in lower_q or "open youtube" in lower_q or "open google" in lower_q:
-            tool_result = open_website.invoke({"url_or_domain": user_query})
-            tool_executed = True
-        elif "take screenshot" in lower_q or "capture screenshot" in lower_q:
-            tool_result = take_desktop_screenshot.invoke({"filename": ""})
-            tool_executed = True
-        elif "tell joke" in lower_q or "tell me a joke" in lower_q:
-            tool_result = tell_joke.invoke({})
-            tool_executed = True
-        elif "take note" in lower_q or "save note" in lower_q:
-            tool_result = take_voice_note.invoke({"note_text": user_query})
-            tool_executed = True
-        # --- Discord intents ---
-        elif any(kw in lower_q for kw in ["discord send", "send discord", "post to discord", "message discord", "discord message"]):
-            # Extract channel id and message from user_query heuristically; LLM will refine
-            tool_result = discord_send_message.invoke({
-                "channel_id": "",
-                "message": user_query
-            })
-            tool_executed = True
-        elif any(kw in lower_q for kw in ["discord read", "read discord", "fetch discord", "discord messages", "discord channel messages"]):
-            tool_result = discord_fetch_messages.invoke({"channel_id": "", "limit": 5})
-            tool_executed = True
-        elif any(kw in lower_q for kw in ["discord create channel", "new discord channel", "create channel discord"]):
-            tool_result = discord_create_channel.invoke({"guild_id": "", "channel_name": ""})
-            tool_executed = True
-        # --- Scrapling Adaptive Web Scraping ---
-        elif any(kw in lower_q for kw in ["scrape", "scrapling", "extract webpage", "extract site", "crawl site", "crawl web", "bypass cloudflare"]):
-            if "crawl" in lower_q:
-                tool_result = crawl_website.invoke({"start_url": user_query, "max_pages": 3})
-            else:
-                tool_result = scrape_web_page.invoke({"url": user_query, "mode": "stealth"})
-            tool_executed = True
-        elif "api key" in lower_q or "key stat" in lower_q or "key tracking" in lower_q:
-            tool_result = self.key_manager.get_usage_summary()
-            logger.info(f"\n{tool_result}\n")
-            tool_executed = True
-
-        if tool_executed:
-            self.last_tool_context = format_tool_output_for_cli(tool_result) if isinstance(tool_result, dict) else str(tool_result)
-        else:
-            # Evaluate Automatic Hardware Reflex Instincts
-            instincts = self.instincts_engine.evaluate_query_instincts(user_query)
-            if instincts:
-                inst_lines = [f"⚡ [{i['instinct']}]: {i['trigger_reason']} -> Action: {i['action_recommended']}" for i in instincts]
-                self.last_tool_context = "\n".join(inst_lines)
+        self.last_tool_context = ""
+        
+        # Evaluate Automatic Hardware Reflex Instincts
+        instincts = self.instincts_engine.evaluate_query_instincts(user_query)
+        if instincts:
+            inst_lines = [f"⚡ [{i['instinct']}]: {i['trigger_reason']} -> Action: {i['action_recommended']}" for i in instincts]
+            self.last_tool_context = "\n".join(inst_lines)
 
         messages = [SystemMessage(content=JARVIS_SYSTEM_PROMPT)]
 
@@ -428,7 +321,7 @@ class JarvisAgent:
                                 timeout=25,
                                 max_retries=1
                             )
-                            if not tool_executed and scoped_tools and hasattr(gemini_model, 'bind_tools'):
+                            if scoped_tools and hasattr(gemini_model, 'bind_tools'):
                                 gemini_model = gemini_model.bind_tools(scoped_tools)
                             response = await gemini_model.ainvoke(messages)
                             if response:
@@ -514,7 +407,7 @@ class JarvisAgent:
                     final_answer = "\n".join(text_parts).strip()
 
         if not final_answer or final_answer in ["[]", "()", "{}"]:
-            if tool_executed and self.last_tool_context:
+            if self.last_tool_context:
                 final_answer = f"{self.last_tool_context}"
             else:
                 # Dynamic context-aware synthesis from local memory & workspace

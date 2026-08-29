@@ -13,6 +13,9 @@ __pycache__/
 # Large Model Files & Scratches
 models/
 scratch/
+data/
+*.db
+*.sqlite3
 *.onnx
 *.bin
 *.pth

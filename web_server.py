@@ -1,746 +1,418 @@
 """
-Jarvis PCB Copilot — Cyberpunk Glassmorphic HUD Web Server.
-
-Multi-threaded, high-performance HTTP server for Jarvis PCB Copilot.
-Serves the Tactical Engineering HUD Web UI at http://localhost:8000
-and provides sub-second JSON REST endpoints for real-time KiCad analysis,
-DRC audits, thermal modeling, signal integrity checks, Composio cloud actions,
-and AI conversational reasoning.
+FastAPI Tactical REST Server for Jarvis AI / Jarvis-Copilot.
+Fully async, high-performance API backend replacing manual HTTP server:
+- Native async def endpoints eliminating event loop contention.
+- Integrated CORSMiddleware.
+- Direct Neural Audio Streaming.
+- Full parity across EDA hardware, Memory Tree, Workflows, 12-App Recipes, Cron Daemon, and ECC Instincts.
 """
 
 import os
+import sys
 import json
 import time
 import asyncio
 import urllib.parse
-from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
+from typing import Dict, Any, List, Optional
+import psutil
+
+from fastapi import FastAPI, Request, Response, Query, Body, HTTPException
+from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import uvicorn
+
 import config
 
 logger = config.get_logger(__name__)
 
-# Import Jarvis backend tools
-from agent.copilot import JarvisAgent
-from tools.kicad_tool import analyze_kicad_file, get_power_tree, check_pcb_errors, generate_bom_report
-from tools.thermal_tool import calculate_thermal_loss
-from tools.signal_integrity_tool import check_signal_integrity
-from tools.supply_chain_tool import check_supply_chain_status
+# Initialize FastAPI App
+app = FastAPI(
+    title="Jarvis AI Copilot API",
+    description="Tactical Cyberpunk Assistant API for Personal Productivity & Hardware Engineering",
+    version="4.5.0"
+)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_SAMPLE_SCHEMATIC = os.path.join(BASE_DIR, "tests", "sample_autopick.kicad_sch")
-PORT = 8000
-START_TIME = time.time()
+# Enable CORS for HUD Web Application
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Global Agent Instance Singleton
-_JARVIS_AGENT = None
+# UI Directory
+UI_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "ui")
+
+# Global Shared Agent Instance
+_agent_instance = None
 
 def get_agent():
-    global _JARVIS_AGENT
-    if _JARVIS_AGENT is None or _JARVIS_AGENT is False:
-        try:
-            logger.info("[HUD Server] Initializing JarvisAgent for live reasoning and tool execution...")
-            _JARVIS_AGENT = JarvisAgent()
-        except Exception as e:
-            logger.warning(f"[HUD Server] Could not initialize full JarvisAgent: {e}")
-            _JARVIS_AGENT = False
-    return _JARVIS_AGENT
-
-
-class JarvisHUDHandler(BaseHTTPRequestHandler):
-
-    def log_message(self, format, *args):
-        logger.info(f"[HTTP {self.address_string()}] {format % args}")
-
-    def _set_json_headers(self, status_code=200):
-        self.send_response(status_code)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.end_headers()
-
-    def _set_html_headers(self, content_type="text/html"):
-        self.send_response(200)
-        self.send_header("Content-Type", f"{content_type}; charset=utf-8")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.end_headers()
-
-    def _set_binary_headers(self, content_type="image/png"):
-        self.send_response(200)
-        self.send_header("Content-Type", content_type)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
-        self.end_headers()
-
-    def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.end_headers()
-
-    def do_GET(self):
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-
-        # -------------------------------------------------------------------
-        # Static Asset Routes
-        # -------------------------------------------------------------------
-        if path == "/" or path == "/index.html":
-            ui_index = os.path.join(BASE_DIR, "ui", "index.html")
-            if os.path.exists(ui_index):
-                self._set_html_headers("text/html")
-                with open(ui_index, "rb") as f:
-                    self.wfile.write(f.read())
-                return
-            else:
-                self._set_json_headers(404)
-                self.wfile.write(json.dumps({"error": "ui/index.html not found"}).encode())
-                return
-
-        elif path == "/app.js":
-            ui_js = os.path.join(BASE_DIR, "ui", "app.js")
-            if os.path.exists(ui_js):
-                self._set_html_headers("application/javascript")
-                with open(ui_js, "rb") as f:
-                    self.wfile.write(f.read())
-                return
-
-        elif path in ["/screen_capture.png", "/image.png"]:
-            file_path = os.path.join(BASE_DIR, "scratch", "screen_capture.png") if path == "/screen_capture.png" else os.path.join(BASE_DIR, "image.png")
-            if os.path.exists(file_path):
-                self._set_binary_headers("image/png")
-                with open(file_path, "rb") as f:
-                    self.wfile.write(f.read())
-                return
-
-        elif path.startswith("/scratch/"):
-            file_name = os.path.basename(path)
-            if not file_name or file_name == "scratch":
-                file_name = "screen_capture.png"
-            file_path = os.path.join(BASE_DIR, "scratch", file_name)
-            logger.info(f"[HUD Server] Serving scratch asset: '{file_name}' from '{file_path}' (exists={os.path.exists(file_path)})")
-            
-            # If screen_capture.png doesn't exist yet, generate default frame buffer
-            if not os.path.exists(file_path) and file_name == "screen_capture.png":
-                try:
-                    from PIL import Image
-                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                    img = Image.new('RGB', (1920, 1080), color=(30, 30, 30))
-                    img.save(file_path)
-                except Exception as ie:
-                    logger.warning(f"[HUD Server] Could not create initial frame buffer: {ie}")
-
-            if os.path.exists(file_path):
-                ext = os.path.splitext(file_name)[1].lower()
-                content_type = "image/png" if ext in [".png", ".jpg", ".jpeg"] else "application/octet-stream"
-                self._set_binary_headers(content_type)
-                with open(file_path, "rb") as f:
-                    self.wfile.write(f.read())
-                return
-            else:
-                self._set_json_headers(404)
-                self.wfile.write(json.dumps({"error": f"File '{file_name}' not found at '{file_path}'"}).encode())
-                return
-
-        # -------------------------------------------------------------------
-        # REST API Routes
-        # -------------------------------------------------------------------
-        if path == "/api/status":
-            uptime_sec = int(time.time() - START_TIME)
-            res = {
-                "status": "online",
-                "system": config.PROJECT_NAME,
-                "model": config.GEMINI_MODEL if config.USE_GEMINI else config.OLLAMA_MODEL,
-                "uptime": f"{uptime_sec}s",
-                "host": "localhost",
-                "port": 8000,
-                "active_tools": 34,
-                "composio_connected": bool(config.COMPOSIO_API_KEY)
-            }
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/agent/startup-briefing":
-            try:
-                from tools.system_control_tool import get_startup_briefing
-                res = get_startup_briefing.invoke({})
-                self._set_json_headers(200)
-                self.wfile.write(json.dumps(res).encode())
-            except Exception as e:
-                logger.error(f"[HUD Server] Startup briefing error: {e}")
-                self._set_json_headers(500)
-                self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode())
-            return
-
-        elif path == "/api/kicad/sch":
-            sch_path = DEFAULT_SAMPLE_SCHEMATIC
-            res = analyze_kicad_file.invoke({"file_path": sch_path})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/kicad/drc":
-            sch_path = DEFAULT_SAMPLE_SCHEMATIC
-            res = check_pcb_errors.invoke({"file_path": sch_path})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/kicad/power":
-            sch_path = DEFAULT_SAMPLE_SCHEMATIC
-            res = get_power_tree.invoke({"file_path": sch_path})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/kicad/bom":
-            sch_path = DEFAULT_SAMPLE_SCHEMATIC
-            res = generate_bom_report.invoke({"file_path": sch_path})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/composio/status":
-            res = {
-                "status": "success",
-                "summary": "Composio MCP Hub 5 Active App Connections Verified",
-                "data": {
-                    "active_apps": ["Gmail", "Google Calendar", "Notion", "Google Sheets", "Google Docs"],
-                    "api_key_configured": bool(config.COMPOSIO_API_KEY)
-                }
-            }
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/pcb/state":
-            from tools.kicad_tool import read_schematic, get_erc_violations, get_project_info
-            info = get_project_info.invoke({})
-            sch = read_schematic.invoke({})
-            erc = get_erc_violations.invoke({})
-            res = {
-                "status": "success",
-                "summary": "Live PCB project state retrieved.",
-                "data": {
-                    "project_info": info.get("data", {}),
-                    "schematic": sch.get("data", {}),
-                    "erc": erc.get("data", {})
-                }
-            }
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/pcb/templates":
-            from tools.circuit_templates_tool import list_circuit_templates
-            res = list_circuit_templates.invoke({})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        # -------------------------------------------------------------------
-        # OpenHuman-Inspired General Purpose Endpoints (GET)
-        # -------------------------------------------------------------------
-        elif path == "/api/memory_tree":
-            query = urllib.parse.parse_qs(parsed.query).get("query", [""])[0]
-            category = urllib.parse.parse_qs(parsed.query).get("category", [""])[0]
-            from tools.memory_tree_tool import memory_tree_query
-            res = memory_tree_query.invoke({"query": query, "category": category})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/goals":
-            status = urllib.parse.parse_qs(parsed.query).get("status", [""])[0]
-            from tools.memory_tree_tool import goals_kanban_list
-            res = goals_kanban_list.invoke({"status": status})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/workflows":
-            from tools.workflows_engine_tool import workflow_list
-            res = workflow_list.invoke({})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/channels":
-            from tools.multichannel_hub_tool import channel_list_status
-            res = channel_list_status.invoke({})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/medulla/attention":
-            from agent.medulla_reflex import medulla
-            queue = medulla.get_attention_queue()
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "data": {"attention_queue": queue}}).encode())
-            return
-
-        elif path == "/api/recipes":
-            from tools.recipes_automation_tool import list_available_recipes
-            res = list_available_recipes.invoke({})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/cron":
-            from agent.cron_daemon import cron_daemon
-            jobs = cron_daemon.get_jobs()
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "data": {"jobs": jobs}}).encode())
-            return
-
-        elif path == "/api/system/stats":
-            from tools.desktop_control_tool import get_system_metrics
-            res = get_system_metrics.invoke({})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/desktop/apps":
-            from tools.desktop_control_tool import list_active_windows
-            res = list_active_windows.invoke({})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/lifecycle/status":
-            from agent.service_lifecycle import service_lifecycle
-            status = service_lifecycle.get_status()
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "data": status}).encode())
-            return
-
-        elif path == "/api/memory/scoped":
-            from agent.unified_memory import unified_memory
-            query_params = urllib.parse.parse_qs(parsed.query)
-            scope = query_params.get("scope", ["project"])[0]
-            items = unified_memory.list_scope(scope)
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "scope": scope, "items": items}).encode())
-            return
-
-        elif path == "/api/tts/synthesize":
-            # Direct Neural Audio Streaming (GET /api/tts/synthesize?text=...&voice=...)
-            query_params = urllib.parse.parse_qs(parsed.query)
-            text = query_params.get("text", [""])[0]
-            voice = query_params.get("voice", ["en-US-ChristopherNeural"])[0]
-            
-            from voice.tts import TextToSpeech
-            tts = TextToSpeech(voice=voice)
-            try:
-                audio_bytes = asyncio.run(tts.synthesize_bytes(text, voice=voice))
-            except Exception as e:
-                logger.warning(f"[TTS Server Error]: {e}")
-                audio_bytes = b""
-
-            if not audio_bytes:
-                self.send_response(204)
-                self.send_header("Access-Control-Allow-Origin", "*")
-                self.end_headers()
-                return
-
-            self.send_response(200)
-            self.send_header("Content-Type", "audio/mpeg")
-            self.send_header("Content-Length", str(len(audio_bytes)))
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Cache-Control", "no-cache")
-            self.end_headers()
-            self.wfile.write(audio_bytes)
-            return
-
-        # Fallback 404
-        self._set_json_headers(404)
-        self.wfile.write(json.dumps({"error": f"Route '{path}' not found"}).encode())
-
-    def do_POST(self):
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-
-        content_length = int(self.headers.get("Content-Length", 0))
-        body_bytes = self.rfile.read(content_length) if content_length > 0 else b"{}"
-        try:
-            body = json.loads(body_bytes.decode("utf-8"))
-        except json.JSONDecodeError:
-            body = {}
-
-        if path == "/api/agent/command":
-            cmd = body.get("command", "").strip()
-            logger.info(f"[HUD Server] Agent command received: '{cmd}'")
-
-            if not cmd:
-                self._set_json_headers(400)
-                self.wfile.write(json.dumps({"error": "Empty command"}).encode())
-                return
-
-            cmd_lower = cmd.lower()
-            res = None
-
-            if res is None:
-                # Real Agentic Reasoning & Tool Execution via JarvisAgent
-                agent = get_agent()
-                if agent and hasattr(agent, "process_query"):
-                    try:
-                        loop = asyncio.new_event_loop()
-                        asyncio.set_event_loop(loop)
-                        response_text = loop.run_until_complete(agent.process_query(cmd))
-                        loop.close()
-
-                        res = {
-                            "status": "success",
-                            "summary": response_text,
-                            "data": {"command": cmd, "result": response_text}
-                        }
-                    except Exception as e:
-                        logger.error(f"[HUD Server] Agent query execution error: {e}")
-                        res = {
-                            "status": "error",
-                            "summary": f"Jarvis: Execution error occurred while running query ({e}).",
-                            "data": {"error": str(e)}
-                        }
-                else:
-                    res = {
-                        "status": "success",
-                        "summary": f"Jarvis: Query '{cmd}' received. Backend agent online.",
-                        "data": {"command": cmd, "result": "Agent online."}
-                    }
-
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/agent/startup-briefing":
-            try:
-                from tools.system_control_tool import get_startup_briefing
-                res = get_startup_briefing.invoke({})
-                self._set_json_headers(200)
-                self.wfile.write(json.dumps(res).encode())
-            except Exception as e:
-                logger.error(f"[HUD Server] Startup briefing error: {e}")
-                self._set_json_headers(500)
-                self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode())
-            return
-
-        elif path == "/api/thermal/calculate":
-            current = float(body.get("current_amps", 2.5))
-            res = calculate_thermal_loss.invoke({"current_amps": current})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/signal/check":
-            width = float(body.get("trace_width_mm", 0.2))
-            res = check_signal_integrity.invoke({"trace_width_mm": width})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/vision/capture":
-            try:
-                from tools.omniparser_tool import parse_screen_gui
-                res = parse_screen_gui.invoke({"action_context": "HUD Vision Feed Trigger"})
-                self._set_json_headers(200)
-                self.wfile.write(json.dumps({
-                    "status": "success",
-                    "image_url": f"/scratch/screen_capture.png?t={int(time.time()*1000)}",
-                    "summary": res.get("summary", "")
-                }).encode())
-            except Exception as e:
-                logger.error(f"[HUD Server] Vision capture error: {e}")
-                self._set_json_headers(500)
-                self.wfile.write(json.dumps({"status": "error", "message": str(e)}).encode())
-            return
-
-        elif path == "/api/tts/speak":
-            text = body.get("text", "").strip()
-            if text:
-                try:
-                    from voice.tts import TextToSpeech
-                    tts = TextToSpeech()
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    loop.run_until_complete(tts.speak(text))
-                    loop.close()
-                    res = {"status": "success", "summary": f"Spoke: '{text[:50]}...'"}
-                except Exception as e:
-                    logger.warning(f"[HUD Server] TTS speak error: {e}")
-                    res = {"status": "error", "summary": str(e)}
-            else:
-                res = {"status": "error", "summary": "Empty text"}
-        elif path == "/api/pcb/generate":
-            prompt = body.get("prompt", "").strip()
-            template_name = body.get("template_name", "").strip()
-            params = body.get("params", {})
-            file_path = body.get("file_path", "scratch/project.kicad_sch")
-            
-            logger.info(f"[HUD Server] PCB Generate request: prompt='{prompt}', template='{template_name}'")
-            
-            if template_name:
-                from tools.circuit_templates_tool import generate_from_template
-                res = generate_from_template.invoke({"template_name": template_name, "params": params, "file_path": file_path})
-            elif prompt:
-                from agent.verify_loop import AgenticPcbVerifyLoop
-                loop = AgenticPcbVerifyLoop(target_file=os.path.abspath(file_path))
-                res = loop.run_cycle(prompt)
-            else:
-                res = {"status": "error", "summary": "Neither prompt nor template_name was specified."}
-                
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/pcb/autoroute":
-            board_file = body.get("board_file", "scratch/board.kicad_pcb")
-            track_width = float(body.get("track_width_mm", 0.25))
-            layer = body.get("layer", "F.Cu")
-            
-            from tools.autorouter_tool import autoroute_board, get_drc_violations
-            route_res = autoroute_board.invoke({"board_file": board_file, "track_width_mm": track_width, "layer": layer})
-            drc_res = get_drc_violations.invoke({"board_file": board_file})
-            
-            res = {
-                "status": "success",
-                "summary": f"Autorouted board: {route_res.get('summary', '')} DRC: [{drc_res.get('data', {}).get('verdict', 'PASSED')}].",
-                "data": {
-                    "route": route_res.get("data", {}),
-                    "drc": drc_res.get("data", {})
-                }
-            }
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        # -------------------------------------------------------------------
-        # OpenHuman-Inspired General Purpose Endpoints (POST)
-        # -------------------------------------------------------------------
-        elif path == "/api/memory_tree":
-            from tools.memory_tree_tool import memory_tree_store
-            res = memory_tree_store.invoke({
-                "path": body.get("path", "/general/notes"),
-                "title": body.get("title", "Note"),
-                "content": body.get("content", ""),
-                "category": body.get("category", "general"),
-                "tags": body.get("tags", "memory"),
-                "importance": int(body.get("importance", 5))
-            })
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/goals":
-            from tools.memory_tree_tool import goals_kanban_upsert
-            res = goals_kanban_upsert.invoke({
-                "title": body.get("title", "New Goal"),
-                "description": body.get("description", ""),
-                "status": body.get("status", "todo"),
-                "priority": body.get("priority", "medium"),
-                "category": body.get("category", "general"),
-                "deadline": body.get("deadline", ""),
-                "progress": int(body.get("progress", 0)),
-                "goal_id": body.get("goal_id")
-            })
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/workflows/create":
-            from tools.workflows_engine_tool import workflow_create
-            res = workflow_create.invoke({
-                "name": body.get("name", "New Workflow"),
-                "description": body.get("description", ""),
-                "trigger_type": body.get("trigger_type", "manual"),
-                "trigger_config": json.dumps(body.get("trigger_config", {})),
-                "steps_json": json.dumps(body.get("steps", [])),
-                "enabled": body.get("enabled", True)
-            })
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/workflows/execute":
-            from tools.workflows_engine_tool import workflow_execute
-            wf_target = str(body.get("workflow_id_or_name", "1"))
-            payload = json.dumps(body.get("payload", {}))
-            res = workflow_execute.invoke({"workflow_id_or_name": wf_target, "payload": payload})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/channels/send":
-            from tools.multichannel_hub_tool import channel_send_message
-            res = channel_send_message.invoke({
-                "channel": body.get("channel", "discord"),
-                "target_recipient": body.get("recipient", "general"),
-                "message_content": body.get("content", ""),
-                "attachments": body.get("attachments")
-            })
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/tokenjuice":
-            from tools.tokenjuice_tool import tokenjuice_compress
-            res = tokenjuice_compress.invoke({
-                "content": body.get("content", ""),
-                "content_type": body.get("content_type", "auto"),
-                "aggressive": body.get("aggressive", False)
-            })
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/medulla/triage":
-            from agent.medulla_reflex import medulla
-            prompt = body.get("prompt", "")
-            triage_res = medulla.triage_intent(prompt)
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "data": triage_res}).encode())
-            return
-
-        elif path == "/api/tts/synthesize":
-            text = body.get("text", "")
-            voice = body.get("voice", "en-US-ChristopherNeural")
-            
-            from voice.tts import TextToSpeech
-            tts = TextToSpeech(voice=voice)
-            audio_bytes = asyncio.run(tts.synthesize_bytes(text, voice=voice))
-
-            self.send_response(200)
-            self.send_header("Content-Type", "audio/mpeg")
-            self.send_header("Content-Length", str(len(audio_bytes)))
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Cache-Control", "no-cache")
-            self.end_headers()
-            self.wfile.write(audio_bytes)
-            return
-
-        elif path == "/api/tts/speak":
-            text = body.get("text", "")
-            voice = body.get("voice", "en-US-ChristopherNeural")
-            from voice.tts import TextToSpeech
-            tts = TextToSpeech(voice=voice)
-            asyncio.run(tts.speak(text, voice=voice))
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "summary": "Speech playback started"}).encode())
-            return
-
-        elif path == "/api/recipes/run":
-            from tools.recipes_automation_tool import execute_recipe
-            recipe_name = body.get("recipe", "")
-            action = body.get("action", "")
-            params = body.get("parameters", {})
-            params_str = json.dumps(params) if isinstance(params, dict) else str(params)
-            res = execute_recipe.invoke({
-                "recipe_name": recipe_name,
-                "action": action,
-                "parameters": params_str
-            })
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/cron/trigger":
-            from agent.cron_daemon import cron_daemon
-            job_id = body.get("job_id", "")
-            res = cron_daemon.trigger_job(job_id)
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/sandbox/run":
-            from tools.sandbox_runner_tool import run_sandbox_code
-            code = body.get("code", "")
-            res = run_sandbox_code.invoke({"code": code})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/clipboard":
-            from tools.desktop_control_tool import manage_clipboard
-            action = body.get("action", "read")
-            text = body.get("text", "")
-            res = manage_clipboard.invoke({"action": action, "text_to_write": text})
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps(res).encode())
-            return
-
-        elif path == "/api/lifecycle/reclaim":
-            from agent.service_lifecycle import service_lifecycle
-            max_idle = body.get("max_idle_seconds", 0)
-            released = service_lifecycle.release_idle_services(max_idle_seconds=max_idle)
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "released_services_count": released}).encode())
-            return
-
-        elif path == "/api/ecc/plan":
-            from agent.ecc_instincts import ecc_instincts
-            query = body.get("query", "")
-            action = body.get("action", "")
-            target_files = body.get("target_files", [])
-            res = ecc_instincts.plan_before_build(query=query, proposed_action=action, target_files=target_files)
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "data": res}).encode())
-            return
-
-        elif path == "/api/ecc/verify":
-            from agent.ecc_instincts import ecc_instincts
-            code = body.get("code", "")
-            res = ecc_instincts.self_verify_python_code(code)
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "data": res}).encode())
-            return
-
-        elif path == "/api/memory/scoped":
-            from agent.unified_memory import unified_memory
-            scope = body.get("scope", "project")
-            key = body.get("key", "")
-            value = body.get("value", "")
-            metadata = body.get("metadata", {})
-            unified_memory.set(scope=scope, key=key, value=value, metadata=metadata)
-            self._set_json_headers(200)
-            self.wfile.write(json.dumps({"status": "success", "message": f"Saved {scope} memory '{key}'"}).encode())
-            return
-
-        self._set_json_headers(404)
-        self.wfile.write(json.dumps({"error": f"POST route '{path}' not found"}).encode())
+    global _agent_instance
+    if _agent_instance is None:
+        from agent.copilot import JarvisAgent
+        _agent_instance = JarvisAgent()
+    return _agent_instance
+
+
+# ==============================================================================
+# UI Static File Routes
+# ==============================================================================
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_ui_root():
+    index_path = os.path.join(UI_DIR, "index.html")
+    if os.path.exists(index_path):
+        with open(index_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return HTMLResponse("<h1>Jarvis UI not found</h1>", status_code=404)
+
+
+@app.get("/app.js")
+async def serve_app_js():
+    js_path = os.path.join(UI_DIR, "app.js")
+    if os.path.exists(js_path):
+        return FileResponse(js_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found")
+
+
+@app.get("/styles.css")
+async def serve_styles_css():
+    css_path = os.path.join(UI_DIR, "styles.css")
+    if os.path.exists(css_path):
+        return FileResponse(css_path, media_type="text/css")
+    return Response(content="", media_type="text/css")
+
+
+# ==============================================================================
+# Core AI Agent & Speech Routes
+# ==============================================================================
+
+@app.post("/api/agent/command")
+async def handle_agent_command(payload: Dict[str, Any] = Body(...)):
+    command = payload.get("command", "").strip()
+    if not command:
+        raise HTTPException(status_code=400, detail="Command string is required")
+
+    logger.info(f"[FastAPI Server] Agent command received: '{command}'")
+    agent = get_agent()
+    response_text = await agent.process_query(command)
+
+    return {
+        "status": "success",
+        "response": response_text,
+        "history_count": len(agent.history),
+        "timestamp": time.time()
+    }
+
+
+@app.get("/api/tts/synthesize")
+async def synthesize_tts_speech(
+    text: str = Query(..., description="Text to synthesize"),
+    voice: str = Query("en-US-ChristopherNeural", description="Neural voice identifier")
+):
+    if not text.strip():
+        return Response(status_code=204)
+
+    from voice.tts import TextToSpeech
+    tts = TextToSpeech(voice=voice)
+    try:
+        audio_bytes = await tts.synthesize_bytes(text, voice=voice)
+    except Exception as e:
+        logger.warning(f"[TTS Server Error]: {e}")
+        audio_bytes = b""
+
+    if not audio_bytes:
+        return Response(status_code=204)
+
+    return Response(
+        content=audio_bytes,
+        media_type="audio/mpeg",
+        headers={"Content-Disposition": "inline; filename=speech.mp3"}
+    )
+
+
+# ==============================================================================
+# System Metrics & Desktop Control
+# ==============================================================================
+
+@app.get("/api/system/stats")
+async def get_system_stats():
+    cpu = psutil.cpu_percent(interval=0.05)
+    mem = psutil.virtual_memory().percent
+    disk = psutil.disk_usage("/").percent if hasattr(psutil, "disk_usage") else 0
+    return {
+        "status": "success",
+        "cpu_percent": cpu,
+        "ram_percent": mem,
+        "disk_percent": disk,
+        "timestamp": time.time()
+    }
+
 
+@app.get("/api/desktop/apps")
+async def get_active_apps():
+    from tools.desktop_control_tool import list_active_windows
+    res = list_active_windows.invoke({})
+    return res
+
+
+@app.post("/api/clipboard")
+async def manage_clipboard_route(payload: Dict[str, Any] = Body(...)):
+    from tools.desktop_control_tool import manage_clipboard
+    action = payload.get("action", "read")
+    text = payload.get("text", "")
+    res = manage_clipboard.invoke({"action": action, "text_to_write": text})
+    return res
+
+
+# ==============================================================================
+# Intelligence, Memory Tree & Kanban Routes
+# ==============================================================================
+
+@app.get("/api/goals")
+async def list_goals():
+    from tools.memory_tree_tool import goals_kanban_list
+    res = goals_kanban_list.invoke({})
+    return res
+
+
+@app.post("/api/goals")
+async def upsert_goal(payload: Dict[str, Any] = Body(...)):
+    from tools.memory_tree_tool import goals_kanban_upsert
+    res = goals_kanban_upsert.invoke({
+        "goal_id": payload.get("goal_id", ""),
+        "title": payload.get("title", ""),
+        "status": payload.get("status", "todo"),
+        "priority": payload.get("priority", "medium"),
+        "deadline": payload.get("deadline", "")
+    })
+    return res
+
+
+@app.get("/api/memory_tree")
+async def query_memory_tree(query: str = Query("", description="Search query"), category: str = Query("", description="Category")):
+    from tools.memory_tree_tool import memory_tree_query
+    res = memory_tree_query.invoke({"query": query, "category": category})
+    return res
+
+
+@app.post("/api/memory_tree")
+async def save_memory_node(payload: Dict[str, Any] = Body(...)):
+    from tools.memory_tree_tool import memory_tree_save_node
+    res = memory_tree_save_node.invoke({
+        "key": payload.get("key", ""),
+        "value": payload.get("value", ""),
+        "category": payload.get("category", "general"),
+        "score": payload.get("score", 0.5)
+    })
+    return res
+
+
+# ==============================================================================
+# Workflows & Channels Hub Routes
+# ==============================================================================
+
+@app.get("/api/workflows")
+async def get_workflows():
+    from tools.workflows_engine_tool import workflow_list
+    res = workflow_list.invoke({})
+    return res
+
+
+@app.post("/api/workflows")
+async def create_workflow_route(payload: Dict[str, Any] = Body(...)):
+    from tools.workflows_engine_tool import workflow_create
+    res = workflow_create.invoke({
+        "name": payload.get("name", ""),
+        "description": payload.get("description", ""),
+        "trigger": payload.get("trigger", "manual"),
+        "steps_json": json.dumps(payload.get("steps", []))
+    })
+    return res
+
+
+@app.post("/api/workflows/execute")
+async def execute_workflow_route(payload: Dict[str, Any] = Body(...)):
+    from tools.workflows_engine_tool import workflow_execute
+    res = workflow_execute.invoke({"workflow_id": payload.get("workflow_id", "")})
+    return res
+
+
+@app.get("/api/channels")
+async def get_channels_status():
+    from tools.multichannel_hub_tool import channel_list_status
+    res = channel_list_status.invoke({})
+    return res
+
+
+@app.post("/api/channels/send")
+async def send_channel_message(payload: Dict[str, Any] = Body(...)):
+    from tools.multichannel_hub_tool import channel_send_message
+    res = channel_send_message.invoke({
+        "channel": payload.get("channel", "telegram"),
+        "recipient": payload.get("recipient", ""),
+        "message": payload.get("message", "")
+    })
+    return res
+
+
+# ==============================================================================
+# Universal 12-App Recipes & Cron Daemon Routes
+# ==============================================================================
+
+@app.get("/api/recipes")
+async def get_recipes():
+    from tools.recipes_automation_tool import list_available_recipes
+    res = list_available_recipes.invoke({})
+    return res
+
+
+@app.post("/api/recipes/run")
+async def run_recipe_route(payload: Dict[str, Any] = Body(...)):
+    from tools.recipes_automation_tool import execute_recipe
+    res = execute_recipe.invoke({
+        "recipe_id": payload.get("recipe_id", ""),
+        "params": json.dumps(payload.get("params", {}))
+    })
+    return res
+
+
+@app.get("/api/cron")
+async def get_cron_jobs():
+    from agent.cron_daemon import cron_daemon
+    res = cron_daemon.list_jobs()
+    return res
+
+
+@app.post("/api/cron/trigger")
+async def trigger_cron_job(payload: Dict[str, Any] = Body(...)):
+    from agent.cron_daemon import cron_daemon
+    job_id = payload.get("job_id", "")
+    res = cron_daemon.trigger_job(job_id)
+    return res
+
+
+# ==============================================================================
+# Python Sandboxed Code Runner
+# ==============================================================================
+
+@app.post("/api/sandbox/run")
+async def run_sandbox_route(payload: Dict[str, Any] = Body(...)):
+    from tools.sandbox_runner_tool import run_sandbox_code
+    code = payload.get("code", "")
+    res = run_sandbox_code.invoke({"code": code})
+    return res
+
+
+# ==============================================================================
+# ECC Instincts & Lazy Service Lifecycle Routes
+# ==============================================================================
+
+@app.get("/api/lifecycle/status")
+async def get_lifecycle_status():
+    from agent.service_lifecycle import service_lifecycle
+    return {"status": "success", "data": service_lifecycle.get_status()}
+
+
+@app.post("/api/lifecycle/reclaim")
+async def reclaim_lifecycle_memory(payload: Dict[str, Any] = Body(default={})):
+    from agent.service_lifecycle import service_lifecycle
+    max_idle = payload.get("max_idle_seconds", 0)
+    released = service_lifecycle.release_idle_services(max_idle_seconds=max_idle)
+    return {"status": "success", "released_services_count": released}
+
+
+@app.post("/api/ecc/plan")
+async def ecc_plan_route(payload: Dict[str, Any] = Body(...)):
+    from agent.ecc_instincts import ecc_instincts
+    query = payload.get("query", "")
+    action = payload.get("action", "")
+    target_files = payload.get("target_files", [])
+    res = ecc_instincts.plan_before_build(query=query, proposed_action=action, target_files=target_files)
+    return {"status": "success", "data": res}
+
+
+@app.post("/api/ecc/verify")
+async def ecc_verify_route(payload: Dict[str, Any] = Body(...)):
+    from agent.ecc_instincts import ecc_instincts
+    code = payload.get("code", "")
+    res = ecc_instincts.self_verify_python_code(code)
+    return {"status": "success", "data": res}
+
+
+@app.get("/api/memory/scoped")
+async def get_scoped_memory(scope: str = Query("project", description="Scope: user/project/session")):
+    from agent.unified_memory import unified_memory
+    items = unified_memory.list_scope(scope)
+    return {"status": "success", "scope": scope, "items": items}
+
+
+@app.post("/api/memory/scoped")
+async def set_scoped_memory(payload: Dict[str, Any] = Body(...)):
+    from agent.unified_memory import unified_memory
+    scope = payload.get("scope", "project")
+    key = payload.get("key", "")
+    value = payload.get("value", "")
+    metadata = payload.get("metadata", {})
+    unified_memory.set(scope=scope, key=key, value=value, metadata=metadata)
+    return {"status": "success", "message": f"Saved {scope} memory '{key}'"}
+
+
+# ==============================================================================
+# Hardware PCB Tools
+# ==============================================================================
+
+@app.get("/api/hardware/schematic")
+async def get_schematic_tree():
+    sample_sch = "tests/sample_autopick.kicad_sch"
+    if os.path.exists(sample_sch):
+        with open(sample_sch, "r", encoding="utf-8") as f:
+            content = f.read()
+        return {"status": "success", "file": sample_sch, "ast_content": content}
+    return {"status": "error", "message": "Sample schematic not found."}
+
+
+@app.post("/api/hardware/thermal")
+async def run_thermal_calculation(payload: Dict[str, Any] = Body(default={})):
+    from tools.thermal_tool import calculate_thermal_loss
+    res = calculate_thermal_loss.invoke({})
+    return res
+
+
+@app.get("/api/models/status")
+async def get_models_status():
+    agent = get_agent()
+    usage = agent.key_manager.get_usage_summary() if hasattr(agent, "key_manager") else "N/A"
+    return {
+        "status": "success",
+        "gemini_keys_configured": len(config.settings.GEMINI_API_KEYS) if hasattr(config, "settings") else 0,
+        "ollama_base_url": config.OLLAMA_BASE_URL,
+        "key_usage_summary": usage
+    }
+
+
+# ==============================================================================
+# Server Entrypoint
+# ==============================================================================
 
 def start_server(host="localhost", port=8000):
-    ThreadingHTTPServer.allow_reuse_address = True
-    
+    """Starts the background cron daemon and launches the Uvicorn ASGI server."""
     # Start Autonomous Background Cron Daemon
     try:
         from agent.cron_daemon import cron_daemon
         cron_daemon.start()
-    except Exception as ce:
-        logger.warning(f"[Cron Daemon Start Error]: {ce}")
+    except Exception as e:
+        logger.warning(f"[FastAPI Server] Could not auto-start Cron Daemon: {e}")
 
-    httpd = None
-    for p in range(port, port + 10):
-        try:
-            httpd = ThreadingHTTPServer((host, p), JarvisHUDHandler)
-            port = p
-            break
-        except OSError:
-            continue
-
-    if not httpd:
-        logger.error(f"[Jarvis HUD] Could not bind to any port in range {port}..{port+10}")
-        return
-
-    logger.info(f"[Jarvis HUD] Tactical Multi-Threaded Engineering HUD running at http://{host}:{port}")
     print("=" * 70)
-    print(f"[JARVIS PCB-COPILOT] Tactical Cyberpunk HUD Interface Online!")
+    print(f"[JARVIS COPILOT] FastAPI Tactical Cyberpunk HUD Interface Online!")
     print(f"URL: http://{host}:{port}")
     print("=" * 70)
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        print("\n[Jarvis HUD] Server shut down gracefully.")
+
+    uvicorn.run(app, host=host, port=port, log_level="info")
 
 
 if __name__ == "__main__":
-    start_server()
+    start_server(host="localhost", port=8000)

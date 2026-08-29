@@ -139,6 +139,10 @@ class CronDaemon:
             logger.error(f"[Cron Daemon Error in {job.name}]: {e}\n{traceback.format_exc()}")
             return {"status": "error", "message": str(e), "job": job.to_dict()}
 
+    def list_jobs(self) -> Dict[str, Any]:
+        with self.lock:
+            return {"status": "success", "jobs": [job.to_dict() for job in self.jobs.values()]}
+
     def get_jobs(self) -> List[Dict[str, Any]]:
         with self.lock:
             return [job.to_dict() for job in self.jobs.values()]
