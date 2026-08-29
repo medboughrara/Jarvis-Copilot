@@ -110,15 +110,52 @@ class DesktopPetController:
         logger.info("[Desktop Pet] 📸 Visible Screen Capture Indicator Flash Triggered.")
 
 
+def ensure_web_server_running(port: int = 8000) -> bool:
+    """Ensures the FastAPI backend is running. Spawns an embedded Uvicorn server if needed."""
+    import urllib.request
+    try:
+        urllib.request.urlopen(f"http://localhost:{port}/", timeout=0.6)
+        logger.info(f"[Desktop Pet] Verified existing web server on port {port}.")
+        return True
+    except Exception:
+        logger.info(f"[Desktop Pet] Web server not active on port {port}. Auto-starting embedded server...")
+        try:
+            import uvicorn
+            from web_server import app
+
+            def run_server():
+                uvicorn.run(app, host="127.0.0.1", port=port, log_level="warning")
+
+            srv_thread = threading.Thread(target=run_server, daemon=True)
+            srv_thread.start()
+
+            # Wait up to 3 seconds for server readiness
+            for _ in range(15):
+                time.sleep(0.2)
+                try:
+                    urllib.request.urlopen(f"http://localhost:{port}/", timeout=0.5)
+                    logger.info(f"[Desktop Pet] Embedded web server ready on port {port}.")
+                    return True
+                except Exception:
+                    pass
+            return False
+        except Exception as e:
+            logger.warning(f"[Desktop Pet] Could not auto-start embedded web server: {e}")
+            return False
+
+
 def launch_desktop_pet(port: int = 8000, blocking: bool = True) -> DesktopPetController:
     """Entry point for launching the Desktop Pet application."""
     # 1. First line: Set and verify DPI awareness
     init_process_dpi_awareness()
 
+    # 2. Auto-start web server if not already active
+    ensure_web_server_running(port=port)
+
     controller = DesktopPetController(port=port)
     controller.is_running = True
 
-    # 2. Start heartbeat thread
+    # 3. Start heartbeat thread
     controller.heartbeat_thread = threading.Thread(target=controller.start_heartbeat_loop, daemon=True)
     controller.heartbeat_thread.start()
 
