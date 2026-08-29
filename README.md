@@ -1,26 +1,26 @@
 # 🤖 Jarvis AI — Universal General-Purpose Assistant & Autonomous Copilot
 
-A local, voice-activated "Jarvis-style" open-source AI super-assistant designed for **general personal productivity, daily work automations, hierarchical memory trees (Karpathy Knowledgebase), Goals & Tasks Kanban boards, TokenJuice token compression, visual trigger workflows (Tinyflows), universal 17-channel messaging (Telegram, Discord, Slack, WhatsApp, Gmail), desktop app control, visual screen analysis, PDF document RAG, Graphify & Obsidian Knowledge Graphs, MemPalace Long-Term Memory, and specialized hardware/electronics engineering (3D procedural modeling, KiCad EDA, IPC-2221 thermal & autorouting)**.
+A local, voice-activated "Jarvis-style" open-source AI super-assistant designed for **general personal productivity, daily work automations, multi-model agentic orchestration (GLM-5.3, Kimi K2.7 Code, GLM-5.3 Flash, Qwen 3.8, Ornith-1.5), hierarchical memory trees, Goals & Tasks Kanban boards, TokenJuice token compression, visual trigger workflows (Tinyflows), universal 17-channel messaging (Telegram, Discord, Slack, WhatsApp, Gmail), desktop app control, visual screen analysis, PDF document RAG, Graphify & Obsidian Knowledge Graphs, MemPalace Long-Term Memory, and specialized hardware/electronics engineering (3D procedural modeling, KiCad EDA, IPC-2221 thermal & autorouting)**.
 
 <div align="center">
 
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge&logo=python&logoColor=white)
-![LangChain](https://img.shields.io/badge/Orchestration-LangChain-purple.svg?style=for-the-badge&logo=chainlink&logoColor=white)
-![ECC](https://img.shields.io/badge/Harness-ECC_Instincts-6366F1.svg?style=for-the-badge)
-![OpenHuman](https://img.shields.io/badge/Architecture-OpenHuman-FF6B6B.svg?style=for-the-badge)
-![TokenJuice](https://img.shields.io/badge/Compression-TokenJuice_-68%25-00F2FF.svg?style=for-the-badge)
-![Tinyflows](https://img.shields.io/badge/Automations-Tinyflows_Engine-10B981.svg?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/Server-FastAPI_Async-009688.svg?style=for-the-badge&logo=fastapi&logoColor=white)
+![Orchestrator](https://img.shields.io/badge/Orchestrator-Local_Ornith_1.5-6366F1.svg?style=for-the-badge)
+![GLM 5.3](https://img.shields.io/badge/Flagship-GLM--5.3_753B-3B82F6.svg?style=for-the-badge)
+![Kimi K2.7](https://img.shields.io/badge/Coding-Kimi_K2.7_Code_1.04T-10B981.svg?style=for-the-badge)
+![GLM 5.3 Flash](https://img.shields.io/badge/Multimodal-GLM--5.3_Flash_18B_MoE-F59E0B.svg?style=for-the-badge)
+![Qwen 3.8](https://img.shields.io/badge/Reasoning-Qwen_3.8_27B-EC4899.svg?style=for-the-badge)
+![ECC](https://img.shields.io/badge/Harness-ECC_Instincts-8B5CF6.svg?style=for-the-badge)
 ![Obsidian](https://img.shields.io/badge/Vault-Obsidian_Graph-7C3AED.svg?style=for-the-badge&logo=obsidian&logoColor=white)
-![MemPalace](https://img.shields.io/badge/Memory-MemPalace_Loci-00D2FF.svg?style=for-the-badge)
-![Composio MCP](https://img.shields.io/badge/Cloud_Apps-Composio_1000+-6C5CE7.svg?style=for-the-badge)
-![FastMCP](https://img.shields.io/badge/Tools-95+_Active_Tools-FF4B4B.svg?style=for-the-badge)
+![MemPalace](https://img.shields.io/badge/Memory-MemPalace_Gateway-00D2FF.svg?style=for-the-badge)
 
 </div>
 
 ---
 
 > [!NOTE]
-> **Universal Open-Source Personal Assistant & Agentic Harness**: Jarvis AI combines hands-free voice control, interactive animated mascot reactions, **ECC (Everything Claude Code) autonomous instincts & plan-before-build reflexes**, on-demand lazy model lifecycle management, hierarchical scored memory trees, goals kanban boards, trigger-driven workflows, multi-channel messaging (Telegram/Discord/WhatsApp/Slack/Gmail), desktop app automation, long-term spatial memory, interactive Obsidian knowledge graphs, procedural 3D electronic part generation, and automated KiCad PCB engineering across **95+ registered tools**.
+> **Universal Open-Source Personal Assistant & Multi-Model Agentic System**: Jarvis AI combines hands-free voice control, interactive animated mascot reactions, **sub-100ms local intent orchestration**, domain-specialized foundation models, collaborative multi-model pipelines, **ECC (Everything Claude Code) autonomous instincts & plan-before-build reflexes**, on-demand lazy model lifecycle management, unified memory gateways, goals kanban boards, trigger-driven workflows, multi-channel messaging, long-term spatial memory, interactive Obsidian knowledge graphs, procedural 3D electronic part generation, and automated KiCad PCB engineering across **95+ registered tools**.
 
 ---
 
@@ -30,42 +30,56 @@ A local, voice-activated "Jarvis-style" open-source AI super-assistant designed 
 graph TD
     subgraph IN ["Multimodal Input Layer"]
         MIC["🎙️ Hands-Free Mic / Voice PTT"] --> STT["⚡ Faster-Whisper / WebSpeech STT"]
-        UI["🖥️ Next-Gen Glassmorphic Assistant UI"] --> CMD["💬 REST API / Web Server"]
+        UI["🖥️ Next-Gen Glassmorphic Assistant UI"] --> API["⚡ FastAPI Async Backend (REST/WS)"]
         SCR["👁️ Active Screen Capture"] --> OCR["📸 OmniParser V2 & Nemotron OCR"]
     end
     
-    subgraph ORCH ["Split-Brain Harness & Orchestration Engine"]
-        STT --> MED["⚡ Split-Brain Medulla (Reflex Triage in <5ms)"]
-        CMD --> MED
-        OCR --> MED
-        MED --> AGENT["🧠 JarvisAgent (89+ Active Tools)"]
-        AGENT --> SEC["🛡️ AgentShield Security & Approval Gates"]
-        AGENT --> MEM_TREE["🌳 Scored Hierarchical Memory Tree"]
-        AGENT --> MEM_PALACE["🏰 MemPalace Verbatim Long-Term Memory"]
-        AGENT --> FLOWS["⚙️ Tinyflows Trigger Automation Engine"]
-        AGENT --> TJ["🧃 TokenJuice Compression Engine (up to 80% savings)"]
+    subgraph ORCH ["Sub-100ms Local Lightweight Orchestrator Layer"]
+        STT --> L_ORCH["⚡ Local Lightweight Orchestrator (ornith-1.5:9b / llama3:8b)"]
+        API --> L_ORCH
+        OCR --> L_ORCH
+        L_ORCH --> TRIAGE{"Intent & Complexity Triage"}
+        TRIAGE -->|Simple Chat / Greeting| DIRECT["⚡ Direct Local Execution (~50ms)"]
+        TRIAGE -->|Long-Horizon Coding / Architecture| PIPE_C["🛠️ Collaborative Coding Pipeline"]
+        TRIAGE -->|Vision / Screenshot / KiCad| PIPE_M["👁️ Fast Multimodal Pipeline"]
+        TRIAGE -->|Deep Research / Math| PIPE_R["📐 Deep Research Pipeline"]
+        TRIAGE -->|Hardware / EDA S-expr| PIPE_H["📐 KiCad Hardware Engine"]
+    end
+
+    subgraph BRAIN ["Domain-Specialized Foundation Model Suite"]
+        PIPE_C -->|Step 1: Plan| GLM53["⚡ GLM-5.3:cloud (753B / 1M ctx)"]
+        GLM53 -->|Step 2: Generate| KIMI["🛠️ Kimi-K2.7-Code:cloud (1.04T / 256K ctx)"]
+        KIMI -->|Step 3: Verify| GLM_F["🔍 GLM-5.3-Flash:cloud (18B active MoE)"]
+        
+        PIPE_M --> GLM_F
+        PIPE_R --> QWEN["📐 Qwen 3.8 (27B Dense Reasoning)"]
+        PIPE_H --> GEMINI["⚡ Gemini 2.5 Flash 5-Key Pool"]
+        
+        GLM53 -.->|Offline Fallback| LLAMA["💻 Local RTX 3050 Llama 3 8B"]
+        KIMI -.->|Offline Fallback| LLAMA
     end
     
-    subgraph BRAIN ["Multi-Tier LLM Engine Pool"]
-        AGENT --> T1["⚡ Tier 1: Gemini 2.5 / 3.6 Flash Multi-Key Pool"]
-        T1 -.->|Fallback| T2["🌌 Tier 2: NVIDIA NIM Cloud - Kimi 2.6 / Nemotron 3"]
-        T2 -.->|Fallback| T3["☁️ Tier 3: Ollama Cloud - GLM-5.2 / Kimi-K3"]
-        T3 -.->|Fallback| T4["💻 Tier 4: Local RTX 3050 Llama3:8b"]
+    subgraph HARNESS ["ECC Agent Harness & Memory Gateway"]
+        BRAIN --> SEC["🛡️ AgentShield Security & Path Validation"]
+        BRAIN --> MEM_GATE["🏛️ Unified Memory Gateway (data/ directory)"]
+        MEM_GATE --> M_SCOPED["📦 Scoped Memory (user / project / session)"]
+        MEM_GATE --> M_TREE["🌳 Scored Hierarchical Tree & Goals Kanban"]
+        MEM_GATE --> M_PALACE["🏰 MemPalace Spatial Loci Graph"]
+        BRAIN --> TJ["🧃 TokenJuice History Compression"]
     end
     
-    subgraph SUITE ["Universal Capability Tools (89+ Tools)"]
-        AGENT --> CHANNELS["📡 Multi-Channel Hub (Telegram / Discord / Slack / WhatsApp / Gmail)"]
-        AGENT --> WORKSPACE["💼 Google Sheets / Notion / Calendar / Docs / Drive"]
-        AGENT --> KANBAN["📋 Goals & Todos Kanban Manager"]
-        AGENT --> CRAWLER["🌐 Crawl4AI & Scrapling Deep Web Search"]
-        AGENT --> HARDWARE["📐 KiCad 8/9 EDA / DRC / Thermal / 3D img2obj Mesher"]
+    subgraph SUITE ["Universal Capability Tools (95+ Tools)"]
+        HARNESS --> CHANNELS["📡 Multi-Channel Hub (Telegram / Discord / Slack / WhatsApp / Gmail)"]
+        HARNESS --> WORKSPACE["💼 Google Sheets / Notion / Calendar / Docs / Drive"]
+        HARNESS --> CRAWLER["🌐 4-Tier MCP Web Gateway (curl_cffi -> Crawl4AI -> Playwright)"]
+        HARNESS --> HARDWARE["📐 KiCad 8/9 EDA / DRC / Thermal / 3D img2obj Mesher"]
     end
     
     subgraph OUT ["Multimodal Output Layer"]
-        AGENT --> TTS["🔊 Kokoro 24kHz Neural TTS / NVIDIA Magpie"]
+        HARNESS --> TTS["🔊 Kokoro 24kHz Neural TTS / Edge-TTS"]
         TTS --> SPK["📣 Speaker Playback & Audio Uplink"]
-        AGENT --> WEBGL["🌊 Interactive Circle Edge Voice Wave Shader"]
-        AGENT --> HUD_LOG["💻 Live Web HUD Terminal Log Stream & 3D WebGL Canvas"]
+        HARNESS --> WEBGL["🌊 Interactive Circle Edge Voice Wave Shader"]
+        HARNESS --> HUD_LOG["💻 Live Web HUD Terminal Log Stream & 3D WebGL Canvas"]
     end
 ```
 
@@ -234,15 +248,14 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 
 ```
 d:/aaaassistan_pcb/
-├── config.py                 # Pydantic Settings & logger configuration
-├── main.py                   # Async main execution loop (Wake Word -> STT -> LLM -> TTS)
-├── mcp_server.py             # FastMCP Stdio MCP server exposing 89+ dynamic tools
-├── web_server.py             # Cyberpunk Tactical HUD REST API & static server
-├── test_capabilities.py      # System capability verification suite
-├── requirements.txt          # PyTorch CUDA 12.1, LangChain, MemPalace & MCP dependencies
-├── README.md                 # Project documentation & capability matrix
-├── DISCORD_SETUP.md          # Setup guide for Discord Composio integration
-├── demo.gif                  # Native GitHub animated video demo
+├── config.py                 # Pydantic Settings (typed settings singleton)
+├── main.py                   # Async main voice loop (Wake Word -> STT -> Orchestrator -> LLM -> TTS)
+├── mcp_server.py             # FastMCP Stdio MCP server exposing 95+ dynamic tools
+├── web_server.py             # High-performance async FastAPI REST backend & WebGL HUD static server
+├── requirements.txt          # PyTorch, FastAPI, Uvicorn, LangChain, MemPalace & MCP dependencies
+├── README.md                 # Project documentation & architecture matrix
+├── .env.example              # Complete environment variables template
+├── data/                     # Standardized SQLite database directory (scoped_memory, memory_tree)
 ├── ui/                       # Next-Gen Glassmorphic Conversational HUD Web Interface
 │   ├── index.html            # Web HUD with Markdown rendering & Conversational Avatar Mode
 │   ├── app.js                # App logic, Web Speech synthesis, & Avatar state controller
@@ -263,21 +276,24 @@ d:/aaaassistan_pcb/
 ├── voice/
 │   ├── wakeword.py           # openWakeWord CPU ONNX background listener
 │   ├── stt.py                # Faster-Whisper STT + NVIDIA Whisper Large v3
-│   └── tts.py                # Kokoro-82M 24kHz TTS + NVIDIA Magpie TTS
+│   └── tts.py                # Kokoro-82M 24kHz TTS + Edge-TTS Neural voices
 ├── agent/
-│   ├── copilot.py            # LangChain JarvisAgent with 89+ active tools & multi-tier LLM pool
-│   ├── medulla_reflex.py     # Split-Brain fast reflex triage & attention queue
+│   ├── model_registry.py     # Central Model Registry & singleton client cache for 7 foundation models
+│   ├── local_orchestrator.py # Sub-100ms Local Lightweight Intent Evaluator & Pipeline Planner
+│   ├── memory_gateway.py     # Unified Memory Gateway Facade (Scoped, Hierarchical Tree, MemPalace)
+│   ├── service_lifecycle.py  # On-demand lazy model loader with 5-minute idle memory reclamation
+│   ├── copilot.py            # LangChain JarvisAgent with 95+ active tools & orchestrator routing
+│   ├── ecc_instincts.py      # Plan-Before-Build, static AST validation & auto-recovery engine
+│   ├── cron_daemon.py        # Background autonomous heartbeat daemon & periodic health checks
 │   ├── session_context.py    # JarvisSessionContext per-session model container
 │   ├── key_manager.py        # Multi-key Gemini rotation & real-time metrics manager
 │   ├── composio_router.py    # Dynamic tool router & context optimizer
 │   ├── verify_loop.py        # Self-correcting ERC/DRC agentic verify loop
-│   ├── instincts.py          # Automatic hardware & work reflex rules (ECC-inspired)
 │   ├── security.py           # AgentShield workspace path & argument security guard
 │   ├── context_compressor.py # Incremental token budget & history compressor
-│   ├── workflows.py          # Autonomous multi-stage audit workflows
 │   └── prompts.py            # System prompt persona configuration
-├── skills/                   # AAS & Claude-style SKILL.md playbooks
 ├── tools/
+│   ├── ecc_tools.py          # ECC Plan action, AST verify & unified scoped memory tools
 │   ├── memory_tree_tool.py   # Hierarchical memory tree, Goals Kanban, People dossiers & Obsidian mirror
 │   ├── tokenjuice_tool.py    # TokenJuice semantic JSON/AST/Log compression engine
 │   ├── workflows_engine_tool.py # Tinyflows trigger-driven multi-step automation graph
@@ -324,19 +340,24 @@ d:/aaaassistan_pcb/
    python main.py
    ```
 
-4. **Generate & Open the Obsidian Knowledge Graph**:
+4. **Test Multi-Model Orchestrator & Fast Intent Triage**:
+   ```powershell
+   python scratch/test_multi_model_orchestrator.py
+   ```
+
+5. **Generate & Open the Obsidian Knowledge Graph**:
    ```powershell
    python scratch/run_obsidian_tools.py
    ```
    Open `d:\aaaassistan_pcb\obsidian_vault` in **Obsidian** to view `Architecture_Graph.canvas` and the interactive graph.
 
-5. **Generate 3D Electronic Component Models**:
+6. **Generate 3D Electronic Component Models**:
    ```python
    from tools.img2obj_component_3d_tool import generate_3d_part_from_image_or_spec
    res = generate_3d_part_from_image_or_spec.invoke({"package_or_image": "SOT-223", "output_name": "ams1117_sot223"})
    ```
 
-6. **Run Full Test Suite**:
+7. **Run Full Test Suite**:
    ```powershell
    python -m unittest discover tests
    ```
