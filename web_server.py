@@ -16,7 +16,7 @@ import urllib.parse
 from typing import Dict, Any, List, Optional
 import psutil
 
-from fastapi import FastAPI, Request, Response, Query, Body, HTTPException
+from fastapi import FastAPI, Request, Response, Query, Body, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, FileResponse, StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -58,8 +58,24 @@ def get_agent():
     return _agent_instance
 
 
+# Active Desktop Pet Process ID and WebSocket Connections
+_active_pet_pid: Optional[int] = None
+_pet_websocket_connections: List[WebSocket] = []
+
+async def broadcast_to_pet(message: Dict[str, Any]):
+    dead_connections = []
+    for ws in _pet_websocket_connections:
+        try:
+            await ws.send_json(message)
+        except Exception:
+            dead_connections.append(ws)
+    for ws in dead_connections:
+        if ws in _pet_websocket_connections:
+            _pet_websocket_connections.remove(ws)
+
+
 # ==============================================================================
-# UI Static File Routes
+# UI Static File Routes & Desktop Pet WebSockets
 # ==============================================================================
 
 @app.get("/", response_class=HTMLResponse)
@@ -85,6 +101,120 @@ async def serve_styles_css():
     if os.path.exists(css_path):
         return FileResponse(css_path, media_type="text/css")
     return Response(content="", media_type="text/css")
+
+
+@app.get("/desktop_pet.html")
+async def serve_desktop_pet_html():
+    pet_html = os.path.join(UI_DIR, "desktop_pet.html")
+    if os.path.exists(pet_html):
+        return FileResponse(pet_html, media_type="text/html")
+    raise HTTPException(status_code=404, detail="desktop_pet.html not found")
+
+
+@app.get("/desktop_pet.js")
+async def serve_desktop_pet_js():
+    pet_js = os.path.join(UI_DIR, "desktop_pet.js")
+    if os.path.exists(pet_js):
+        return FileResponse(pet_js, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="desktop_pet.js not found")
+
+
+@app.websocket("/ws/desktop_pet")
+async def desktop_pet_websocket_endpoint(websocket: WebSocket):
+    origin = websocket.headers.get("origin", "").strip()
+    # Task 6: Normalize origin and reject null, file://, and foreign origins
+    norm_origin = origin.rstrip("/").lower()
+    allowed = [o.rstrip("/").lower() for o in config.settings.PET_TRUSTED_ORIGINS]
+    
+    if not norm_origin or norm_origin in ["null", "file://", "undefined"] or norm_origin not in allowed:
+        logger.warning(f"[WebSocket Security] Rejected connection with unauthorized origin: '{origin}'")
+        await websocket.close(code=4003, reason="Forbidden origin: unauthorized or null/file origin rejected")
+        return
+
+    await websocket.accept()
+    _pet_websocket_connections.append(websocket)
+    logger.info(f"[WebSocket] Desktop pet client connected from origin: '{origin}'")
+    try:
+        while True:
+            data = await websocket.receive_text()
+            from agent.screen_annotator import screen_annotator
+            screen_annotator.record_heartbeat()
+    except WebSocketDisconnect:
+        if websocket in _pet_websocket_connections:
+            _pet_websocket_connections.remove(websocket)
+        logger.info("[WebSocket] Desktop pet client disconnected.")
+
+
+# ==============================================================================
+# Desktop Pet & Screen Pointer REST Endpoints
+# ==============================================================================
+
+@app.post("/api/pet/launch")
+async def launch_desktop_pet_endpoint():
+    global _active_pet_pid
+    # Singleton PID guard
+    if _active_pet_pid and psutil.pid_exists(_active_pet_pid):
+        return {
+            "status": "success",
+            "message": "Desktop pet is already active.",
+            "pid": _active_pet_pid
+        }
+    
+    import subprocess
+    cmd = [sys.executable, "agent/desktop_pet_app.py"]
+    proc = subprocess.Popen(cmd, cwd=os.getcwd())
+    _active_pet_pid = proc.pid
+    logger.info(f"[Desktop Pet Launcher] Launched desktop pet process with PID {_active_pet_pid}")
+    return {
+        "status": "success",
+        "message": "Desktop pet launched successfully.",
+        "pid": _active_pet_pid
+    }
+
+
+@app.get("/api/pet/status")
+async def get_desktop_pet_status():
+    global _active_pet_pid
+    from agent.screen_annotator import screen_annotator
+    is_running = bool(_active_pet_pid and psutil.pid_exists(_active_pet_pid))
+    active_annotations = screen_annotator.get_active_annotations()
+    return {
+        "status": "success",
+        "is_running": is_running,
+        "pid": _active_pet_pid if is_running else None,
+        "connected_clients": len(_pet_websocket_connections),
+        "active_annotations_count": len(active_annotations)
+    }
+
+
+@app.post("/api/pet/point")
+async def point_desktop_pet_endpoint(payload: Dict[str, Any] = Body(...)):
+    from tools.screen_pointer_tool import screen_pointer_manager
+    target = payload.get("target", "")
+    message = payload.get("message", "")
+    res = screen_pointer_manager.point_to_element(target, narration_text=message)
+    if res.get("status") == "success":
+        await broadcast_to_pet({
+            "type": "point_to",
+            "target": target,
+            "message": message,
+            "coordinates": res.get("data")
+        })
+    return res
+
+
+@app.post("/api/pet/terminate")
+async def terminate_desktop_pet_endpoint():
+    global _active_pet_pid
+    if _active_pet_pid and psutil.pid_exists(_active_pet_pid):
+        try:
+            parent = psutil.Process(_active_pet_pid)
+            parent.terminate()
+        except Exception:
+            pass
+        _active_pet_pid = None
+        return {"status": "success", "message": "Desktop pet terminated."}
+    return {"status": "success", "message": "No active desktop pet process."}
 
 
 # ==============================================================================

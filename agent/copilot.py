@@ -104,6 +104,10 @@ from tools.security_skills_tool import (
     attack_coverage_report,
     execute_security_skill_script
 )
+from tools.screen_pointer_tool import (
+    point_and_highlight_screen_element,
+    dismiss_screen_annotations
+)
 from agent.model_registry import model_registry
 from agent.local_orchestrator import local_orchestrator
 
@@ -260,7 +264,10 @@ class JarvisAgent:
             find_security_skills,
             load_security_skill,
             attack_coverage_report,
-            execute_security_skill_script
+            execute_security_skill_script,
+            # 11. Screen-Aware Desktop Pet & Interactive Element Pointer
+            point_and_highlight_screen_element,
+            dismiss_screen_annotations
         ]
         self.composio_router = ComposioRouter(self.tools)
         self.tools_by_name = {t.name: t for t in self.tools}

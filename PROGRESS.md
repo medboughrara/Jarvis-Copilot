@@ -114,11 +114,40 @@
   4. **AgentShield v2 Security Hardening:** Canonical realpath workspace jail, Windows Job Object memory sandbox + subprocess network restriction, multi-pattern + Shannon entropy secret redaction, untrusted prompt-injection sanitization, tokenized approval gates, and SQLite audit logging in [`agent/security.py`](file:///d:/aaaassistan_pcb/agent/security.py).
   5. **Durable TaskRunner & Parallel DAG Execution:** Single & multi-step DAG scheduler, SQLite task persistence (`data/task_runner.db`), side-effect aware crash recovery, and bounded worker pools (`MAX_PARALLEL_CLOUD_CALLS: 5` vs `MAX_PARALLEL_LOCAL_GPU_CALLS: 1`) in [`agent/task_runner.py`](file:///d:/aaaassistan_pcb/agent/task_runner.py).
   6. **Knowledge Graph & CI Automation:** `Autonomous Execution & Security` cluster (`#8B5CF6`), typed-edge taxonomy in [`obsidian_vault/Wiki/Edge_Taxonomy.md`](file:///d:/aaaassistan_pcb/obsidian_vault/Wiki/Edge_Taxonomy.md), 4 hub notes, `Runs/` task mirroring, CI script [`scripts/verify_graph_consistency.py`](file:///d:/aaaassistan_pcb/scripts/verify_graph_consistency.py), and GitHub Actions workflow [`.github/workflows/graph_consistency.yml`](file:///d:/aaaassistan_pcb/.github/workflows/graph_consistency.yml).
+---
+
+## Two-Stage Local-First SLM & Fast Reflex Architecture (Completed ✅)
+
+- **Completed:** 2026-08-29
+- **Objective:** Zero-latency (<10ms) responses for casual greetings, status queries, capabilities, and conversational turns without slow cloud roundtrips, plus seamless handoff to Stage 2 agentic pipelines.
+- **Implemented:**
+  - Added [`agent/local_orchestrator.py`](file:///d:/aaaassistan_pcb/agent/local_orchestrator.py)'s `LocalSLMReflexEngine` for dynamic greeting/time/system health reflexes.
+  - Stage 1 Local SLM fallback to Ollama `llama3.2:1b` / `qwen2.5:1.5b`.
+  - Upgraded `agent/copilot.py` `process_query` with fast local-first interception.
+  - Clean natural text string extraction for neural TTS in `ui/app.js` and `web_server.py`.
 - **Verification Evidence:**
-  - `tests/test_intent_routing_and_orchestrator.py`: 100% passed (20 prompt acceptance test).
-  - `tests/test_security_agentshield_v2.py`: 100% passed (jail traversal, sandbox limits, red-team blocking, secret scrubbing).
-  - `tests/test_code_pipeline_and_task_runner.py`: 100% passed (7 tests including crash recovery, atomic rollback, Kahn DAG cycle detection, parallel timing).
-  - `tests/test_web_server_approval_api.py`: 100% passed (6 tests for single-use token replay rejection, constant-time compare, missing header, and cross-origin CSRF rejection).
-  - `scripts/verify_graph_consistency.py`: 100% passed (7 clusters, 4 hubs, 9 typed relationship verbs in `Edge_Taxonomy.md`).
-  - **Full Unittest Discovery Suite:** `python -m unittest discover tests -v` — **109/109 tests PASSED (100% OK)** in 91.1s.
+  - `tests/test_intent_routing_and_orchestrator.py`: 6/6 tests passed in 13ms.
+  - `tests/test_agent_copilot.py`: 5/5 tests passed in 0.119s.
 - **Definition of Done Status:** **PASSED**
+
+---
+
+## Screen-Aware Floating Desktop Pet & Interactive Screen Copilot (Completed ✅)
+
+- **Completed:** 2026-08-29
+- **Objective:** Transform the web-based avatar into an autonomous, screen-aware Windows Desktop Pet overlay with local-only OCR grounding, robotic pointing gestures, holographic spotlights, and strict security/privacy enforcement.
+- **Implemented:**
+  - **Task 1 (Local-Only Grounding):** `locate_screen_element_local_only` in [`tools/omniparser_tool.py`](file:///d:/aaaassistan_pcb/tools/omniparser_tool.py) using `RapidOCR ONNX` on-device with zero network dependencies.
+  - **Task 2 (Pure Metadata Audit Logging):** `log_screen_grounding_event` hardcoding `engine_tag = "RapidOCR_ONNX_Local"` into SQLite `audit_screen_grounding` table (<500 bytes, no image bytes).
+  - **Task 3 (DPI-Awareness Startup Ordering):** Line-1 `SetProcessDpiAwareness(2)` in [`agent/desktop_pet_app.py`](file:///d:/aaaassistan_pcb/agent/desktop_pet_app.py) with startup verification and mismatch logging.
+  - **Task 4 (Fullscreen Transition Invalidation):** Display mode and focus watcher in [`agent/screen_annotator.py`](file:///d:/aaaassistan_pcb/agent/screen_annotator.py) invalidating stale annotations upon mode transitions.
+  - **Task 5 (Event-Driven Unified Interruption):** Single cancel-and-replace policy in [`tools/screen_pointer_tool.py`](file:///d:/aaaassistan_pcb/tools/screen_pointer_tool.py) cutting visual flight/spotlight and voice TTS simultaneously.
+  - **Task 6 (Normalized WebSocket Anti-CSWSH):** Handshake origin validator on `/ws/desktop_pet` in [`web_server.py`](file:///d:/aaaassistan_pcb/web_server.py) normalizing slashes/case and rejecting `null`/`file://`.
+  - **Task 7 (Heartbeat Auto-Clear Watchdog):** 5.0-second lease watchdog in [`agent/screen_annotator.py`](file:///d:/aaaassistan_pcb/agent/screen_annotator.py) auto-purging annotations if the pet crashes.
+  - **Frontend Overlay:** SVG mascot with pointing arms, eye shutter flash, speech bubble, and neural TTS in [`ui/desktop_pet.html`](file:///d:/aaaassistan_pcb/ui/desktop_pet.html) and [`ui/desktop_pet.js`](file:///d:/aaaassistan_pcb/ui/desktop_pet.js).
+  - **Spike Verification:** [`scripts/verify_desktop_pet_transparency.py`](file:///d:/aaaassistan_pcb/scripts/verify_desktop_pet_transparency.py) verifying layered window and DPI compatibility on Windows.
+- **Verification Evidence:**
+  - `tests/test_screen_pointer_tool.py`: 5/5 tests passed (100% OK).
+  - `tests/test_desktop_pet_api.py`: 5/5 tests passed (100% OK).
+- **Definition of Done Status:** **PASSED**
+

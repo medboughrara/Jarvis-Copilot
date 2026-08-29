@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis Desktop Pet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: transparent !important;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            user-select: none;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .drag-handle {
+            -webkit-app-region: drag;
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        .no-drag {
+            -webkit-app-region: no-drag;
+        }
+        @keyframes floatPet {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: floatPet 4s ease-in-out infinite;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4)); }
+            50% { filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.7)); }
+        }
+        .glow-mascot {
+            animation: pulseGlow 3s infinite;
+        }
+        @keyframes shutterFlash {
+            0% { opacity: 0; transform: scale(0.9); }
+            30% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0; transform: scale(1); }
+        }
+        .shutter-active {
+            animation: shutterFlash 1.2s ease-out forwards;
+        }
+        @keyframes armPointLeft {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-45deg); }
+        }
+        @keyframes armPointRight {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(45deg); }
+        }
+        .arm-pointing-left {
+            transform-origin: 40px 140px;
+            animation: armPointLeft 0.4s ease-out forwards;
+        }
+        .arm-pointing-right {
+            transform-origin: 160px 140px;
+            animation: armPointRight 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center h-screen p-2">
+
+    <!-- 1. Visible Screen Grounding Active Indicator Banner -->
+    <div id="shutter-indicator-badge" class="hidden absolute top-1 z-50 flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/90 border border-cyan-400 text-[10px] font-mono font-bold text-cyan-300 shadow-lg backdrop-blur-md">
+        <span class="material-symbols-outlined text-xs text-amber-400 animate-spin">camera</span>
+        <span>📸 Screen Grounding Active (Local OCR)</span>
+    </div>
+
+    <!-- 2. Floating Speech / Thought Bubble -->
+    <div id="pet-speech-bubble" class="hidden max-w-[220px] mb-2 p-2.5 rounded-2xl bg-black/80 border border-cyan-500/40 text-cyan-100 text-xs shadow-2xl backdrop-blur-md transition-all duration-300">
+        <div id="pet-speech-text" class="leading-relaxed font-mono text-[11px]"></div>
+    </div>
+
+    <!-- 3. Mascot Stage Container (Draggable) -->
+    <div id="pet-mascot-container" class="drag-handle relative w-48 h-48 flex items-center justify-center animate-float glow-mascot">
+        
+        <!-- Ambient Orbit Ring -->
+        <div class="absolute inset-0 rounded-full border border-cyan-500/20 pointer-events-none animate-pulse"></div>
+
+        <!-- Robot Mascot SVG with Pointing Arms & Visemes -->
+        <svg id="pet-mascot-svg" class="w-40 h-40 cursor-pointer no-drag" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="petGradBody" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#0e1726" />
+                    <stop offset="100%" stop-color="#020617" />
+                </linearGradient>
+                <linearGradient id="petGradAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop id="pet-grad-stop1" offset="0%" stop-color="#00f2ff" />
+                    <stop id="pet-grad-stop2" offset="100%" stop-color="#3b82f6" />
+                </linearGradient>
+                <filter id="petGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+
+            <!-- Antenna & Glow Beacon -->
+            <path d="M 100 50 L 100 28" stroke="#00f2ff" stroke-width="3" stroke-linecap="round" />
+            <circle id="pet-antenna-light" cx="100" cy="24" r="5" fill="#00f2ff" filter="url(#petGlow)" />
+
+            <!-- Left Robotic Arm (Animatable for Pointing) -->
+            <g id="pet-arm-left">
+                <path d="M 46 115 Q 26 135 34 150" stroke="#00f2ff" stroke-width="6" stroke-linecap="round" fill="none" />
+                <circle cx="34" cy="150" r="5" fill="#38bdf8" />
+            </g>
+
+            <!-- Right Robotic Arm (Animatable for Pointing) -->
+            <g id="pet-arm-right">
+                <path d="M 154 115 Q 174 135 166 150" stroke="#00f2ff" stroke-width="6" stroke-linecap="round" fill="none" />
+                <circle cx="166" cy="150" r="5" fill="#38bdf8" />
+            </g>
+
+            <!-- Head / Chassis Body -->
+            <rect x="46" y="50" width="108" height="96" rx="28" fill="url(#petGradBody)" stroke="#00f2ff" stroke-width="2.5" />
+            
+            <!-- Visor Display Screen -->
+            <rect x="56" y="62" width="88" height="60" rx="18" fill="#030712" stroke="#00f2ff" stroke-opacity="0.3" stroke-width="1.5" />
+
+            <!-- Left Eye Socket & Pupil -->
+            <ellipse id="pet-eye-left" cx="80" cy="88" rx="12" ry="16" fill="#00f2ff" filter="url(#petGlow)" />
+            <circle id="pet-pupil-left" cx="80" cy="88" r="4" fill="#ffffff" />
+
+            <!-- Right Eye Socket & Pupil -->
+            <ellipse id="pet-eye-right" cx="120" cy="88" rx="12" ry="16" fill="#00f2ff" filter="url(#petGlow)" />
+            <circle id="pet-pupil-right" cx="120" cy="88" r="4" fill="#ffffff" />
+
+            <!-- Viseme Animated Mouth Path -->
+            <path id="pet-mouth" d="M 88 110 Q 100 114 112 110" stroke="#00f2ff" stroke-width="2.5" stroke-linecap="round" fill="none" filter="url(#petGlow)" />
+        </svg>
+
+        <!-- Floating Quick Mic Button -->
+        <button id="btn-pet-mic" class="no-drag absolute bottom-1 right-2 w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-cyan-300 hover:bg-cyan-500 hover:text-black transition-all shadow-md">
+            <span class="material-symbols-outlined text-sm">mic</span>
+        </button>
+    </div>
+
+    <script src="desktop_pet.js"></script>
+</body>
+</html>

@@ -119,6 +119,16 @@ class JarvisConfig(BaseSettings):
         validation_alias="TRUSTED_ORIGINS"
     )
 
+    # Desktop Pet & Screen Copilot Settings
+    PET_ENABLED: bool = Field(default=True)
+    PET_HOTKEY: str = Field(default="ctrl+space")
+    PET_IDLE_TIMEOUT_SECONDS: int = Field(default=120)
+    PET_LOCAL_VISION_ONLY: bool = Field(default=True)
+    PET_TRUSTED_ORIGINS_RAW: str = Field(
+        default="http://localhost:8000,http://127.0.0.1:8000",
+        validation_alias="PET_TRUSTED_ORIGINS"
+    )
+
     class Config:
         extra = "ignore"
         env_file = ".env"
@@ -140,6 +150,13 @@ class JarvisConfig(BaseSettings):
     @property
     def TRUSTED_ORIGINS(self) -> List[str]:
         return [o.strip() for o in self.TRUSTED_ORIGINS_RAW.split(",") if o.strip()]
+
+    @property
+    def PET_TRUSTED_ORIGINS(self) -> List[str]:
+        raw = self.PET_TRUSTED_ORIGINS_RAW.strip()
+        if not raw:
+            return self.TRUSTED_ORIGINS
+        return [o.strip() for o in raw.split(",") if o.strip()]
 
     def validate_configuration(self):
         """Ensures at least 1 LLM tier is properly configured."""

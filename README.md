@@ -245,6 +245,7 @@ Optimized to run seamlessly on a standard Windows laptop with an **Intel Core i5
 | **35**| **📊 Universal DAG TaskRunner** | `agent/task_runner.py` | Asynchronous DAG scheduler, pure-Python Kahn cycle validation, durable SQLite task persistence (`data/task_runner.db`), side-effect aware crash recovery, and split cloud (5) / local GPU (1) concurrency limits. |
 | **36**| **🌐 Explicit Search with Citations**| `tools/reach_tool.py` | Explicit `search_web_explicit(force=True)` with inline source citations (`[Source: <url>]`) and 4-tier gateway escalation. |
 | **37**| **🔌 Stdio FastMCP Server (95+ Tools)** | `mcp_server.py` | Automatically exposes all 95+ Jarvis tools over stdio Model Context Protocol for direct integration into Claude Code, Cursor, Windsurf, and VS Code. |
+| **38**| **🐾 Screen-Aware Desktop Pet & Overlay** | `agent/desktop_pet_app.py`, `tools/screen_pointer_tool.py`, `agent/screen_annotator.py` | Transparent always-on-top roaming desktop mascot, 100% on-device local screen grounding (`RapidOCR ONNX`), robotic arm pointing gestures, holographic spotlight annotations, per-monitor DPI v2 scaling, and normalized origin WebSocket security. |
 
 ---
 
