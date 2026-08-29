@@ -193,13 +193,17 @@ except Exception:
 
     def run_sandboxed_python(
         self,
-        code_string: str,
+        code_string: str = None,
+        script_path: str = None,
+        args: List[str] = None,
         timeout: int = None,
-        cwd: str = None
+        cwd: str = None,
+        allow_network: bool = False
     ) -> Dict[str, Any]:
         """
-        Executes Python code in an isolated subprocess with Job Object memory limits,
-        watchdog timeout, and interpreter-level network restriction.
+        Executes Python code or a script in an isolated subprocess with Job Object memory limits,
+        watchdog timeout, and interpreter-level network restriction (unless allow_network=True).
+        Args is passed strictly as a list with shell=False to prevent shell metacharacter injection.
         """
         timeout = timeout or config.settings.CODE_SANDBOX_TIMEOUT_SECONDS
         cwd = cwd or os.path.join(self.workspace_root, "scratch")
@@ -208,20 +212,28 @@ except Exception:
         start_time = time.time()
         venv_python = sys.executable
 
-        # Prepare environment with sitecustomize.py for network cutoff
+        # Prepare environment
         sandbox_env = os.environ.copy()
-        current_pp = sandbox_env.get("PYTHONPATH", "")
-        sandbox_env["PYTHONPATH"] = f"{self.sandbox_env_dir}{os.pathsep}{current_pp}" if current_pp else self.sandbox_env_dir
+        if not allow_network:
+            # Inject sitecustomize.py network cutoff wrapper
+            current_pp = sandbox_env.get("PYTHONPATH", "")
+            sandbox_env["PYTHONPATH"] = f"{self.sandbox_env_dir}{os.pathsep}{current_pp}" if current_pp else self.sandbox_env_dir
+
+        if script_path:
+            cmd = [venv_python, script_path] + [str(a) for a in (args or [])]
+        else:
+            cmd = [venv_python, "-c", code_string or ""]
 
         try:
-            # Execute in subprocess
+            # Execute in subprocess with shell=False
             proc = subprocess.Popen(
-                [venv_python, "-c", code_string],
+                cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 cwd=cwd,
-                env=sandbox_env
+                env=sandbox_env,
+                shell=False
             )
 
             # Apply Windows Job Object limits if on Windows
@@ -459,6 +471,12 @@ except Exception:
         """Determines if an autonomous action requires human approval."""
         if action_type in ["outbound_message_send", "delete_file"]:
             return True
+        if action_type in ["execute_security_skill", "dual_use_skill_execute"]:
+            risk_tier = details.get("risk_tier", "dual_use")
+            # Default to dual_use (fail closed) if unreviewed/unclassified
+            if risk_tier != "informational":
+                return True
+            return False
         if action_type == "write_file":
             target_path = details.get("file_path", "")
             # Safe subset: scratch/ and tests/ do not require approval
@@ -514,6 +532,76 @@ except Exception:
             logger.error(f"[AgentShield] Token validation error: {e}")
         return False
 
+    def verify_and_consume_security_skill_token(
+        self,
+        task_id: str,
+        token: str,
+        expected_target: str,
+        expected_skill: str
+    ) -> Tuple[bool, str]:
+        """
+        Scope-bound single-use token verification and atomic consumption for dual-use security skills.
+        Validates:
+        1. Token existence, PENDING status, and constant-time match.
+        2. Skill name matches approved skill.
+        3. Target scope matches approved target scope.
+        4. Replay rejection via atomic UPDATE rowcount.
+        Logs scope mismatches to audit log.
+        """
+        try:
+            with sqlite3.connect(self.task_db_path) as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT token_hash, status, details_json FROM approval_tokens WHERE task_id = ?", (task_id,))
+                row = cursor.fetchone()
+                if not row:
+                    return False, "Token not found"
+                if row[1] != 'PENDING':
+                    return False, f"Token is not PENDING (current status: {row[1]})"
+
+                stored_token, _, details_json = row
+                if not secrets.compare_digest(stored_token, token):
+                    return False, "Invalid token"
+
+                details = json.loads(details_json or "{}")
+                approved_target = details.get("target", "")
+                approved_skill = details.get("skill_name", "")
+
+                # Validate skill match
+                if approved_skill and approved_skill != expected_skill:
+                    self.log_tool_invocation(
+                        tool_name="execute_security_skill_script",
+                        args={"task_id": task_id, "expected_skill": expected_skill, "approved_skill": approved_skill},
+                        status="SCOPE_MISMATCH_REJECTED",
+                        duration_ms=0,
+                        error_msg=f"Skill mismatch: approved for '{approved_skill}', got '{expected_skill}'"
+                    )
+                    return False, f"Skill mismatch: approved for '{approved_skill}', got '{expected_skill}'"
+
+                # Validate target scope match
+                if approved_target != expected_target:
+                    self.log_tool_invocation(
+                        tool_name="execute_security_skill_script",
+                        args={"task_id": task_id, "expected_target": expected_target, "approved_target": approved_target, "skill": expected_skill},
+                        status="SCOPE_MISMATCH_REJECTED",
+                        duration_ms=0,
+                        error_msg=f"Scope mismatch: approved for target '{approved_target}', got '{expected_target}'"
+                    )
+                    return False, f"Scope mismatch: approved for target '{approved_target}', got '{expected_target}'"
+
+                # Atomic consumption
+                cursor.execute("""
+                    UPDATE approval_tokens
+                    SET status = 'APPROVED', consumed_at = ?
+                    WHERE task_id = ? AND status = 'PENDING'
+                """, (time.time(), task_id))
+                conn.commit()
+                if cursor.rowcount > 0:
+                    return True, "approved"
+                return False, "Token already consumed (race condition prevented)"
+        except Exception as e:
+            logger.error(f"[AgentShield] Security skill token verification error: {e}")
+            return False, str(e)
+
     def log_tool_invocation(
         self,
         tool_name: str,
@@ -556,5 +644,6 @@ except Exception:
 
 
 # Global Singleton AgentShield Guard
+AgentShield = AgentShieldGuard
 agentshield = AgentShieldGuard()
 AgentShieldGuardInstance = agentshield

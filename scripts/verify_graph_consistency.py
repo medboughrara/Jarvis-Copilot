@@ -101,6 +101,24 @@ def verify_edge_taxonomy() -> bool:
     return True
 
 
+def verify_security_domain_hubs() -> bool:
+    """Verifies that all 29 security domain hub notes exist."""
+    from tools.obsidian_knowledge_graph_tool import SECURITY_DOMAINS_29
+    wiki_dir = os.path.join(VAULT_DIR, "Wiki")
+    missing_hubs = []
+    for code, title, _, _ in SECURITY_DOMAINS_29:
+        filename = f"Hub_Domain_{code}.md"
+        path = os.path.join(wiki_dir, filename)
+        if not os.path.exists(path):
+            missing_hubs.append(filename)
+
+    if missing_hubs:
+        print(f"[FAIL] Missing {len(missing_hubs)} Security Domain Hub notes: {missing_hubs[:5]}...")
+        return False
+    print(f"[PASS] All {len(SECURITY_DOMAINS_29)} Security Domain Hub notes verified in Wiki/.")
+    return True
+
+
 def main():
     print("=" * 60)
     print("[INFO] Starting Jarvis Knowledge Graph Consistency Verification...")
@@ -113,8 +131,9 @@ def main():
     c1 = verify_graph_config()
     c2 = verify_hub_notes()
     c3 = verify_edge_taxonomy()
+    c4 = verify_security_domain_hubs()
 
-    if c1 and c2 and c3:
+    if c1 and c2 and c3 and c4:
         print("=" * 60)
         print("[SUCCESS] ALL KNOWLEDGE GRAPH CONSISTENCY CHECKS PASSED (100% OK)")
         print("=" * 60)

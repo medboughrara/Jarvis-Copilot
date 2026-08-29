@@ -96,6 +96,7 @@ def _build_obsidian_vault(
         "nodeSizeMultiplier": 1.35,
         "lineSizeMultiplier": 1.4,
         "colorGroups": [
+            {"query": "path:data/security_skills OR file:Hub_Domain OR file:security_skills", "color": {"a": 1, "rgb": 44008}}, # Cyan (Anthropic Security Skills)
             {"query": "path:agent/security OR path:agent/code_pipeline OR path:agent/task_runner", "color": {"a": 1, "rgb": 9133302}}, # Purple (Autonomous Execution & Security)
             {"query": "path:tools/kicad OR file:KiCad", "color": {"a": 1, "rgb": 3978495}},       # Emerald Green
             {"query": "path:agent OR file:copilot", "color": {"a": 1, "rgb": 54271}},             # Cyber Blue
@@ -123,8 +124,41 @@ def _build_obsidian_vault(
     }
 
 
+SECURITY_DOMAINS_29 = [
+    ("Digital_Forensics", "Digital Forensics & Incident Response", "Memory acquisition, disk forensics, browser forensics, and timeline analysis.", "performing-memory-forensics-with-volatility3"),
+    ("Threat_Hunting", "Threat Hunting & Hypothesis Testing", "Proactive hunting for adversary TTPs, LOLBins, persistence, and C2 beaconing.", "hunting-for-command-and-control-beaconing"),
+    ("Incident_Response", "Incident Response & Playbooks", "Triage, breach containment, eradication, and lessons learned.", "triaging-security-incident"),
+    ("SIEM_Log_Analysis", "SIEM & Security Log Analysis", "Splunk, QRadar, Sentinel correlation rules, and event log auditing.", "analyzing-security-logs-with-splunk"),
+    ("SOC_Operations", "SOC Operations & Triage", "Alert fatigue reduction, escalation matrices, and KPI tracking.", "building-soc-escalation-matrix"),
+    ("Malware_Analysis", "Malware Analysis & Reverse Engineering", "Static PE analysis, Ghidra disassembly, Cuckoo detonation, and YARA rules.", "performing-automated-malware-analysis-with-cape"),
+    ("Vulnerability_Management", "Vulnerability Management & Prioritization", "CVE scoring with SSVC, KEV catalog prioritization, and DefectDojo tracking.", "triaging-vulnerabilities-with-ssvc-framework"),
+    ("Identity_Access_Management", "Identity & Access Management (IAM)", "Active Directory, Entra ID, OAuth2, and PAM governance.", "auditing-azure-active-directory-configuration"),
+    ("Cloud_Security", "Cloud Security (AWS / Azure / GCP)", "CloudTrail, GuardDuty, CSPM posture management, and CIS benchmarks.", "auditing-cloud-with-cis-benchmarks"),
+    ("Container_Security", "Container & Kubernetes Security", "Runtime Falco detection, Trivy scanning, and RBAC hardening.", "detecting-container-runtime-threats-with-falco"),
+    ("Network_Security", "Network Security & Traffic Analysis", "Wireshark PCAP analysis, Zeek anomaly detection, and Suricata IDS.", "analyzing-network-traffic-with-wireshark"),
+    ("Web_Application_Security", "Web Application Security", "OWASP Top 10, SQLi, XSS, SSRF, and CSRF analysis.", "analyzing-web-server-logs-for-intrusion"),
+    ("API_Security", "API Security & Gateway Governance", "REST, GraphQL, BOLA/IDOR detection, and token validation.", "analyzing-api-gateway-access-logs"),
+    ("Mobile_Security", "Mobile Application Security (iOS / Android)", "MobSF analysis, Frida/Objection runtime testing, and APK inspection.", "analyzing-android-malware-with-apktool"),
+    ("Red_Teaming", "Red Teaming & Adversary Emulation", "Full-scope engagement planning, C2 infrastructure, and atomic testing.", "executing-red-team-engagement-planning"),
+    ("Penetration_Testing", "Penetration Testing Tradecraft", "Network, cloud, and wireless penetration test methodologies.", "conducting-network-penetration-test"),
+    ("Phishing_Defense", "Phishing Defense & Social Engineering", "Header analysis, DMARC validation, GoPhish simulation, and BEC detection.", "analyzing-email-headers-for-phishing-investigation"),
+    ("Active_Directory_Security", "Active Directory & Kerberos Security", "BloodHound attack paths, DCSync, Kerberoasting, and ACL abuse.", "analyzing-active-directory-acl-abuse"),
+    ("Cryptography_PKI", "Cryptography & PKI Management", "TLS 1.3, HSM integration, Certificate Transparency, and post-quantum migration.", "analyzing-tls-certificate-transparency-logs"),
+    ("OT_ICS_Security", "OT / ICS & SCADA Security", "Purdue model, Modbus/DNP3 anomaly detection, and Claroty/Dragos monitoring.", "detecting-attacks-on-scada-systems"),
+    ("Compliance_Risk", "Compliance & Risk Governance", "NIST CSF 2.0, ISO 27001, GDPR, HIPAA, PCI DSS, and CMMC Level 2.", "performing-nist-csf-maturity-assessment"),
+    ("Supply_Chain_Security", "Software Supply Chain Security & SBOM", "CycloneDX/SPDX SBOM analysis, Sigstore signing, and SLSA provenance.", "analyzing-sbom-for-supply-chain-vulnerabilities"),
+    ("AI_LLM_Security", "AI & LLM System Security", "Prompt injection defense, Guardrails, PyRIT orchestration, and OWASP LLM08.", "detecting-ai-model-prompt-injection-attacks"),
+    ("Zero_Trust_Architecture", "Zero Trust Architecture (ZTA)", "BeyondCorp, microsegmentation, device posture assessment, and ZTNA gateways.", "implementing-cisa-zero-trust-maturity-model"),
+    ("Deception_Technology", "Deception Technology & Honeytokens", "Canarytokens, AD honeytokens, and decoy ransomware files.", "deploying-honeytokens-and-canarytokens"),
+    ("DevSecOps_CICD", "DevSecOps & Pipeline Security", "SAST/DAST pipeline integration, Semgrep rules, and Gitleaks scanning.", "building-devsecops-pipeline-with-gitlab-ci"),
+    ("Threat_Intelligence", "Threat Intelligence & CTI Sharing", "MISP platforms, STIX/TAXII pipelines, OpenCTI, and threat actor profiles.", "analyzing-threat-intelligence-feeds"),
+    ("Ransomware_Defense", "Ransomware Defense & Recovery", "CISA ransomware guide, canary files, leak-site tracking, and immutable backup.", "building-soc-playbook-for-ransomware"),
+    ("Financial_Fraud", "Financial Fraud & Fraud Defense (MITRE F3)", "Synthetic identity detection, account takeover, money mule tracking, and BEC.", "detecting-business-email-compromise")
+]
+
+
 def _generate_subsystem_hub_notes(vault_dir: str):
-    """Generates first-class subsystem hub notes in the Obsidian Vault."""
+    """Generates first-class subsystem and 29 domain hub notes in the Obsidian Vault."""
     wiki_dir = os.path.join(vault_dir, "Wiki")
     os.makedirs(wiki_dir, exist_ok=True)
 
@@ -180,6 +214,20 @@ def _generate_subsystem_hub_notes(vault_dir: str):
             "| **`mirrors`** | Task execution record is mirrored to Obsidian vault. | `TaskRunner` --mirrors--> `Runs/` |\n"
         )
     }
+
+    # Generate 29 Security Domain Hub Notes
+    for code, title, desc, sample_skill in SECURITY_DOMAINS_29:
+        filename = f"Hub_Domain_{code}.md"
+        content = (
+            f"# 🛡️ Security Domain Hub: {title}\n\n"
+            f"**Domain Scope:** {desc}\n\n"
+            f"## Knowledge Graph & Typed Relationships\n"
+            f"- [[security_skills_tool]] --routes-through--> [[Hub_Domain_{code}]]\n"
+            f"- [[Hub_Domain_{code}]] --contains--> [[{sample_skill}]]\n"
+            f"- [[Hub_Domain_{code}]] --maps-to--> [[MITRE_ATTACK_v19.1]]\n"
+            f"- [[AgentShieldGuard]] --gates--> [[Hub_Domain_{code}]]\n"
+        )
+        hubs[filename] = content
 
     for filename, content in hubs.items():
         hub_path = os.path.join(wiki_dir, filename)

@@ -1,0 +1,26 @@
+{
+  "version": "1.0.0",
+  "commit_sha": "1b3f6b2286981381a5cc0566551ef3bb6bc38383",
+  "exceptions": {
+    "analyzing-tls-certificate-transparency-logs": {
+      "script": "agent.py",
+      "allowed": true,
+      "justification": "Queries public crt.sh Certificate Transparency logs via HTTPS"
+    },
+    "auditing-tls-certificate-transparency-logs": {
+      "script": "agent.py",
+      "allowed": true,
+      "justification": "Queries public crt.sh Certificate Transparency endpoint"
+    },
+    "analyzing-typosquatting-domains-with-dnstwist": {
+      "script": "agent.py",
+      "allowed": true,
+      "justification": "Resolves public DNS A/MX records for permutation monitoring"
+    },
+    "tracking-threat-actor-infrastructure": {
+      "script": "agent.py",
+      "allowed": true,
+      "justification": "Queries public WHOIS and DNS records for infrastructure mapping"
+    }
+  }
+}

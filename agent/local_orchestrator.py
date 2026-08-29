@@ -100,7 +100,26 @@ class LocalLightweightOrchestrator:
                 "Explicit web search request routed to ReachTool with source citations."
             )
 
-        # 3. Simple Chat / Greeting
+        # 3. Explicit SECURITY_TASK: matched against 29 cybersecurity domains and key tradecraft terms
+        security_triggers = [
+            r"\bmemory forensics\b", r"\bvolatility\b", r"\bthreat hunt(ing)?\b", r"\bincident response\b",
+            r"\bsiem\b", r"\bsoc\b", r"\bpentest(ing)?\b", r"\bred team(ing)?\b", r"\bphishing\b",
+            r"\bmalware analysis\b", r"\bvulnerability scan(ning)?\b", r"\biam hardening\b",
+            r"\bcontainer security\b", r"\bot/ics\b", r"\bmitre attack\b", r"\bnist csf\b",
+            r"\bd3fend\b", r"\bprocess injection\b", r"\bcredential dumping\b", r"\bkerberoasting\b",
+            r"\bdcsync\b", r"\bshadow credentials\b", r"\bactive directory security\b",
+            r"\bdigital forensics\b", r"\bdfir\b", r"\bthreat intelligence\b", r"\bmisp\b"
+        ]
+        if any(re.search(p, lower_p) for p in security_triggers):
+            return (
+                "security",
+                "SINGLE_SPECIALIZED",
+                3,
+                "qwen3.8",
+                "Cybersecurity practitioner task routed through Anthropic Security Skills RAG."
+            )
+
+        # 4. Simple Chat / Greeting
         simple_chat_triggers = [
             r"^(hello|hi|hey|howdy|good morning|good evening|good afternoon|who are you|what is your name)\b",
             r"^(thank you|thanks|bye|goodbye)\b"

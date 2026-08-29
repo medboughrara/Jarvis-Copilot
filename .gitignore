@@ -13,7 +13,9 @@ __pycache__/
 # Large Model Files & Scratches
 models/
 scratch/
-data/
+data/*
+!data/security_skills/
+!data/security_skills_index/
 *.db
 *.sqlite3
 *.onnx

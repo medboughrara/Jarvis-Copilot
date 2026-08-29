@@ -1,0 +1,4918 @@
+{
+  "version": "1.0.0",
+  "commit_sha": "1b3f6b2286981381a5cc0566551ef3bb6bc38383",
+  "total_skills": 818,
+  "dual_use_count": 103,
+  "informational_count": 715,
+  "default_unclassified_tier": "dual_use",
+  "skills": {
+    "abusing-dpapi-for-credential-access": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "abusing-shadow-credentials-for-privesc": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "achieving-cmmc-level-2-compliance": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "acquiring-disk-image-with-dd-and-dcfldd": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-active-directory-acl-abuse": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-android-malware-with-apktool": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-api-gateway-access-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-apt-group-with-mitre-navigator": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-azure-activity-logs-for-threats": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-bootkit-and-rootkit-samples": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-browser-forensics-with-hindsight": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-campaign-attribution-evidence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-certificate-transparency-for-phishing": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-cloud-storage-access-patterns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-cobalt-strike-beacon-configuration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-cobaltstrike-malleable-c2-profiles": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-command-and-control-communication": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-cyber-kill-chain": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-disk-image-with-autopsy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-dns-logs-for-exfiltration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-docker-container-forensics": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-email-headers-for-phishing-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-ethereum-smart-contract-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-golang-malware-with-ghidra": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-heap-spray-exploitation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-indicators-of-compromise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-ios-app-security-with-objection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-kubernetes-audit-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-linux-audit-logs-for-intrusion": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-linux-elf-malware": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-linux-kernel-rootkits": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-linux-system-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-lnk-file-and-jump-list-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-macro-malware-in-office-documents": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-malicious-pdf-with-peepdf": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-malicious-url-with-urlscan": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-malware-behavior-with-cuckoo-sandbox": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-malware-family-relationships-with-malpedia": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-malware-persistence-with-autoruns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-malware-sandbox-evasion-techniques": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-memory-dumps-with-volatility": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-memory-forensics-with-lime-and-volatility": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-mft-for-deleted-file-recovery": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-network-covert-channels-in-malware": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-network-flow-data-with-netflow": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-network-packets-with-scapy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-network-traffic-for-incidents": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-network-traffic-of-malware": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-network-traffic-with-wireshark": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-office365-audit-logs-for-compromise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-outlook-pst-for-email-forensics": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-packed-malware-with-upx-unpacker": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-pdf-malware-with-pdfid": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-persistence-mechanisms-in-linux": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-powershell-empire-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-powershell-script-block-logging": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-prefetch-files-for-execution-history": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-ransomware-encryption-mechanisms": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-ransomware-leak-site-intelligence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-ransomware-network-indicators": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-ransomware-payment-wallets": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-sbom-for-supply-chain-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-security-logs-with-splunk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-slack-space-and-file-system-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-supply-chain-malware-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-threat-actor-ttps-with-mitre-attack": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-threat-actor-ttps-with-mitre-navigator": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-threat-intelligence-feeds": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-threat-landscape-with-misp": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-tls-certificate-transparency-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-typosquatting-domains-with-dnstwist": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-uefi-bootkit-persistence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-usb-device-connection-history": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-web-server-logs-for-intrusion": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-windows-amcache-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-windows-event-logs-in-splunk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-windows-lnk-files-for-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-windows-prefetch-with-python": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-windows-registry-for-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "analyzing-windows-shellbag-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "assessing-vector-and-embedding-weaknesses": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "attacking-entra-id-with-roadtools": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "attacking-oauth-with-device-code-phishing": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "auditing-aws-s3-bucket-permissions": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-azure-active-directory-configuration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-cloud-with-cis-benchmarks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-entra-id-with-aadinternals": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-foundry-smart-contract-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-gcp-iam-permissions": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-kubernetes-cluster-rbac": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-kubernetes-rbac-privilege-escalation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-mcp-servers-for-tool-poisoning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-terraform-infrastructure-for-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-tls-certificate-transparency-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "auditing-uefi-firmware-with-chipsec": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "automating-ioc-enrichment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "benchmarking-kubernetes-with-kube-bench": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-adversary-infrastructure-tracking-system": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "building-attack-pattern-library-from-cti-reports": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-automated-malware-submission-pipeline": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-c2-infrastructure-with-sliver-framework": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "building-c2-redirector-infrastructure": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "building-cloud-siem-with-sentinel": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-detection-rule-with-splunk-spl": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-detection-rules-with-sigma": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-devsecops-pipeline-with-gitlab-ci": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-identity-federation-with-saml-azure-ad": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-identity-governance-lifecycle-process": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-incident-response-dashboard": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-incident-response-playbook": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-incident-timeline-with-timesketch": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-ioc-defanging-and-sharing-pipeline": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-ioc-enrichment-pipeline-with-opencti": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-malware-incident-communication-template": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-patch-tuesday-response-process": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-phishing-reporting-button-workflow": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-ransomware-playbook-with-cisa-framework": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-red-team-c2-infrastructure-with-havoc": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "building-role-mining-for-rbac-optimization": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-soc-escalation-matrix": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-soc-metrics-and-kpi-tracking": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-soc-playbook-for-ransomware": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-super-timelines-with-plaso": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-threat-actor-profile-from-osint": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-threat-feed-aggregation-with-misp": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-threat-hunt-hypothesis-framework": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-threat-intelligence-enrichment-in-splunk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-threat-intelligence-feed-integration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-threat-intelligence-platform": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-vulnerability-aging-and-sla-tracking": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-vulnerability-dashboard-with-defectdojo": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-vulnerability-exception-tracking-system": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "building-vulnerability-scanning-workflow": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "bypassing-authentication-with-forced-browsing": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "coercing-authentication-with-coercer-petitpotam": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "collecting-indicators-of-compromise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "collecting-open-source-intelligence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "collecting-threat-intelligence-with-misp": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "collecting-volatile-evidence-from-compromised-host": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-api-security-testing": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-cloud-incident-response": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-cloud-penetration-testing": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-cyber-risk-assessment-with-nist-800-30": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-domain-persistence-with-dcsync": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-external-reconnaissance-with-osint": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-full-scope-red-team-engagement": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-gdpr-compliance-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-internal-network-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-internal-reconnaissance-with-bloodhound-ce": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-malware-incident-response": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-man-in-the-middle-attack-simulation": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-memory-forensics-with-volatility": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-mobile-app-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-network-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-pass-the-ticket-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-phishing-incident-response": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-post-incident-lessons-learned": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "conducting-social-engineering-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-social-engineering-pretext-call": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-spearphishing-simulation-campaign": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "conducting-wireless-network-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "configuring-active-directory-tiered-model": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-aws-verified-access-for-ztna": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-certificate-authority-with-openssl": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-host-based-intrusion-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-hsm-for-key-storage": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-identity-aware-proxy-with-google-iap": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-ldap-security-hardening": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-microsegmentation-for-zero-trust": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-multi-factor-authentication-with-duo": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-network-segmentation-with-vlans": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-oauth2-authorization-flow": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-pfsense-firewall-rules": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-snort-ids-for-intrusion-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-suricata-for-network-monitoring": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-tls-1-3-for-secure-communications": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-windows-defender-advanced-settings": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-windows-event-logging-for-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "configuring-zscaler-private-access-for-ztna": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "containing-active-breach": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "continuous-llm-red-teaming-with-promptfoo": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "correlating-security-events-in-qradar": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "correlating-threat-campaigns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "defending-llms-with-guardrails": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deobfuscating-javascript-malware": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deobfuscating-powershell-obfuscated-malware": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "deploying-active-directory-honeytokens": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-cloud-deception-with-decoy-resources": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-cloudflare-access-for-zero-trust": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-decoy-files-for-ransomware-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-edr-agent-with-crowdstrike": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-honeytokens-and-canarytokens": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-osquery-for-endpoint-monitoring": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-palo-alto-prisma-access-zero-trust": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-ransomware-canary-files": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-software-defined-perimeter": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "deploying-tailscale-for-zero-trust-vpn": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "designing-adversary-engagement-with-mitre-engage": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-ai-model-prompt-injection-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-anomalies-in-industrial-control-systems": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-anomalous-authentication-patterns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-api-enumeration-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-arp-poisoning-in-network-traffic": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-attacks-on-historian-servers": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-attacks-on-scada-systems": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-aws-cloudtrail-anomalies": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-aws-credential-exposure-with-trufflehog": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-aws-guardduty-findings-automation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-aws-iam-privilege-escalation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-azure-lateral-movement": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-azure-service-principal-abuse": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-azure-storage-account-misconfigurations": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-beaconing-patterns-with-zeek": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-bluetooth-low-energy-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-broken-object-property-level-authorization": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-business-email-compromise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-business-email-compromise-with-ai": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-cloud-threats-with-guardduty": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-command-and-control-over-dns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-compromised-cloud-credentials": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-container-drift-at-runtime": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-container-escape-attempts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-container-escape-with-falco-rules": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-container-runtime-threats-with-falco": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-credential-dumping-techniques": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-cryptomining-in-cloud": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-data-and-model-poisoning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-dcsync-attack-in-active-directory": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-deepfake-audio-in-vishing-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-dependency-confusion": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-dll-sideloading-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-dnp3-protocol-anomalies": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-dns-exfiltration-with-dns-query-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-email-account-compromise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-email-forwarding-rules-attack": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-entra-offensive-tools-in-graph-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-evasion-techniques-in-endpoint-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-exfiltration-over-dns-with-zeek": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-fileless-attacks-on-endpoints": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-fileless-malware-techniques": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-golden-ticket-attacks-in-kerberos-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-golden-ticket-forgery": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-indirect-prompt-injection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-insider-data-exfiltration-via-dlp": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-insider-threat-behaviors": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-insider-threat-with-ueba": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-kerberoasting-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-lateral-movement-in-network": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-lateral-movement-with-splunk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-lateral-movement-with-zeek": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-living-off-the-land-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-living-off-the-land-with-lolbas": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-malicious-npm-packages": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-malicious-scheduled-tasks-with-sysmon": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-mimikatz-execution-patterns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-misconfigured-azure-storage": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-mobile-malware-behavior": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-modbus-command-injection-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-modbus-protocol-anomalies": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-model-extraction-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-network-anomalies-with-zeek": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-network-scanning-with-ids-signatures": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-ntlm-relay-with-event-correlation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-oauth-token-theft": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-pass-the-hash-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-pass-the-ticket-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-port-scanning-with-fail2ban": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-privilege-escalation-attempts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-privilege-escalation-in-kubernetes-pods": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-process-hollowing-technique": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-process-injection-techniques": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-qr-code-phishing-with-email-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-ransomware-encryption-behavior": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-ransomware-precursors-in-network": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-rdp-brute-force-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-rootkit-activity": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-s3-data-exfiltration-attempts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-secure-boot-bypass": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-serverless-function-injection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-service-account-abuse": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-shadow-api-endpoints": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-shadow-it-cloud-usage": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-spearphishing-with-email-gateway": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-sql-injection-via-waf-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-stuxnet-style-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-supply-chain-attacks-in-ci-cd": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-suspicious-oauth-application-consent": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-suspicious-powershell-execution": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-t1003-credential-dumping-with-edr": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-t1055-process-injection-with-sysmon": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-t1548-abuse-elevation-control-mechanism": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-typosquatting-packages": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-typosquatting-packages-in-npm-pypi": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "detecting-wmi-persistence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "emulating-cloud-attacks-with-stratus-red-team": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "enumerating-cloud-with-cloudfox": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "eradicating-malware-from-infected-systems": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "escaping-containers-to-host": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "evaluating-threat-intelligence-platforms": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "executing-active-directory-attack-simulation": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "executing-nist-rmf-authorization-to-operate": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "executing-phishing-simulation-campaign": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "executing-red-team-engagement-planning": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "executing-red-team-exercise": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-active-directory-certificate-services-esc1": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-active-directory-with-bloodhound": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-adcs-with-certipy": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-api-injection-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-aws-with-pacu": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-bgp-hijacking-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-broken-function-level-authorization": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-broken-link-hijacking": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-constrained-delegation-abuse": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-deeplink-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-excessive-data-exposure-in-api": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-http-request-smuggling": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-idor-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-insecure-data-storage-in-mobile": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-insecure-deserialization": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-ipv6-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-jwt-algorithm-confusion-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-kerberoasting-with-impacket": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-mass-assignment-in-rest-apis": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-ms17-010-eternalblue-vulnerability": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-nopac-cve-2021-42278-42287": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-nosql-injection-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-oauth-misconfiguration": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-prototype-pollution-in-javascript": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-race-condition-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-server-side-request-forgery": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-smb-vulnerabilities-with-metasploit": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-sql-injection-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-sql-injection-with-sqlmap": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-template-injection-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-type-juggling-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-vulnerabilities-with-metasploit-framework": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-websocket-vulnerabilities": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "exploiting-zerologon-vulnerability-cve-2020-1472": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "extracting-browser-history-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "extracting-config-from-agent-tesla-rat": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "extracting-credentials-from-memory-dump": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "extracting-iocs-from-malware-samples": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "extracting-memory-artifacts-with-rekall": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "extracting-windows-event-logs-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "fleet-hunting-with-velociraptor": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "generating-and-analyzing-sboms": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "generating-forensic-timelines-with-hayabusa": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "generating-threat-intelligence-reports": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hardening-docker-containers-for-production": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hardening-docker-daemon-configuration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hardening-linux-endpoint-with-cis-benchmark": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hardening-windows-endpoint-with-cis-benchmark": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-advanced-persistent-threats": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-bootkits-in-efi-system-partition": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-credential-stuffing-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-evtx-with-chainsaw": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-anomalous-powershell-execution": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-beaconing-with-frequency-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-cobalt-strike-beacons": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-command-and-control-beaconing": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-data-exfiltration-indicators": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-data-staging-before-exfiltration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-dcom-lateral-movement": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-dcsync-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-defense-evasion-via-timestomping": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-dns-based-persistence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-dns-tunneling-with-zeek": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-domain-fronting-c2-traffic": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-lateral-movement-via-wmi": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-living-off-the-cloud-techniques": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-living-off-the-land-binaries": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-lolbins-execution-in-endpoint-logs": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-ntlm-relay-attacks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-persistence-mechanisms-in-windows": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-persistence-via-wmi-subscriptions": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-process-injection-techniques": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-registry-persistence-mechanisms": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-registry-run-key-persistence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-scheduled-task-persistence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-shadow-copy-deletion": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-spearphishing-indicators": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-startup-folder-persistence": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-supply-chain-compromise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-suspicious-scheduled-tasks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-t1098-account-manipulation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-unusual-network-connections": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-unusual-service-installations": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-for-webshell-activity": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "hunting-saas-sso-token-abuse": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aes-encryption-for-data-at-rest": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-alert-fatigue-reduction": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-anti-phishing-training-program": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-anti-ransomware-group-policy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-abuse-detection-with-rate-limiting": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-gateway-security-controls": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-key-security-controls": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-rate-limiting-and-throttling": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-schema-validation-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-security-posture-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-security-testing-with-42crunch": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-api-threat-protection-with-apigee": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-application-whitelisting-with-applocker": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aqua-security-for-container-scanning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-attack-path-analysis-with-xm-cyber": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-attack-surface-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aws-config-rules-for-compliance": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aws-iam-permission-boundaries": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aws-macie-for-data-classification": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aws-nitro-enclave-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aws-security-hub": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-aws-security-hub-compliance": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-azure-ad-privileged-identity-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-azure-defender-for-cloud": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-beyondcorp-zero-trust-access-model": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-bgp-security-with-rpki": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-browser-isolation-for-zero-trust": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-canary-tokens-for-network-intrusion": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-cisa-zero-trust-maturity-model": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-cloud-dlp-for-data-protection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-cloud-security-posture-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-cloud-trail-log-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-cloud-vulnerability-posture-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-cloud-waf-rules": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-cloud-workload-protection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-code-signing-for-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-conditional-access-policies-azure-ad": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-conduit-security-for-ot-remote-access": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-container-image-minimal-base-with-distroless": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-container-network-policies-with-calico": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-continuous-security-validation-with-bas": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-data-loss-prevention-with-microsoft-purview": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ddos-mitigation-with-cloudflare": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-deception-based-detection-with-canarytoken": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-delinea-secret-server-for-pam": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-device-posture-assessment-in-zero-trust": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-devsecops-security-scanning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-diamond-model-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-digital-signatures-with-ed25519": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-disk-encryption-with-bitlocker": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-dmarc-dkim-spf-email-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-dragos-platform-for-ot-monitoring": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ebpf-security-monitoring": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-email-sandboxing-with-proofpoint": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-end-to-end-encryption-for-messaging": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-endpoint-detection-with-wazuh": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-endpoint-dlp-controls": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-envelope-encryption-with-aws-kms": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-epss-score-for-vulnerability-prioritization": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-file-integrity-monitoring-with-aide": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-fuzz-testing-in-cicd-with-aflplusplus": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-gcp-binary-authorization": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-gcp-organization-policy-constraints": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-gcp-vpc-firewall-rules": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-gdpr-data-protection-controls": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-gdpr-data-subject-access-request": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-github-advanced-security-for-code-scanning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-google-workspace-admin-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-google-workspace-phishing-protection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-google-workspace-sso-configuration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-hardware-security-key-authentication": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-hashicorp-vault-dynamic-secrets": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-hipaa-security-rule-safeguards": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-honeypot-for-ransomware-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-honeytokens-for-breach-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ics-firewall-with-tofino": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-identity-governance-with-sailpoint": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-identity-verification-for-zero-trust": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-iec-62443-security-zones": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-image-provenance-verification-with-cosign": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-immutable-backup-with-restic": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-infrastructure-as-code-security-scanning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-iso-27001-information-security-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-just-in-time-access-provisioning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-jwt-signing-and-verification": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-kubernetes-network-policy-with-calico": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-kubernetes-pod-security-standards": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-llm-guardrails-for-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-log-forwarding-with-fluentd": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-log-integrity-with-blockchain": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-memory-protection-with-dep-aslr": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-microsegmentation-with-guardicore": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-mimecast-targeted-attack-protection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-mitre-attack-coverage-mapping": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-mobile-application-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-mtls-for-zero-trust-services": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-nerc-cip-compliance-controls": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-access-control": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-access-control-with-cisco-ise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-deception-with-honeypots": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-intrusion-prevention-with-suricata": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-policies-for-kubernetes": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-segmentation-for-ot": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-segmentation-with-firewall-zones": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-traffic-analysis-with-arkime": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-network-traffic-baselining": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-next-generation-firewall-with-palo-alto": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-opa-gatekeeper-for-policy-enforcement": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ot-incident-response-playbook": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ot-network-traffic-analysis-with-nozomi": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-pam-for-database-access": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-passwordless-auth-with-microsoft-entra": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-passwordless-authentication-with-fido2": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-patch-management-for-ot-systems": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-patch-management-workflow": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-pci-dss-compliance-controls": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-pod-security-admission-controller": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-policy-as-code-with-open-policy-agent": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-privileged-access-management-with-cyberark": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-privileged-access-workstation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-privileged-session-monitoring": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-proofpoint-email-security-gateway": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-purdue-model-network-segmentation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ransomware-backup-strategy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ransomware-kill-switch-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-rapid7-insightvm-for-scanning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-rbac-hardening-for-kubernetes": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-rsa-key-pair-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-runtime-application-self-protection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-runtime-security-with-tetragon": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-saml-sso-with-okta": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-scim-provisioning-with-okta": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-secret-scanning-with-gitleaks": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-secrets-management-with-vault": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-secrets-scanning-in-ci-cd": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-security-chaos-engineering": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-security-information-sharing-with-stix2": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-security-monitoring-with-datadog": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-semgrep-for-custom-sast-rules": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-siem-correlation-rules-for-apt": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-siem-use-case-tuning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-siem-use-cases-for-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-sigstore-for-software-signing": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-soar-automation-with-phantom": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-soar-playbook-for-phishing": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-soar-playbook-with-palo-alto-xsoar": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-stix-taxii-feed-integration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-supply-chain-security-with-in-toto": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-syslog-centralization-with-rsyslog": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-taxii-server-with-opentaxii": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-threat-intelligence-lifecycle-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-threat-modeling-with-mitre-attack": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-ticketing-system-for-incidents": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-usb-device-control-policy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-velociraptor-for-ir-collection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-vulnerability-management-with-greenbone": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-vulnerability-remediation-sla": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-vulnerability-sla-breach-alerting": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-web-application-logging-with-modsecurity": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-knowledge-proof-for-authentication": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-standing-privilege-with-cyberark": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-trust-dns-with-nextdns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-trust-for-saas-applications": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-trust-in-cloud": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-trust-network-access": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-trust-network-access-with-zscaler": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-trust-with-beyondcorp": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "implementing-zero-trust-with-hashicorp-boundary": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "integrating-dast-with-owasp-zap-in-pipeline": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "integrating-sast-into-github-actions-pipeline": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "intercepting-mobile-traffic-with-burpsuite": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "investigating-insider-threat-indicators": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "investigating-phishing-email-incident": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "investigating-ransomware-attack-artifacts": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "managing-cloud-identity-with-okta": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "managing-intelligence-lifecycle": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "managing-third-party-vendor-risk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "mapping-attack-paths-with-bloodhound-ce": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "mapping-mitre-attack-techniques": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "migrating-to-post-quantum-cryptography": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "modeling-threats-with-opencti": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "monitoring-darkweb-sources": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "monitoring-scada-modbus-traffic-anomalies": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "moving-laterally-with-netexec": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "operating-havoc-c2": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "operating-sliver-c2": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "operationalizing-misp-threat-feeds": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "orchestrating-llm-attacks-with-pyrit": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "parsing-artifacts-with-eric-zimmerman-tools": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-access-recertification-with-saviynt": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-access-review-and-certification": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-active-directory-bloodhound-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-active-directory-compromise-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-active-directory-forest-trust-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-active-directory-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-active-directory-vulnerability-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-adversary-in-the-middle-phishing-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-agentless-vulnerability-scanning": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ai-driven-osint-correlation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-alert-triage-with-elastic-siem": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-android-app-static-analysis-with-mobsf": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-api-fuzzing-with-restler": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-api-inventory-and-discovery": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-api-rate-limiting-bypass": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-api-security-testing-with-postman": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-arp-spoofing-attack-simulation": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-asset-criticality-scoring-for-vulns": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-authenticated-scan-with-openvas": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-authenticated-vulnerability-scan": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-automated-malware-analysis-with-cape": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-aws-account-enumeration-with-scout-suite": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-aws-privilege-escalation-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-bandwidth-throttling-attack-simulation": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-binary-exploitation-analysis": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-blind-ssrf-exploitation": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-bluetooth-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-brand-monitoring-for-impersonation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-clickjacking-attack-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-cloud-asset-inventory-with-cartography": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cloud-forensics-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cloud-forensics-with-aws-cloudtrail": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cloud-incident-containment-procedures": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cloud-log-forensics-with-athena": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cloud-native-forensics-with-falco": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cloud-native-threat-hunting-with-aws-detective": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cloud-penetration-testing-with-pacu": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-cloud-storage-forensic-acquisition": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-container-escape-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-container-image-hardening": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-container-security-scanning-with-trivy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-content-security-policy-bypass": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-credential-access-with-lazagne": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-cryptographic-audit-of-application": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-csrf-attack-simulation": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-cve-prioritization-with-kev-catalog": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-dark-web-monitoring-for-threats": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-deception-technology-deployment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-directory-traversal-testing": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-disk-forensics-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-dmarc-policy-enforcement-rollout": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-dns-enumeration-and-zone-transfer": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-dns-tunneling-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-docker-bench-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-dynamic-analysis-of-android-app": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-dynamic-analysis-with-any-run": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-endpoint-forensics-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-endpoint-vulnerability-remediation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-entitlement-review-with-sailpoint-iiq": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-external-network-penetration-test": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-false-positive-reduction-in-siem": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-file-carving-with-foremost": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-firmware-extraction-with-binwalk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-firmware-malware-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-fuzzing-with-aflplusplus": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-gcp-penetration-testing-with-gcpbucketbrute": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-gcp-security-assessment-with-forseti": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-graphql-depth-limit-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-graphql-introspection-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-graphql-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-hardware-security-module-integration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-hash-cracking-with-hashcat": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-http-parameter-pollution-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-ics-asset-discovery-with-claroty": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-indicator-lifecycle-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-initial-access-with-evilginx3": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-insider-threat-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ioc-enrichment-automation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ios-app-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-iot-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ip-reputation-analysis-with-shodan": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-jwt-none-algorithm-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-kerberoasting-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-kubernetes-cis-benchmark-with-kube-bench": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-kubernetes-etcd-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-kubernetes-penetration-testing": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-lateral-movement-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-lateral-movement-with-wmiexec": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-linux-log-forensics-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-log-analysis-for-forensic-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-log-source-onboarding-in-siem": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-malware-hash-enrichment-with-virustotal": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-malware-ioc-extraction": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-malware-persistence-investigation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-malware-triage-with-yara": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-memory-forensics-with-volatility3": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-memory-forensics-with-volatility3-plugins": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-mobile-app-certificate-pinning-bypass": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-mobile-device-forensics-with-cellebrite": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-network-forensics-with-wireshark": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-network-packet-capture-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-network-traffic-analysis-with-tshark": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-network-traffic-analysis-with-zeek": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-nist-csf-maturity-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-oauth-scope-minimization-review": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-oil-gas-cybersecurity-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-open-source-intelligence-gathering": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-osint-with-spiderfoot": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ot-network-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ot-vulnerability-assessment-with-claroty": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ot-vulnerability-scanning-safely": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-packet-injection-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-paste-site-monitoring-for-credentials": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-phishing-simulation-with-gophish": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-physical-intrusion-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-plc-firmware-security-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-post-quantum-cryptography-migration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-power-grid-cybersecurity-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-privacy-impact-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-privilege-escalation-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-privilege-escalation-on-linux": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-privileged-account-access-review": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-privileged-account-discovery": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-purple-team-atomic-testing": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-purple-team-exercise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ransomware-response": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ransomware-tabletop-exercise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-red-team-phishing-with-gophish": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-red-team-with-covenant": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-s7comm-protocol-security-analysis": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-sca-dependency-scanning-with-snyk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-scada-hmi-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-second-order-sql-injection": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-security-headers-audit": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-serverless-function-security-review": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-service-account-audit": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-service-account-credential-rotation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-soap-web-service-security-testing": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-soc-tabletop-exercise": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-soc2-type2-audit-preparation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-sqlite-database-forensics": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ssl-certificate-lifecycle-management": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ssl-stripping-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-ssl-tls-inspection-configuration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ssl-tls-security-assessment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-ssrf-vulnerability-exploitation": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-static-malware-analysis-with-pe-studio": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-steganography-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-subdomain-enumeration-with-subfinder": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-supply-chain-attack-simulation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-thick-client-application-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-threat-emulation-with-atomic-red-team": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-threat-hunting-with-elastic-siem": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-threat-hunting-with-yara-rules": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-threat-intelligence-sharing-with-misp": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-threat-landscape-assessment-for-sector": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-threat-modeling-with-owasp-threat-dragon": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-timeline-reconstruction-with-plaso": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-user-behavior-analytics": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-vlan-hopping-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-vulnerability-scanning-with-nessus": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-web-application-firewall-bypass": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-web-application-penetration-test": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-web-application-scanning-with-nikto": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-web-application-vulnerability-triage": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-web-cache-deception-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-web-cache-poisoning-attack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-wifi-password-cracking-with-aircrack": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "performing-windows-artifact-analysis-with-eric-zimmerman-tools": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-wireless-network-penetration-test": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-wireless-security-assessment-with-kismet": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "performing-yara-rule-development-for-detection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "post-exploiting-microsoft-graph-with-graphrunner": {
+      "tier": "dual_use",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Offensive tradecraft / exploit workflow"
+    },
+    "prioritizing-vulnerabilities-with-cvss-scoring": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "processing-stix-taxii-feeds": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "profiling-threat-actor-groups": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "recovering-deleted-files-with-photorec": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "recovering-from-ransomware-attack": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "red-teaming-llms-with-garak": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "relaying-ntlm-for-adcs-esc8": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "remediating-s3-bucket-misconfiguration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "reverse-engineering-android-malware-with-jadx": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "reverse-engineering-dotnet-malware-with-dnspy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "reverse-engineering-ios-app-with-frida": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "reverse-engineering-malware-with-ghidra": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "reverse-engineering-ransomware-encryption-routine": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "reverse-engineering-rust-malware": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "scanning-container-images-with-grype": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "scanning-containers-with-trivy-in-cicd": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "scanning-docker-images-with-trivy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "scanning-iac-and-images-with-trivy": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "scanning-infrastructure-with-nessus": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "scanning-kubernetes-manifests-with-kubesec": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "scanning-network-with-nmap-advanced": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-agentic-ai-tool-invocation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-api-gateway-with-aws-waf": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-aws-iam-permissions": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-aws-lambda-execution-roles": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-azure-with-microsoft-defender": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-container-registry-images": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-container-registry-with-harbor": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-github-actions-workflows": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-helm-chart-deployments": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-historian-server-in-ot-environment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-kubernetes-on-cloud": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-remote-access-to-ot-environment": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "securing-serverless-functions": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-android-intents-for-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-api-authentication-weaknesses": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-api-for-broken-object-level-authorization": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-api-for-mass-assignment-vulnerability": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-api-security-with-owasp-top-10": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-cors-misconfiguration": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-broken-access-control": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-business-logic-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-email-header-injection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-host-header-injection": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-json-web-token-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-open-redirect-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-sensitive-data-exposure": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-system-prompt-leakage": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-xml-injection-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-xss-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-xss-vulnerabilities-with-burpsuite": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-for-xxe-injection-vulnerabilities": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-jwt-token-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-mobile-api-authentication": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-oauth2-implementation-flaws": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-prompt-injection-in-rag-pipelines": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-ransomware-recovery-procedures": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "testing-websocket-api-security": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "tracking-threat-actor-infrastructure": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "triaging-security-alerts-in-splunk": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "triaging-security-incident": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "triaging-security-incident-with-ir-playbook": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "triaging-vulnerabilities-with-ssvc-framework": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "triaging-windows-with-kape": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "validating-backup-integrity-for-recovery": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "validating-tpm-measured-boot-attestation": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    },
+    "verifying-build-provenance-with-slsa-sigstore": {
+      "tier": "informational",
+      "reviewed": true,
+      "review_date": "2026-08-29",
+      "rationale": "Defensive engineering / analysis / hardening"
+    }
+  }
+}
