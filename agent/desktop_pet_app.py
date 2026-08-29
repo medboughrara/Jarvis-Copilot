@@ -117,6 +117,29 @@ def launch_desktop_pet(port: int = 8000, blocking: bool = True) -> DesktopPetCon
     controller.heartbeat_thread.start()
 
     logger.info(f"[Desktop Pet] Initialized at ({controller.x}, {controller.y}). Connecting to web server on port {port}...")
+
+    if blocking:
+        try:
+            import webview
+            url = f"http://localhost:{port}/desktop_pet.html"
+            window = webview.create_window(
+                title="Jarvis Copilot Desktop Pet",
+                url=url,
+                width=controller.width,
+                height=controller.height,
+                x=controller.x,
+                y=controller.y,
+                frameless=True,
+                on_top=True,
+                transparent=True,
+                background_color='#00000000',
+                easy_drag=True
+            )
+            controller.window = window
+            webview.start(debug=False)
+        except Exception as e:
+            logger.warning(f"[Desktop Pet] GUI window notice: {e}")
+
     return controller
 
 

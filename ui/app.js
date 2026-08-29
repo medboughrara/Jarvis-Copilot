@@ -450,6 +450,26 @@ document.addEventListener('DOMContentLoaded', () => {
         btnExitAvatar.addEventListener('click', () => switchView('chat'));
     }
 
+    const btnLaunchPet = document.getElementById('btn-launch-desktop-pet');
+    if (btnLaunchPet) {
+        btnLaunchPet.addEventListener('click', async () => {
+            btnLaunchPet.innerHTML = `<span class="material-symbols-outlined text-base animate-spin">refresh</span><span>LAUNCHING...</span>`;
+            try {
+                const resp = await fetch('/api/pet/launch', { method: 'POST' });
+                const data = await resp.json();
+                btnLaunchPet.innerHTML = `<span class="material-symbols-outlined text-base text-success">check_circle</span><span>PET ACTIVE (PID ${data.pid || 'OK'})</span>`;
+                setTimeout(() => {
+                    btnLaunchPet.innerHTML = `<span class="material-symbols-outlined text-base animate-bounce">pets</span><span>FLOATING PET</span>`;
+                }, 3500);
+            } catch (err) {
+                btnLaunchPet.innerHTML = `<span class="material-symbols-outlined text-base text-error">error</span><span>ERROR</span>`;
+                setTimeout(() => {
+                    btnLaunchPet.innerHTML = `<span class="material-symbols-outlined text-base animate-bounce">pets</span><span>FLOATING PET</span>`;
+                }, 3000);
+            }
+        });
+    }
+
     // =======================================================================
     // 3. VOICE SPEECH SYNTHESIS & REPLAY ENGINE
     // =======================================================================
