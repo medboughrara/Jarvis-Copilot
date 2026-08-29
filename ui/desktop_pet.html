@@ -6,14 +6,25 @@
     <title>Jarvis Desktop Pet</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        html, body {
             background: transparent !important;
+            background-color: transparent !important;
+            background-color: rgba(0, 0, 0, 0) !important;
             margin: 0;
             padding: 0;
             overflow: hidden;
-            user-select: none;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             font-family: 'Space Grotesk', sans-serif;
         }
         .drag-handle {
@@ -26,20 +37,25 @@
         .no-drag {
             -webkit-app-region: no-drag;
         }
+        
+        /* Floating & Glow Animations */
         @keyframes floatPet {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-8px); }
         }
         .animate-float {
-            animation: floatPet 4s ease-in-out infinite;
+            animation: floatPet 3.5s ease-in-out infinite;
         }
+        
         @keyframes pulseGlow {
-            0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4)); }
-            50% { filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.7)); }
+            0%, 100% { filter: drop-shadow(0 0 12px rgba(0, 242, 255, 0.45)); }
+            50% { filter: drop-shadow(0 0 24px rgba(0, 242, 255, 0.85)); }
         }
         .glow-mascot {
-            animation: pulseGlow 3s infinite;
+            animation: pulseGlow 2.5s infinite;
         }
+
+        /* Screen Grounding Shutter Flash */
         @keyframes shutterFlash {
             0% { opacity: 0; transform: scale(0.9); }
             30% { opacity: 1; transform: scale(1.05); }
@@ -48,6 +64,8 @@
         .shutter-active {
             animation: shutterFlash 1.2s ease-out forwards;
         }
+
+        /* Arm Pointing Keyframes */
         @keyframes armPointLeft {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(-45deg); }
@@ -64,29 +82,93 @@
             transform-origin: 160px 140px;
             animation: armPointRight 0.4s ease-out forwards;
         }
+
+        /* Speech Bubble Styling */
+        .speech-bubble {
+            max-width: 220px;
+            margin-bottom: 6px;
+            padding: 8px 12px;
+            border-radius: 16px;
+            background: rgba(4, 8, 18, 0.88);
+            border: 1px solid rgba(0, 242, 255, 0.5);
+            color: #cffafe;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* Shutter Indicator Badge */
+        .shutter-badge {
+            position: absolute;
+            top: 4px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: rgba(8, 20, 36, 0.92);
+            border: 1px solid #00f2ff;
+            color: #00f2ff;
+            font-size: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(0, 242, 255, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Quick Mic Button */
+        .quick-mic-btn {
+            position: absolute;
+            bottom: 4px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 242, 255, 0.15);
+            border: 1px solid #00f2ff;
+            color: #00f2ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+            transition: all 0.2s;
+        }
+        .quick-mic-btn:hover {
+            background: #00f2ff;
+            color: #040812;
+            transform: scale(1.1);
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center h-screen p-2">
+<body>
 
     <!-- 1. Visible Screen Grounding Active Indicator Banner -->
-    <div id="shutter-indicator-badge" class="hidden absolute top-1 z-50 flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-950/90 border border-cyan-400 text-[10px] font-mono font-bold text-cyan-300 shadow-lg backdrop-blur-md">
-        <span class="material-symbols-outlined text-xs text-amber-400 animate-spin">camera</span>
-        <span>📸 Screen Grounding Active (Local OCR)</span>
+    <div id="shutter-indicator-badge" class="shutter-badge hidden">
+        <span class="material-symbols-outlined" style="font-size: 14px; color: #f59e0b;">camera</span>
+        <span>📸 Screen Grounding Active</span>
     </div>
 
     <!-- 2. Floating Speech / Thought Bubble -->
-    <div id="pet-speech-bubble" class="hidden max-w-[220px] mb-2 p-2.5 rounded-2xl bg-black/80 border border-cyan-500/40 text-cyan-100 text-xs shadow-2xl backdrop-blur-md transition-all duration-300">
-        <div id="pet-speech-text" class="leading-relaxed font-mono text-[11px]"></div>
+    <div id="pet-speech-bubble" class="speech-bubble hidden">
+        <div id="pet-speech-text" style="line-height: 1.4;">Jarvis ready!</div>
     </div>
 
     <!-- 3. Mascot Stage Container (Draggable) -->
-    <div id="pet-mascot-container" class="drag-handle relative w-48 h-48 flex items-center justify-center animate-float glow-mascot">
+    <div id="pet-mascot-container" class="drag-handle animate-float glow-mascot" style="position: relative; width: 190px; height: 190px; display: flex; align-items: center; justify-content: center;">
         
         <!-- Ambient Orbit Ring -->
-        <div class="absolute inset-0 rounded-full border border-cyan-500/20 pointer-events-none animate-pulse"></div>
+        <div style="position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(0, 242, 255, 0.2); pointer-events: none;"></div>
 
         <!-- Robot Mascot SVG with Pointing Arms & Visemes -->
-        <svg id="pet-mascot-svg" class="w-40 h-40 cursor-pointer no-drag" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg id="pet-mascot-svg" class="no-drag" style="width: 160px; height: 160px; cursor: pointer;" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
                 <linearGradient id="petGradBody" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#0e1726" />
@@ -97,7 +179,7 @@
                     <stop id="pet-grad-stop2" offset="100%" stop-color="#3b82f6" />
                 </linearGradient>
                 <filter id="petGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
             </defs>
@@ -122,7 +204,7 @@
             <rect x="46" y="50" width="108" height="96" rx="28" fill="url(#petGradBody)" stroke="#00f2ff" stroke-width="2.5" />
             
             <!-- Visor Display Screen -->
-            <rect x="56" y="62" width="88" height="60" rx="18" fill="#030712" stroke="#00f2ff" stroke-opacity="0.3" stroke-width="1.5" />
+            <rect x="56" y="62" width="88" height="60" rx="18" fill="#030712" stroke="#00f2ff" stroke-opacity="0.4" stroke-width="1.5" />
 
             <!-- Left Eye Socket & Pupil -->
             <ellipse id="pet-eye-left" cx="80" cy="88" rx="12" ry="16" fill="#00f2ff" filter="url(#petGlow)" />
@@ -137,8 +219,8 @@
         </svg>
 
         <!-- Floating Quick Mic Button -->
-        <button id="btn-pet-mic" class="no-drag absolute bottom-1 right-2 w-8 h-8 rounded-full bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-cyan-300 hover:bg-cyan-500 hover:text-black transition-all shadow-md">
-            <span class="material-symbols-outlined text-sm">mic</span>
+        <button id="btn-pet-mic" class="quick-mic-btn no-drag" title="Talk with Jarvis">
+            <span class="material-symbols-outlined" style="font-size: 16px;">mic</span>
         </button>
     </div>
 

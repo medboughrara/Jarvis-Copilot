@@ -1,6 +1,6 @@
 /**
  * Jarvis Desktop Pet Client Logic
- * Handles interactive mascot animations, visemes, pupil tracking, pointing gestures,
+ * Handles interactive mascot animations, visemes, pupil cursor-following, pointing gestures,
  * and WebSocket synchronization with the Jarvis Web Server.
  */
 
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let ws = null;
 
     // =========================================================================
-    // 1. Natural Eye Blinking & Pupil Tracking
+    // 1. Natural Eye Blinking & Intelligent Pupil Tracking
     // =========================================================================
 
     function triggerBlink() {
@@ -46,28 +46,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (pupilRight) pupilRight.style.opacity = '1';
             }
             isBlinking = false;
-        }, 150);
+        }, 140);
     }
 
     setInterval(() => {
-        if (Math.random() > 0.4) triggerBlink();
-    }, 3500);
+        if (Math.random() > 0.35) triggerBlink();
+    }, 3800);
 
-    // Mouse Tracking for Pupils
-    window.addEventListener('mousemove', (e) => {
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        const dx = Math.max(-6, Math.min(6, (e.clientX - cx) / 20));
-        const dy = Math.max(-6, Math.min(6, (e.clientY - cy) / 20));
+    // Precise Cursor Tracking for Pupils (Relative & Absolute Angles)
+    window.updatePupilPosition = function(targetX, targetY) {
+        if (isBlinking) return;
+
+        // Center of left & right eye sockets
+        const eyeLeftCenter = { x: 80, y: 88 };
+        const eyeRightCenter = { x: 120, y: 88 };
+        const maxRadius = 5.5;
+
+        // Compute angle for left eye
+        const angleL = Math.atan2(targetY - eyeLeftCenter.y, targetX - eyeLeftCenter.x);
+        const distL = Math.hypot(targetX - eyeLeftCenter.x, targetY - eyeLeftCenter.y);
+        const rL = Math.min(maxRadius, distL / 25);
+        const dxL = Math.cos(angleL) * rL;
+        const dyL = Math.sin(angleL) * rL;
+
+        // Compute angle for right eye
+        const angleR = Math.atan2(targetY - eyeRightCenter.y, targetX - eyeRightCenter.x);
+        const distR = Math.hypot(targetX - eyeRightCenter.x, targetY - eyeRightCenter.y);
+        const rR = Math.min(maxRadius, distR / 25);
+        const dxR = Math.cos(angleR) * rR;
+        const dyR = Math.sin(angleR) * rR;
 
         if (pupilLeft) {
-            pupilLeft.setAttribute('cx', (80 + dx).toFixed(1));
-            pupilLeft.setAttribute('cy', (88 + dy).toFixed(1));
+            pupilLeft.setAttribute('cx', (80 + dxL).toFixed(2));
+            pupilLeft.setAttribute('cy', (88 + dyL).toFixed(2));
         }
         if (pupilRight) {
-            pupilRight.setAttribute('cx', (120 + dx).toFixed(1));
-            pupilRight.setAttribute('cy', (88 + dy).toFixed(1));
+            pupilRight.setAttribute('cx', (120 + dxR).toFixed(2));
+            pupilRight.setAttribute('cy', (88 + dyR).toFixed(2));
         }
+    };
+
+    // In-Window Mouse Move Event
+    window.addEventListener('mousemove', (e) => {
+        const rect = document.body.getBoundingClientRect();
+        const mouseX = (e.clientX / rect.width) * 200;
+        const mouseY = (e.clientY / rect.height) * 200;
+        window.updatePupilPosition(mouseX, mouseY);
     });
 
     // =========================================================================
@@ -141,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 130);
 
         // Auto-dismiss bubble after reading duration
-        const duration = Math.max(3000, text.length * 70);
+        const duration = Math.max(3200, text.length * 75);
         setTimeout(() => {
             isSpeaking = false;
             currentMood = 'idle';
@@ -174,6 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.speakText(data.text);
                 } else if (data.type === 'mood') {
                     currentMood = data.mood || 'idle';
+                } else if (data.type === 'cursor_track') {
+                    // Global cursor coordinates relative to pet window
+                    window.updatePupilPosition(data.relX, data.relY);
                 }
             } catch (err) {
                 console.warn('[Desktop Pet] Error parsing WS message:', err);
@@ -194,14 +221,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mascotSvg) {
         mascotSvg.addEventListener('click', () => {
             triggerBlink();
-            window.speakText("Jarvis Desktop Pet online, sir!");
+            window.speakText("Yes, sir? Jarvis is tracking your workspace!");
         });
     }
 
     if (btnMic) {
         btnMic.addEventListener('click', () => {
             window.triggerShutterFlash();
-            window.speakText("Listening to your command...");
+            window.speakText("Listening... Go ahead!");
         });
     }
 });
