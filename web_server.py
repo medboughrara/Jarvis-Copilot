@@ -668,6 +668,27 @@ async def get_models_status():
 
 
 # ==============================================================================
+# NVIDIA SkillSpector Audit Routes
+# ==============================================================================
+
+@app.post("/api/skills/inspect")
+async def inspect_skill_route(payload: Dict[str, Any] = Body(default={})):
+    """Audits a specific skill folder or file using NVIDIA SkillSpector."""
+    from tools.skillspector_tool import inspect_skill
+    target_path = payload.get("path", payload.get("skill_path", "skills/"))
+    res = inspect_skill.invoke({"skill_path": target_path})
+    return res
+
+
+@app.get("/api/skills/audit")
+async def audit_skills_route():
+    """Returns security posture and compliance status for all installed skills."""
+    from tools.skillspector_tool import scan_all_installed_skills
+    res = scan_all_installed_skills.invoke({})
+    return res
+
+
+# ==============================================================================
 # Server Entrypoint
 # ==============================================================================
 

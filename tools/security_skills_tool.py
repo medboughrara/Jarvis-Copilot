@@ -14,6 +14,7 @@ from typing import Dict, Any, List, Optional, Tuple
 from langchain_core.tools import tool
 import config
 from agent.security import AgentShield
+from agent.skillspector_scanner import skillspector_scanner
 
 logger = config.get_logger(__name__)
 
@@ -257,10 +258,26 @@ class SecuritySkillsEngine:
         scripts_dir = os.path.join(skill_dir, "scripts")
         script_files = [f for f in os.listdir(scripts_dir)] if os.path.exists(scripts_dir) else []
 
+        # NVIDIA SkillSpector Security Gating
+        scan_res = skillspector_scanner.scan_target(skill_dir)
+        if not scan_res.is_safe and scan_res.risk_tier == "CRITICAL":
+            logger.error(f"[SecuritySkills] BLOCKED '{skill_name}' by SkillSpector: {scan_res.findings_count} critical finding(s).")
+            return {
+                "status": "error",
+                "error": f"Security Skill '{skill_name}' BLOCKED by NVIDIA SkillSpector (Risk Score: {scan_res.risk_score}, Tier: {scan_res.risk_tier}).",
+                "skillspector_findings": [f.title for f in scan_res.findings]
+            }
+
         return {
             "status": "success",
             "name": skill_name,
             "risk_tier": risk_tier,
+            "skillspector_audit": {
+                "risk_score": scan_res.risk_score,
+                "risk_tier": scan_res.risk_tier,
+                "is_safe": scan_res.is_safe,
+                "findings_count": scan_res.findings_count
+            },
             "framework_mappings": fw_mappings,
             "skill_markdown": content,
             "available_references": ref_files,
@@ -299,6 +316,26 @@ class SecuritySkillsEngine:
             }
 
         script_sha256 = compute_file_sha256(script_path)
+
+        # 1b. NVIDIA SkillSpector Pre-Execution Script Inspection
+        script_findings = skillspector_scanner.scan_file(script_path)
+        critical_unsuppressed = [
+            f for f in script_findings
+            if f.severity == "CRITICAL" and not skillspector_scanner._is_suppressed(f)
+        ]
+        if critical_unsuppressed:
+            err_msg = (
+                f"Execution Blocked by NVIDIA SkillSpector: Detected critical security violation in '{script_name}': "
+                f"{critical_unsuppressed[0].title} ({critical_unsuppressed[0].rule_id})."
+            )
+            self.agent_shield.log_tool_invocation(
+                tool_name="execute_security_skill_script",
+                args={"skill_name": skill_name, "script_name": script_name, "risk_tier": risk_tier},
+                status="SKILLSPECTOR_BLOCKED",
+                duration_ms=0,
+                error_msg=err_msg
+            )
+            return {"status": "error", "error": err_msg, "skillspector_findings": [f.title for f in critical_unsuppressed]}
 
         # 2. Dual-Use Authorization & Target Scope Binding (Fail-Closed)
         if risk_tier == "dual_use":

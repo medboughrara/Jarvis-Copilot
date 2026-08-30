@@ -1,0 +1,19 @@
+# NVIDIA SkillSpector Baseline Suppression Configuration
+# Suppresses known authorized security test payloads in data/security_skills/
+
+version: "1.0.0"
+description: "Authorized security test fixtures and dual-use exploit verification baselines."
+
+suppressions:
+  # Allow authorized security research scripts within data/security_skills/
+  - rule_id: "NVD-013-DANGEROUS-AST-SUBPROCESS-SHELL"
+    file_path: "data/security_skills/*"
+    reason: "Authorized dual-use security assessment skill."
+
+  - rule_id: "NVD-003-PRIV-ESCALATION-CTYPES"
+    file_path: "data/security_skills/*"
+    reason: "Authorized dual-use binary analysis and memory introspection."
+
+  - rule_id: "NVD-003-PRIV-ESCALATION-CTYPES"
+    file_path: "agent/desktop_pet_app.py"
+    reason: "Native Windows Win32 DPI awareness and DWM glass compositing hook."
