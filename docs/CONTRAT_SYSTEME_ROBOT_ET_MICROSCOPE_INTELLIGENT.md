@@ -31,7 +31,7 @@ Le Client et le Prestataire sont ci-après désignés individuellement comme une
 | **Plateformes Matérielles** | Microcontrôleur ESP32-C6 + Actionneurs Série Intelligents Feetech STS3215 + Architecture Télémétrie MQTT |
 | **Statut Opérationnel** | Spécification Technique & Contractuelle Active (Baseline de Production) |
 | **Périmètre Technique** | Déplacement autonome/manuel Sparky, détection de dock & gestion de charge, télémétrie capteurs, balance de pesée Dual-HX711, platine 3 axes sub-micronique, autofocus optique 4K, corridor SSOT et pipeline d'imagerie WSI |
-| **Référence Version** | Révision 2.0 – Consolidation Multi-Tours & Durcissement Logiciel Validé |
+| **Référence Version** | Révision 2.1 – Consolidation Multi-Tours, Autofocus Asservi sur Encodeur Réel, Compensation de Backlash & Rapport 41 |
 
 ---
 
@@ -177,7 +177,7 @@ La table ci-dessous constitue l'Autorité Unique de Vérité (*Single Source of 
 | `DirectionGuardTolerance` | **5 pas** | Écart minimal déclenchant le contrôle de concordance de direction |
 | `SettlingDelayShortMs` | **350 ms** | Délai de stabilisation mécanique avant capture standard de tuile |
 | `SettlingDelayAfMs` | **1500 ms** | Délai de dissipation des vibrations avant balayage autofocus |
-| `ZBacklashCompensation` | **25 pas** | Dépassement vertical ascendant pour suppression du jeu d'inversion |
+| `ZBacklashCompensation` | **25 pas** | Dépassement vertical ascendant pour suppression du jeu d'inversion (avec confirmation encodeur et détection d'écrêtage plafond) |
 
 ### 4.5 Paramètres Optiques, Illumination et Autofocus Tenengrad
 
@@ -386,11 +386,11 @@ Le moteur de balayage unifié formalise trois paradigmes d'acquisition validés 
 | Indicateur (KPI Autofocus) | Objectif Contractuel | Performance Démontrée | Impact Technique & Bénéfice Opérationnel |
 | :--- | :--- | :--- | :--- |
 | **Taux de Convergence AF** | $\ge 90.0\%$ sur tissu biologique | **$90.87\%$ (956 / 1052)** | Taux de réussite du verrouillage focal au premier passage sans oscillation |
-| **Précision Axiale du Focus (Z)** | $\le 1$ pas encodeur ($\approx 0.4\ \mu\text{m}$) | **$\pm 0.1\ \mu\text{m}$ (sub-pas)** | Ajustement par régression parabolique 3 points au sommet de la courbe de netteté |
+| **Précision Axiale du Focus (Z)** | $\le 1$ pas encodeur ($\approx 0.4\ \mu\text{m}$) | **$\pm 0.1\ \mu\text{m}$ (sub-pas)** | Ajustement par régression parabolique sur positions réelles encodeur (`actual_positions`) découplé de la consigne discrète |
 | **Réduction de Balayages AF (Plan 3D)** | $\ge 70\%$ de sweeps économisés | **$87.4\%$ d'économie (7269 FOVs)** | Le plan prédictif $Z(X,Y)$ maintient le focus automatique sans déplacement vertical superflu |
 | **Économie Temporelle Plan 3D** | $\ge 5\text{ heures}$ sur lame entière | **$12.1\text{ heures}$ économisées** | Préservation des moteurs et accélération massive de la numérisation complète |
 | **Zéro Faux-Positif sur Verre Nu** | $100\%$ de rejet | **$100\%$ validé (0 faux lock)** | Rejet automatique des zones sans cellules (couverture $<2.5\%$), évitant la focalisation sur la poussière |
-| **Compensation de Jeu (Z-Backlash)**| Dépassement unidirectionnel | **25 pas $(\approx 10\ \mu\text{m})$** | Approche focale descendante strictly monotone éliminant tout jeu mécanique d'inversion |
+| **Compensation de Jeu (Z-Backlash)**| Approche conditionnelle 3 cas | **25 pas $(\approx 10\ \mu\text{m})$** | Cas A: Déjà sur cible (0 mouvement) ; Cas B: Descente monotone directe ; Cas C: Dépassement ascendant +25 pas puis descente strictement monotone (Rapport 41) |
 
 #### 8.2.4 Cadence, Débit et Optimisation du Stockage
 
@@ -433,7 +433,7 @@ Le moteur de balayage unifié formalise trois paradigmes d'acquisition validés 
 4. **Intégration du capteur BMP388 :** Remplacement des capteurs obsolètes et publication de la télémétrie barométrique en Pa et JSON.
 5. **Équilibrage de translation :** Calibrage des rampes d'accélération et des coefficients PWM assurant une trajectoire rectiligne symétrique.
 
-### 9.2 Durcissements Logiciels et Sécurisation du Microscope (Rapports 01 à 40)
+### 9.2 Durcissements Logiciels et Sécurisation du Microscope (Rapports 01 à 41)
 Les travaux récents d'ingénierie et d'assurance qualité ont apporté les garanties suivantes :
 1. **Interlock Matériel pour Environnements de Test :** Injection d'un garde logiciel interceptant les ouvertures de ports séries réels pendant les tests, garantissant **zéro mouvement mécanique intempestif** lors des validations hors-ligne.
 2. **Refonte de la Garde Linéaire de Direction en Mode 0 :** Éradication complète des angles morts de l'arithmétique modulo ; vérification stricte de la cohérence du signe de déplacement.
@@ -441,7 +441,13 @@ Les travaux récents d'ingénierie et d'assurance qualité ont apporté les gara
 4. **Résolution du Piège de l'Enregistrement de Butée Simple :** Découplage interactif automatique des bornes opposées situées sur un tour virtuel antérieur lors de la redéfinition d'un corridor.
 5. **Écriture Atomique et Protection en Lecture Seule :** Algorithme de persistance garantissant le maintien de l'attribut *Read-Only* à l'arrêt sur les fichiers critiques de calibration (`verified_corridors.json`), avec basculement temporaire lors des sauvegardes atomiques.
 6. **Parité Binaire et Cryptographique Complète :** Validation de l'empreinte SHA-256 rigoureusement identique entre le répertoire opérationnel de production (`D:\aaa_new_microscope`) et le dépôt de référence (`d:\aaaassistan_pcb`).
-7. **Suite de Tests d'Intégrité Complète :** 27 tests logiciels automatisés réussis à 100% (27/27) sans recours au matériel physique.
+7. **Suite de Tests d'Intégrité Complète :** 27 tests logiciels automatisés d'architecture multi-tours réussis à 100% (27/27) sans recours au matériel physique.
+8. **Asservissement Autofocus sur Encodeur Réel et Approche à 3 Cas Sécurisée (Rapport 41) :**
+   * Remplacement de la grille de consigne théorique par les positions réelles issues de l'encodeur magnétique 12 bits (`actual_positions`) pour la métrique de netteté Tenengrad et l'ajustement parabolique sub-pas.
+   * Implémentation d'une machine à états d'approche finale à 3 cas (`AT_TARGET`, `DOWN`, `UP-then-DOWN`), éliminant tout dépassement superflu lorsque la platine est déjà au-dessus de la cible focale.
+   * Validation en boucle fermée de l'atteinte physique de l'apex de compensation (+25 pas) avec temporisation de stabilisation et gardes contre le blocage ou le retard de réponse moteur.
+   * Détection et télémétrie de saturation au plafond du corridor (`safe_hi = 2275`) pour les cibles focales $Z > 2250$ (`overshoot_clipped: True`), protégeant la butée mécanique dure.
+   * Dissociation formelle entre la consigne optique sub-pas (`optical_peak`) et la consigne mécanique discrète (`mechanical_target`).
 
 ---
 
@@ -450,7 +456,7 @@ Les travaux récents d'ingénierie et d'assurance qualité ont apporté les gara
 Le Prestataire s'engage à remettre au Client les éléments suivants, constituant l'ensemble des livrables du projet :
 
 1. **Code Source & Dépôts Logiciels :**
-   * Code source complet, nettoyé, documenté et optimisé du contrôleur de platine de microscope (`movements.py`, `controller.py`, `persistence.py`, `safe_stall_recovery.py`, etc.).
+   * Code source complet, nettoyé, documenté et optimisé du contrôleur de platine de microscope (`movements.py`, `controller.py`, `persistence.py`, `safe_stall_recovery.py`, `autofocus.py`, etc.).
    * Code source firmware pour microcontrôleur ESP32-C6 (Robot Sparky) et ESP32 (Balance de pesée Dual-HX711).
    * Code source de la suite de numérisation WSI et des algorithmes d'autofocus Tenengrad.
    * Dépôt Git avec historique d'ingénierie traçable et exempt de régressions.
@@ -460,13 +466,13 @@ Le Prestataire s'engage à remettre au Client les éléments suivants, constitua
    * Configuration réseau sécurisée via tunnel **Tailscale** pour la maintenance à distance.
 
 3. **Documentation Technique & Rapports d'Assurance Qualité :**
-   * Ensemble des **40 rapports techniques d'ingénierie et d'investigation** (Rapports 01 à 40).
+   * Ensemble des **41 rapports techniques d'ingénierie et d'investigation** (Rapports 01 à 41), incluant le Rapport 41 sur l'asservissement d'autofocus sur encodeur réel et la compensation de jeu Z.
    * Spécification d'architecture multi-tours et plan de référence du système d'état.
    * Procédures opérationnelles standardisées (SOP) pour le recalibrage d'axes et l'exploitation quotidienne.
 
 4. **Suite de Tests et Validation :**
-   * Suite complète de tests unitaires et d'intégration validée sans matériel (27/27 tests réussis).
-   * Scripts de validation de non-régression et de vérification d'empreinte SHA-256.
+   * Suite complète de tests unitaires et d'intégration validée sans matériel : **39 tests unitaires système et multi-tours** + **46 tests d'autofocus et de compensation de backlash** (Pass 2, Pass 3 et Backlash), exécutés à 100% de succès sans recours au matériel physique.
+   * Scripts de validation de non-régression, mocks d'émulation de bus série et de vérification d'empreinte SHA-256.
 
 ---
 
