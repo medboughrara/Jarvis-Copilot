@@ -94,7 +94,22 @@ from tools.workflows_engine_tool import workflow_create, workflow_list, workflow
 from tools.multichannel_hub_tool import channel_send_message, channel_list_status
 from tools.recipes_automation_tool import list_available_recipes, execute_recipe
 from tools.sandbox_runner_tool import run_sandbox_code
-from tools.desktop_control_tool import get_system_metrics, list_active_windows, manage_clipboard
+from tools.desktop_control_tool import (
+    get_system_metrics,
+    list_active_windows,
+    manage_clipboard,
+    get_cursor_position,
+    mouse_move,
+    mouse_click,
+    mouse_drag,
+    mouse_scroll,
+    type_text,
+    press_hotkey,
+    click_element_by_name,
+    smart_focus_window,
+    smart_move_canvas_element,
+    smart_click_canvas_element
+)
 from tools.ecc_tools import ecc_plan_action, ecc_verify_python, unified_memory_store, unified_memory_query
 from agent.code_pipeline import write_and_verify_code
 from tools.reach_tool import search_web_explicit
@@ -248,10 +263,21 @@ class JarvisAgent:
             execute_recipe,
             # 6. Sandboxed Script & Math Execution
             run_sandbox_code,
-            # 7. Desktop Automation & System Metrics
+            # 7. Desktop Automation, System Metrics & Desktop Takeover
             get_system_metrics,
             list_active_windows,
             manage_clipboard,
+            get_cursor_position,
+            mouse_move,
+            mouse_click,
+            mouse_drag,
+            mouse_scroll,
+            type_text,
+            press_hotkey,
+            click_element_by_name,
+            smart_focus_window,
+            smart_move_canvas_element,
+            smart_click_canvas_element,
             # 8. ECC (Everything Claude Code) Autonomous Instincts & Scoped Memory
             ecc_plan_action,
             ecc_verify_python,
